@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}</ProjectGuid>
+    <Keyword>NetCoreCProj</Keyword>
+    <RootNamespace>DirectXNet</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.20348.0</WindowsTargetPlatformVersion>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>NetCore</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>NetCore</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>NetCore</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>NetCore</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\CommonStructs.h" />
+    <ClInclude Include="Common\D3D10Blob.h" />
+    <ClInclude Include="Common\D3DCompiler.h" />
+    <ClInclude Include="Common\Result.h" />
+    <ClInclude Include="Common\Unknown.h" />
+    <ClInclude Include="DirectX12\D3D12.h" />
+    <ClInclude Include="DirectX12\D3D12CommandList.h" />
+    <ClInclude Include="DirectX12\D3D12CommandQueue.h" />
+    <ClInclude Include="DirectX12\D3D12Device.h" />
+    <ClInclude Include="DirectX12\D3D12DeviceChild.h" />
+    <ClInclude Include="DirectX12\D3D12Fence.h" />
+    <ClInclude Include="DirectX12\D3D12Heap.h" />
+    <ClInclude Include="DirectX12\D3D12Object.h" />
+    <ClInclude Include="DirectX12\D3D12Pageable.h" />
+    <ClInclude Include="DirectX12\D3D12Resource.h" />
+    <ClInclude Include="DirectX12\D3D12Structs.h" />
+    <ClInclude Include="DirectX12\d3dx12.h" />
+    <ClInclude Include="DXGI\Debug\DXGIDebug.h" />
+    <ClInclude Include="DXGI\Debug\DXGIDebugStructs.h" />
+    <ClInclude Include="DXGI\Debug\DXGIInfoQueue.h" />
+    <ClInclude Include="DXGI\DXGI.h" />
+    <ClInclude Include="DXGI\DXGIAdapter.h" />
+    <ClInclude Include="DXGI\DXGIAdapter1.h" />
+    <ClInclude Include="DXGI\DXGIDevice.h" />
+    <ClInclude Include="DXGI\DXGIDevice1.h" />
+    <ClInclude Include="DXGI\DXGIDeviceSubObject.h" />
+    <ClInclude Include="DXGI\DXGIFactory1.h" />
+    <ClInclude Include="DXGI\DXGIKeyedMutex.h" />
+    <ClInclude Include="DXGI\DXGIObject.h" />
+    <ClInclude Include="DXGI\DXGIFactory.h" />
+    <ClInclude Include="DXGI\DXGIOutput.h" />
+    <ClInclude Include="DXGI\DXGIResource.h" />
+    <ClInclude Include="DXGI\DXGIStructs.h" />
+    <ClInclude Include="DXGI\DXGISurface.h" />
+    <ClInclude Include="DXGI\DXGISurface1.h" />
+    <ClInclude Include="DXGI\DXGISwapChain.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="Common\CommonStructs.cpp" />
+    <ClCompile Include="Common\D3D10Blob.cpp" />
+    <ClCompile Include="Common\D3DCompiler.cpp" />
+    <ClCompile Include="Common\Result.cpp" />
+    <ClCompile Include="Common\Unknown.cpp" />
+    <ClCompile Include="DirectX12\D3D12.cpp" />
+    <ClCompile Include="DirectX12\D3D12CommandList.cpp" />
+    <ClCompile Include="DirectX12\D3D12CommandQueue.cpp" />
+    <ClCompile Include="DirectX12\D3D12Device.cpp" />
+    <ClCompile Include="DirectX12\D3D12DeviceChild.cpp" />
+    <ClCompile Include="DirectX12\D3D12Fence.cpp" />
+    <ClCompile Include="DirectX12\D3D12Heap.cpp" />
+    <ClCompile Include="DirectX12\D3D12Object.cpp" />
+    <ClCompile Include="DirectX12\D3D12Pageable.cpp" />
+    <ClCompile Include="DirectX12\D3D12Resource.cpp" />
+    <ClCompile Include="DirectX12\D3D12Structs.cpp" />
+    <ClCompile Include="DXGI\Debug\DXGIDebug.cpp" />
+    <ClCompile Include="DXGI\Debug\DXGIDebugStructs.cpp" />
+    <ClCompile Include="DXGI\Debug\DXGIInfoQueue.cpp" />
+    <ClCompile Include="DXGI\DXGI.cpp" />
+    <ClCompile Include="DXGI\DXGIAdapter.cpp" />
+    <ClCompile Include="DXGI\DXGIAdapter1.cpp" />
+    <ClCompile Include="DXGI\DXGIDevice.cpp" />
+    <ClCompile Include="DXGI\DXGIDevice1.cpp" />
+    <ClCompile Include="DXGI\DXGIDeviceSubObject.cpp" />
+    <ClCompile Include="DXGI\DXGIFactory.cpp" />
+    <ClCompile Include="DXGI\DXGIFactory1.cpp" />
+    <ClCompile Include="DXGI\DXGIKeyedMutex.cpp" />
+    <ClCompile Include="DXGI\DXGIObject.cpp" />
+    <ClCompile Include="DXGI\DXGIOutput.cpp" />
+    <ClCompile Include="DXGI\DXGIResource.cpp" />
+    <ClCompile Include="DXGI\DXGIStructs.cpp" />
+    <ClCompile Include="DXGI\DXGISurface.cpp" />
+    <ClCompile Include="DXGI\DXGISurface1.cpp" />
+    <ClCompile Include="DXGI\DXGISwapChain.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="app.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

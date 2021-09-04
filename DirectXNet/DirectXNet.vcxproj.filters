@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일\Common">
+      <UniqueIdentifier>{6e424184-df42-43f7-97ec-cac3cd847048}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Common">
+      <UniqueIdentifier>{5d68784d-5826-40ce-a8d3-c9b0c754d7e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\DXGI">
+      <UniqueIdentifier>{40d984a4-7767-415b-8b69-80fd4c8975a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\DXGI">
+      <UniqueIdentifier>{794d0d52-e921-44fc-a854-20adab4f0477}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\DirectX12">
+      <UniqueIdentifier>{f9a0166c-fef9-4509-855e-992cb66574a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\DXGI\Debug">
+      <UniqueIdentifier>{6fe3d9df-15c4-4454-962f-46042d392185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\DXGI\Debug">
+      <UniqueIdentifier>{d5073e4d-58e0-4b30-8ebd-953dc1f82bfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\DirectX12">
+      <UniqueIdentifier>{ab9b6a20-e5a4-42d6-917c-1d547cc4a522}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Unknown.h">
+      <Filter>헤더 파일\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIObject.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIFactory.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIStructs.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Result.h">
+      <Filter>헤더 파일\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIDeviceSubObject.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGISwapChain.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIAdapter.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIOutput.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CommonStructs.h">
+      <Filter>헤더 파일\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGISurface.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGI.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIDevice.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIAdapter1.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIDevice1.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIFactory1.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIKeyedMutex.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGIResource.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\DXGISurface1.h">
+      <Filter>헤더 파일\DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\Debug\DXGIDebug.h">
+      <Filter>헤더 파일\DXGI\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\Debug\DXGIDebugStructs.h">
+      <Filter>헤더 파일\DXGI\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\Debug\DXGIInfoQueue.h">
+      <Filter>헤더 파일\DXGI\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12Object.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12Device.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12Structs.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\d3dx12.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12DeviceChild.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12Pageable.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12CommandQueue.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12Resource.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12Heap.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12CommandList.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12Fence.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\D3D10Blob.h">
+      <Filter>헤더 파일\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\D3DCompiler.h">
+      <Filter>헤더 파일\Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Unknown.cpp">
+      <Filter>소스 파일\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIObject.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIFactory.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIStructs.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Result.cpp">
+      <Filter>소스 파일\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIDeviceSubObject.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGISwapChain.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIAdapter.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIOutput.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\CommonStructs.cpp">
+      <Filter>소스 파일\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGISurface.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGI.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIDevice.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIAdapter1.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIDevice1.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIFactory1.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIKeyedMutex.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGIResource.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\DXGISurface1.cpp">
+      <Filter>소스 파일\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\Debug\DXGIDebug.cpp">
+      <Filter>소스 파일\DXGI\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\Debug\DXGIDebugStructs.cpp">
+      <Filter>소스 파일\DXGI\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\Debug\DXGIInfoQueue.cpp">
+      <Filter>소스 파일\DXGI\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12Object.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12Device.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12Structs.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12DeviceChild.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12Pageable.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12CommandQueue.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12Resource.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12Heap.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12CommandList.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12Fence.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\D3D10Blob.cpp">
+      <Filter>소스 파일\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\D3DCompiler.cpp">
+      <Filter>소스 파일\Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="app.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
