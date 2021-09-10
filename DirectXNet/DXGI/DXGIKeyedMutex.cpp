@@ -8,14 +8,13 @@ using namespace DirectXNet::DXGI;
 DirectXNet::DXGI::DXGIKeyedMutex::DXGIKeyedMutex(::IDXGIKeyedMutex* pMutex)
     : DXGIDeviceSubObject((::IDXGIDeviceSubObject*)pMutex)
 {
-    this->pMutex.Attach(pMutex);
+    this->pMutex = pMutex;
 }
 
 void DirectXNet::DXGI::DXGIKeyedMutex::AttatchComObj(::IUnknown* pComObj)
 {
     DXGIDeviceSubObject::AttatchComObj(pComObj);
-    pMutex.Release();
-    pMutex.Attach((::IDXGIKeyedMutex*)pComObj);
+    pMutex = (::IDXGIKeyedMutex*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGIKeyedMutex::GetGuid()

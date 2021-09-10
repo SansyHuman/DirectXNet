@@ -23,7 +23,7 @@ namespace DirectXNet
         public ref class DXGIAdapter1 : DXGIAdapter
         {
         private:
-            com::ptr<::IDXGIAdapter1> pAdapter1;
+            ::IDXGIAdapter1* pAdapter1;
             
         internal:
             DXGIAdapter1(::IDXGIAdapter1* pAdapter1);

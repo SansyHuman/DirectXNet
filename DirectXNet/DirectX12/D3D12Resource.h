@@ -25,7 +25,7 @@ namespace DirectXNet
         public ref class D3D12Resource : D3D12Pageable
         {
         private:
-            com::ptr<::ID3D12Resource> pResource;
+            ::ID3D12Resource* pResource;
 
         internal:
             D3D12Resource(::ID3D12Resource* pResource);
@@ -41,6 +41,15 @@ namespace DirectXNet
             /// </summary>
             /// <returns>GUID of ID3D12Resource.</returns>
             virtual Guid GetGuid() override;
+
+            /// <summary>
+            /// Gets the native resource pointer. This does not increase the reference count of the
+            /// resource. Do not use this other than filling some structs.
+            /// </summary>
+            property IntPtr NativeResource
+            {
+                IntPtr get();
+            }
 
             /// <summary>
             /// Gets a CPU pointer to the specified subresource in the resource, but may not disclose

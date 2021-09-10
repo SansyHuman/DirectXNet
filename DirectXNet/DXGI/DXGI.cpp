@@ -16,8 +16,8 @@
 #include "DXGISurface1.h"
 #include "DXGISwapChain.h"
 
-#include "Debug/DXGIDebug.h"
-#include "Debug/DXGIInfoQueue.h"
+#include "Debugs/DXGIDebug.h"
+#include "Debugs/DXGIInfoQueue.h"
 
 using namespace DirectXNet::DXGI;
 using namespace DirectXNet::Common;

@@ -26,7 +26,7 @@ namespace DirectXNet
         public ref class D3D12DeviceChild : D3D12Object
         {
         private:
-            com::ptr<::ID3D12DeviceChild> pDeviceChild;
+            ::ID3D12DeviceChild* pDeviceChild;
 
         internal:
             D3D12DeviceChild(::ID3D12DeviceChild* pDeviceChild);

@@ -13,9 +13,15 @@ using namespace DirectXNet::DXGI;
 
 namespace DirectXNet
 {
+    namespace Common
+    {
+        ref class D3D10Blob;
+    }
+
     namespace DirectX12
     {
         ref class D3D12Device;
+        ref class D3D12Resource;
 
         /// <summary>
         /// Used to determine which kinds of command lists are capable of supporting various operations.
@@ -1146,7 +1152,7 @@ namespace DirectXNet
         /// <summary>
         /// Specifies the CPU-page properties for the heap.
         /// </summary>
-        public enum class D3D12CPUPageProperty : UINT 
+        public enum class D3D12CPUPageProperty : UINT
         {
             /// <summary>
             /// The CPU-page property is unknown.
@@ -1349,6 +1355,1251 @@ namespace DirectXNet
             NoHazard = D3D12_TILE_MAPPING_FLAG_NO_HAZARD
         };
 
+        /// <summary>
+        /// Specifies blend factors, which modulate values for the pixel shader and render target.
+        /// </summary>
+        public enum class D3D12Blend : UINT
+        {
+            /// <summary>
+            /// The blend factor is (0, 0, 0, 0). No pre-blend operation.
+            /// </summary>
+            Zero = D3D12_BLEND_ZERO,
+
+            /// <summary>
+            /// The blend factor is (1, 1, 1, 1). No pre-blend operation.
+            /// </summary>
+            One = D3D12_BLEND_ONE,
+
+            /// <summary>
+            /// The blend factor is (Rₛ, Gₛ, Bₛ, Aₛ), that is color data (RGB) from a pixel shader.
+            /// No pre-blend operation.
+            /// </summary>
+            SrcColor = D3D12_BLEND_SRC_COLOR,
+
+            /// <summary>
+            /// The blend factor is (1 - Rₛ, 1 - Gₛ, 1 - Bₛ, 1 - Aₛ), that is color data (RGB) from a
+            /// pixel shader. The pre-blend operation inverts the data, generating 1 - RGB.
+            /// </summary>
+            InvSrcColor = D3D12_BLEND_INV_SRC_COLOR,
+
+            /// <summary>
+            /// The blend factor is (Aₛ, Aₛ, Aₛ, Aₛ), that is alpha data (A) from a pixel shader. No
+            /// pre-blend operation.
+            /// </summary>
+            SrcAlpha = D3D12_BLEND_SRC_ALPHA,
+
+            /// <summary>
+            /// The blend factor is (1 - Aₛ, 1 - Aₛ, 1 - Aₛ, 1 - Aₛ), that is alpha data (A) from a
+            /// pixel shader. The pre-blend operation inverts the data, generating 1 - A.
+            /// </summary>
+            InvSrcAlpha = D3D12_BLEND_INV_SRC_ALPHA,
+
+            /// <summary>
+            /// The blend factor is (Ad Ad Ad Ad), that is alpha data from a render target.
+            /// No pre-blend operation.
+            /// </summary>
+            DestAlpha = D3D12_BLEND_DEST_ALPHA,
+
+            /// <summary>
+            /// The blend factor is (1 - Ad 1 - Ad 1 - Ad 1 - Ad), that is alpha data from a
+            /// render target. The pre-blend operation inverts the data, generating 1 - A.
+            /// </summary>
+            InvDestAlpha = D3D12_BLEND_INV_DEST_ALPHA,
+
+            /// <summary>
+            /// The blend factor is (Rd, Gd, Bd, Ad), that is color data from a render target.
+            /// No pre-blend operation.
+            /// </summary>
+            DestColor = D3D12_BLEND_DEST_COLOR,
+
+            /// <summary>
+            /// The blend factor is (1 - Rd, 1 - Gd, 1 - Bd, 1 - Ad), that is color data from a
+            /// render target. The pre-blend operation inverts the data, generating 1 - RGB.
+            /// </summary>
+            InvDestColor = D3D12_BLEND_INV_DEST_COLOR,
+
+            /// <summary>
+            /// The blend factor is (f, f, f, 1); where f = min(Aₛ, 1 - Ad).The pre-blend operation
+            /// clamps the data to 1 or less.
+            /// </summary>
+            SrcAlphaSat = D3D12_BLEND_SRC_ALPHA_SAT,
+
+            /// <summary>
+            /// The blend factor is the blend factor set with D3D12GraphicsCommandList::OMSetBlendFactor.
+            /// No pre-blend operation.
+            /// </summary>
+            BlendFactor = D3D12_BLEND_BLEND_FACTOR,
+
+            /// <summary>
+            /// The blend factor is the blend factor set with D3D12GraphicsCommandList::OMSetBlendFactor.
+            /// The pre-blend operation inverts the blend factor, generating 1 - blend_factor.
+            /// </summary>
+            InvBlendFactor = D3D12_BLEND_INV_BLEND_FACTOR,
+
+            /// <summary>
+            /// The blend factor is data sources both as color data output by a pixel shader.
+            /// There is no pre-blend operation. This blend factor supports dual-source color blending.
+            /// </summary>
+            Src1Color = D3D12_BLEND_SRC1_COLOR,
+
+            /// <summary>
+            /// The blend factor is data sources both as color data output by a pixel shader.
+            /// The pre-blend operation inverts the data, generating 1 - RGB. This blend factor
+            /// supports dual-source color blending.
+            /// </summary>
+            InvSrc1Color = D3D12_BLEND_INV_SRC1_COLOR,
+
+            /// <summary>
+            /// The blend factor is data sources as alpha data output by a pixel shader. There is no
+            /// pre-blend operation. This blend factor supports dual-source color blending.
+            /// </summary>
+            Src1Alpha = D3D12_BLEND_SRC1_ALPHA,
+
+            /// <summary>
+            /// The blend factor is data sources as alpha data output by a pixel shader. The
+            /// pre-blend operation inverts the data, generating 1 - A. This blend factor supports
+            /// dual-source color blending.
+            /// </summary>
+            InvSrc1Alpha = D3D12_BLEND_INV_SRC1_ALPHA
+        };
+
+        /// <summary>
+        /// Specifies RGB or alpha blending operations.
+        /// </summary>
+        public enum class D3D12BlendOp : UINT
+        {
+            /// <summary>
+            /// Add source 1 and source 2.
+            /// </summary>
+            Add = D3D12_BLEND_OP_ADD,
+
+            /// <summary>
+            /// Subtract source 1 from source 2.
+            /// </summary>
+            Subtract = D3D12_BLEND_OP_SUBTRACT,
+
+            /// <summary>
+            /// Subtract source 2 from source 1.
+            /// </summary>
+            RevSubtract = D3D12_BLEND_OP_REV_SUBTRACT,
+
+            /// <summary>
+            /// Find the minimum of source 1 and source 2.
+            /// </summary>
+            Min = D3D12_BLEND_OP_MIN,
+
+            /// <summary>
+            /// Find the maximum of source 1 and source 2.
+            /// </summary>
+            Max = D3D12_BLEND_OP_MAX
+        };
+
+        /// <summary>
+        /// Defines constants that specify logical operations to configure for a render target.
+        /// </summary>
+        public enum class D3D12LogicOp : UINT
+        {
+            /// <summary>
+            /// Clears the render target (0).
+            /// </summary>
+            Clear = D3D12_LOGIC_OP_CLEAR,
+
+            /// <summary>
+            /// Sets the render target ( 1).
+            /// </summary>
+            Set = D3D12_LOGIC_OP_SET,
+
+            /// <summary>
+            /// Copys the render target (s source from Pixel Shader output).
+            /// </summary>
+            Copy = D3D12_LOGIC_OP_COPY,
+
+            /// <summary>
+            /// Performs an inverted-copy of the render target (~s).
+            /// </summary>
+            CopyInverted = D3D12_LOGIC_OP_COPY_INVERTED,
+
+            /// <summary>
+            /// No operation is performed on the render target (d destination in the Render Target View).
+            /// </summary>
+            Noop = D3D12_LOGIC_OP_NOOP,
+
+            /// <summary>
+            /// Inverts the render target (~d).
+            /// </summary>
+            Invert = D3D12_LOGIC_OP_INVERT,
+
+            /// <summary>
+            /// Performs a logical AND operation on the render target (s & d).
+            /// </summary>
+            And = D3D12_LOGIC_OP_AND,
+
+            /// <summary>
+            /// Performs a logical NAND operation on the render target (~(s & d)).
+            /// </summary>
+            Nand = D3D12_LOGIC_OP_NAND,
+
+            /// <summary>
+            /// Performs a logical OR operation on the render target (s | d).
+            /// </summary>
+            Or = D3D12_LOGIC_OP_OR,
+
+            /// <summary>
+            /// Performs a logical NOR operation on the render target (~(s | d)).
+            /// </summary>
+            Nor = D3D12_LOGIC_OP_NOR,
+
+            /// <summary>
+            /// Performs a logical XOR operation on the render target (s ^ d).
+            /// </summary>
+            Xor = D3D12_LOGIC_OP_XOR,
+
+            /// <summary>
+            /// Performs a logical equal operation on the render target (~(s ^ d)).
+            /// </summary>
+            Equiv = D3D12_LOGIC_OP_EQUIV,
+
+            /// <summary>
+            /// Performs a logical AND and reverse operation on the render target (s & ~d).
+            /// </summary>
+            AndReverse = D3D12_LOGIC_OP_AND_REVERSE,
+
+            /// <summary>
+            /// Performs a logical AND and invert operation on the render target (~s & d).
+            /// </summary>
+            AndInverted = D3D12_LOGIC_OP_AND_INVERTED,
+
+            /// <summary>
+            /// Performs a logical OR and reverse operation on the render target (s | ~d).
+            /// </summary>
+            OrReverse = D3D12_LOGIC_OP_OR_REVERSE,
+
+            /// <summary>
+            /// Performs a logical OR and invert operation on the render target (~s | d).
+            /// </summary>
+            OrInverted = D3D12_LOGIC_OP_OR_INVERTED
+        };
+
+        /// <summary>
+        /// Identifies which components of each pixel of a render target are writable during blending.
+        /// </summary>
+        [Flags]
+        public enum class D3D12ColorWriteEnable : UINT8
+        {
+            None = 0,
+
+            /// <summary>
+            /// Allow data to be stored in the red component.
+            /// </summary>
+            Red = D3D12_COLOR_WRITE_ENABLE_RED,
+
+            /// <summary>
+            /// Allow data to be stored in the green component.
+            /// </summary>
+            Green = D3D12_COLOR_WRITE_ENABLE_GREEN,
+
+            /// <summary>
+            /// Allow data to be stored in the blue component.
+            /// </summary>
+            Blue = D3D12_COLOR_WRITE_ENABLE_BLUE,
+
+            /// <summary>
+            /// Allow data to be stored in the alpha component.
+            /// </summary>
+            Alpha = D3D12_COLOR_WRITE_ENABLE_ALPHA,
+
+            /// <summary>
+            /// Allow data to be stored in all components.
+            /// </summary>
+            All = D3D12_COLOR_WRITE_ENABLE_ALL
+        };
+
+        /// <summary>
+        /// Specifies the fill mode to use when rendering triangles.
+        /// </summary>
+        public enum class D3D12FillMode : UINT
+        {
+            /// <summary>
+            /// Draw lines connecting the vertices. Adjacent vertices are not drawn.
+            /// </summary>
+            Wireframe = D3D12_FILL_MODE_WIREFRAME,
+
+            /// <summary>
+            /// Fill the triangles formed by the vertices. Adjacent vertices are not drawn.
+            /// </summary>
+            Solid = D3D12_FILL_MODE_SOLID
+        };
+
+        /// <summary>
+        /// Specifies triangles facing a particular direction are not drawn.
+        /// </summary>
+        public enum class D3D12CullMode : UINT
+        {
+            /// <summary>
+            /// Always draw all triangles.
+            /// </summary>
+            None = D3D12_CULL_MODE_NONE,
+
+            /// <summary>
+            /// Do not draw triangles that are front-facing.
+            /// </summary>
+            Front = D3D12_CULL_MODE_FRONT,
+
+            /// <summary>
+            /// Do not draw triangles that are back-facing.
+            /// </summary>
+            Back = D3D12_CULL_MODE_BACK
+        };
+
+        /// <summary>
+        /// Identifies whether conservative rasterization is on or off.
+        /// </summary>
+        public enum class D3D12ConservativeRasterizationMode : UINT
+        {
+            /// <summary>
+            /// Conservative rasterization is off.
+            /// </summary>
+            Off = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF,
+
+            /// <summary>
+            /// Conservative rasterization is on.
+            /// </summary>
+            On = D3D12_CONSERVATIVE_RASTERIZATION_MODE_ON
+        };
+
+        /// <summary>
+        /// Identifies the portion of a depth-stencil buffer for writing depth data.
+        /// </summary>
+        public enum class D3D12DepthWriteMask : UINT
+        {
+            /// <summary>
+            /// Turn off writes to the depth-stencil buffer.
+            /// </summary>
+            Zero = D3D12_DEPTH_WRITE_MASK_ZERO,
+
+            /// <summary>
+            /// Turn on writes to the depth-stencil buffer.
+            /// </summary>
+            All = D3D12_DEPTH_WRITE_MASK_ALL
+        };
+
+        /// <summary>
+        /// Specifies comparison options.
+        /// </summary>
+        public enum class D3D12ComparisonFunc : UINT
+        {
+            /// <summary>
+            /// Never pass the comparison.
+            /// </summary>
+            Never = D3D12_COMPARISON_FUNC_NEVER,
+
+            /// <summary>
+            /// If the source data is less than the destination data, the comparison passes.
+            /// </summary>
+            Less = D3D12_COMPARISON_FUNC_LESS,
+
+            /// <summary>
+            /// If the source data is equal to the destination data, the comparison passes.
+            /// </summary>
+            Equal = D3D12_COMPARISON_FUNC_EQUAL,
+
+            /// <summary>
+            /// If the source data is less than or equal to the destination data, the comparison passes.
+            /// </summary>
+            LessEqual = D3D12_COMPARISON_FUNC_LESS_EQUAL,
+
+            /// <summary>
+            /// If the source data is greater than the destination data, the comparison passes.
+            /// </summary>
+            Greater = D3D12_COMPARISON_FUNC_GREATER,
+
+            /// <summary>
+            /// If the source data is not equal to the destination data, the comparison passes.
+            /// </summary>
+            NotEqual = D3D12_COMPARISON_FUNC_NOT_EQUAL,
+
+            /// <summary>
+            /// If the source data is greater than or equal to the destination data, the
+            /// comparison passes.
+            /// </summary>
+            GreaterEqual = D3D12_COMPARISON_FUNC_GREATER_EQUAL,
+
+            /// <summary>
+            /// Always pass the comparison.
+            /// </summary>
+            Always = D3D12_COMPARISON_FUNC_ALWAYS
+        };
+
+        /// <summary>
+        /// Identifies the stencil operations that can be performed during depth-stencil testing.
+        /// </summary>
+        public enum class D3D12StencilOp : UINT
+        {
+            /// <summary>
+            /// Keep the existing stencil data.
+            /// </summary>
+            Keep = D3D12_STENCIL_OP_KEEP,
+
+            /// <summary>
+            /// Set the stencil data to 0.
+            /// </summary>
+            Zero = D3D12_STENCIL_OP_ZERO,
+
+            /// <summary>
+            /// Set the stencil data to the reference value set by calling
+            /// D3D12GraphicsCommandList::OMSetStencilRef.
+            /// </summary>
+            Replace = D3D12_STENCIL_OP_REPLACE,
+
+            /// <summary>
+            /// Increment the stencil value by 1, and clamp the result.
+            /// </summary>
+            IncrSat = D3D12_STENCIL_OP_INCR_SAT,
+
+            /// <summary>
+            /// Decrement the stencil value by 1, and clamp the result.
+            /// </summary>
+            DecrSat = D3D12_STENCIL_OP_DECR_SAT,
+
+            /// <summary>
+            /// Invert the stencil data.
+            /// </summary>
+            Invert = D3D12_STENCIL_OP_INVERT,
+
+            /// <summary>
+            /// Increment the stencil value by 1, and wrap the result if necessary.
+            /// </summary>
+            Incr = D3D12_STENCIL_OP_INCR,
+
+            /// <summary>
+            /// Decrement the stencil value by 1, and wrap the result if necessary.
+            /// </summary>
+            Decr = D3D12_STENCIL_OP_DECR
+        };
+
+        /// <summary>
+        /// Identifies the type of data contained in an input slot.
+        /// </summary>
+        public enum class D3D12InputClassification : UINT
+        {
+            /// <summary>
+            /// Input data is per-vertex data.
+            /// </summary>
+            PerVertexData = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+
+            /// <summary>
+            /// Input data is per-instance data.
+            /// </summary>
+            PerInstanceData = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA
+        };
+
+        /// <summary>
+        /// When using triangle strip primitive topology, vertex positions are interpreted as vertices
+        /// of a continuous triangle “strip”. There is a special index value that represents the desire
+        /// to have a discontinuity in the strip, the cut index value. This enum lists the supported
+        /// cut values.
+        /// </summary>
+        public enum class D3D12IndexBufferStripCutValue : UINT
+        {
+            /// <summary>
+            /// Indicates that there is no cut value.
+            /// </summary>
+            Disabled = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED,
+
+            /// <summary>
+            /// Indicates that 0xFFFF should be used as the cut value.
+            /// </summary>
+            Value0xFFFF = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_0xFFFF,
+
+            /// <summary>
+            /// Indicates that 0xFFFFFFFF should be used as the cut value.
+            /// </summary>
+            Value0xFFFFFFFF = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_0xFFFFFFFF
+        };
+
+        /// <summary>
+        /// Specifies how the pipeline interprets geometry or hull shader input primitives.
+        /// </summary>
+        public enum class D3D12PrimitiveTopologyType : UINT
+        {
+            /// <summary>
+            /// The shader has not been initialized with an input primitive type.
+            /// </summary>
+            Undefined = D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED,
+
+            /// <summary>
+            /// Interpret the input primitive as a point.
+            /// </summary>
+            Point = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT,
+
+            /// <summary>
+            /// Interpret the input primitive as a line.
+            /// </summary>
+            Line = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
+
+            /// <summary>
+            /// Interpret the input primitive as a triangle.
+            /// </summary>
+            Triangle = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+
+            /// <summary>
+            /// Interpret the input primitive as a control point patch.
+            /// </summary>
+            Patch = D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH
+        };
+
+        /// <summary>
+        /// Flags to control pipeline state.
+        /// </summary>
+        [Flags]
+        public enum class D3D12PipelineStateFlags : UINT
+        {
+            /// <summary>
+            /// Indicates no flags.
+            /// </summary>
+            None = D3D12_PIPELINE_STATE_FLAG_NONE,
+
+            /// <summary>
+            /// Indicates that the pipeline state should be compiled with additional information to
+            /// assist debugging.
+            /// This can only be set on WARP devices.
+            /// </summary>
+            ToolDebug = D3D12_PIPELINE_STATE_FLAG_TOOL_DEBUG
+        };
+
+        /// <summary>
+        /// Specifies what type of texture copy is to take place.
+        /// </summary>
+        public enum class D3D12TextureCopyType : UINT
+        {
+            /// <summary>
+            /// Indicates a subresource, identified by an index, is to be copied.
+            /// </summary>
+            SubresourceIndex = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+
+            /// <summary>
+            /// Indicates a place footprint, identified by a D3D12PlacedSubresourceFootprint
+            /// structure, is to be copied.
+            /// </summary>
+            PlacedFootprint = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT
+        };
+
+        /// <summary>
+        /// Specifies how to copy a tile.
+        /// </summary>
+        [Flags]
+        public enum class D3D12TileCopyFlags : UINT
+        {
+            /// <summary>
+            /// No tile-copy flags are specified.
+            /// </summary>
+            None = D3D12_TILE_COPY_FLAG_NONE,
+
+            /// <summary>
+            /// Indicates that the GPU isn't currently referencing any of the portions of destination
+            /// memory being written.
+            /// </summary>
+            NoHazard = D3D12_TILE_COPY_FLAG_NO_HAZARD,
+
+            /// <summary>
+            /// Indicates that the D3D12GraphicsCommandList::CopyTiles operation involves copying a
+            /// linear buffer to a swizzled tiled resource. This means to copy tile data from the
+            /// specified buffer location, reading tiles sequentially, to the specified tile region
+            /// (in x, y, z order if the region is a box), swizzling to optimal hardware memory layout
+            /// as needed. In this D3D12GraphicsCommandList::CopyTiles call, you specify the source data
+            /// with the buffer parameter and the destination with the tiledResource parameter.
+            /// </summary>
+            LinearBufferToSwizzledTiledResource = D3D12_TILE_COPY_FLAG_LINEAR_BUFFER_TO_SWIZZLED_TILED_RESOURCE,
+
+            /// <summary>
+            /// Indicates that the D3D12GraphicsCommandList::CopyTiles operation involves copying a
+            /// swizzled tiled resource to a linear buffer. This means to copy tile data from the tile
+            /// region, reading tiles sequentially (in x,y,z order if the region is a box),
+            /// to the specified buffer location, deswizzling to linear memory layout as needed.
+            /// In this D3D12GraphicsCommandList::CopyTiles call, you specify the source data with
+            /// the tiledResource parameterand the destination with the buffer parameter.
+            /// </summary>
+            SwizzledTiledResourceToLinearBuffer = D3D12_TILE_COPY_FLAG_SWIZZLED_TILED_RESOURCE_TO_LINEAR_BUFFER
+        };
+
+        /// <summary>
+        /// Specifies a type of resource barrier (transition in resource use) description.
+        /// </summary>
+        public enum class D3D12ResourceBarrierType : UINT
+        {
+            /// <summary>
+            /// A transition barrier that indicates a transition of a set of subresources between
+            /// different usages. The caller must specify the before and after usages of the subresources.
+            /// </summary>
+            Transition = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
+
+            /// <summary>
+            /// An aliasing barrier that indicates a transition between usages of 2 different resources
+            /// that have mappings into the same tile pool. The caller can specify both the before and
+            /// the after resource. Note that one or both resources can be NULL, which indicates that
+            /// any tiled resource could cause aliasing.
+            /// </summary>
+            Aliasing = D3D12_RESOURCE_BARRIER_TYPE_ALIASING,
+
+            /// <summary>
+            /// An unordered access view (UAV) barrier that indicates all UAV accesses (reads or writes)
+            /// to a particular resource must complete before any future UAV accesses (read or write)
+            /// can begin.
+            /// </summary>
+            Uav = D3D12_RESOURCE_BARRIER_TYPE_UAV
+        };
+
+        /// <summary>
+        /// Flags for setting split resource barriers.
+        /// </summary>
+        [Flags]
+        public enum class D3D12ResourceBarrierFlags : UINT
+        {
+            /// <summary>
+            /// No flags.
+            /// </summary>
+            None = D3D12_RESOURCE_BARRIER_FLAG_NONE,
+
+            /// <summary>
+            /// This starts a barrier transition in a new state, putting a resource in a temporary
+            /// no-access condition.
+            /// </summary>
+            BeginOnly = D3D12_RESOURCE_BARRIER_FLAG_BEGIN_ONLY,
+
+            /// <summary>
+            /// This barrier completes a transition, setting a new state and restoring active access to
+            /// a resource.
+            /// </summary>
+            EndOnly = D3D12_RESOURCE_BARRIER_FLAG_END_ONLY
+        };
+
+        /// <summary>
+        /// Defines constants that specify the state of a resource regarding how the resource is
+        /// being used.
+        /// </summary>
+        [Flags]
+        public enum class D3D12ResourceStates : UINT
+        {
+            /// <summary>
+            /// Your application should transition to this state only for accessing a resource across
+            /// different graphics engine types.
+            /// Specifically, a resource must be in the COMMON state before being used on a COPY queu
+            /// (when previous used on DIRECT / COMPUTE), and before being used on DIRECT / COMPUTE
+            /// (when previously used on COPY).This restriction does not exist when accessing data
+            /// between DIRECT and COMPUTE queues.
+            /// Additionally, textures must be in the COMMON state for CPU access to be legal,
+            /// assuming the texture was created in a CPU-visible heap in the first place.
+            /// </summary>
+            Common = D3D12_RESOURCE_STATE_COMMON,
+
+            /// <summary>
+            /// A subresource must be in this state when it is accessed by the GPU as a vertex buffer
+            /// or constant buffer. This is a read-only state.
+            /// </summary>
+            VertexAndConstantBuffer = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+
+            /// <summary>
+            /// A subresource must be in this state when it is accessed by the 3D pipeline as an
+            /// index buffer. This is a read-only state.
+            /// </summary>
+            IndexBuffer = D3D12_RESOURCE_STATE_INDEX_BUFFER,
+
+            /// <summary>
+            /// The resource is used as a render target. A subresource must be in this state when it is
+            /// rendered to or when it is cleared with D3D12GraphicsCommandList::ClearRenderTargetView.
+            /// This is a write-only state. To read from a render target as a shader resource the
+            /// resource must be in either D3D12ResourceStates::NonPixelShaderResource or
+            /// D3D12ResourceStates::PixelShaderResource.
+            /// </summary>
+            RenderTarget = D3D12_RESOURCE_STATE_RENDER_TARGET,
+
+            /// <summary>
+            /// The resource is used for unordered access. A subresource must be in this state when it is
+            /// accessed by the GPU via an unordered access view. A subresource must also be in this
+            /// state when it is cleared with D3D12GraphicsCommandList::ClearUnorderedAccessViewInt or
+            /// D3D12GraphicsCommandList::ClearUnorderedAccessViewFloat. This is a read/write state.
+            /// </summary>
+            UnorderedAccess = D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+
+            /// <summary>
+            /// DepthWrite is a state that is mutually exclusive with other states.
+            /// You should use it for ID3D12GraphicsCommandList::ClearDepthStencilView when the flags
+            /// indicate a given subresource should be cleared (otherwise the subresource state doesn't
+            /// matter), or when using it in a writable depth stencil view when the PSO has depth write
+            /// enabled.
+            /// </summary>
+            DepthWrite = D3D12_RESOURCE_STATE_DEPTH_WRITE,
+
+            /// <summary>
+            /// DepthRead is a state which can be combined with other states. It should be used when
+            /// the subresource is in a read-only depth stencil view, or when the DepthEnable parameter
+            /// of D3D12DepthStencilDesc is false. It can be combined with other read states (for
+            /// example, PixelShaderResource), such that the resource can be used for the depth or
+            /// stencil test, and accessed by a shader within the same draw call. Using it when depth
+            /// will be written by a draw call or clear command is invalid.
+            /// </summary>
+            DepthRead = D3D12_RESOURCE_STATE_DEPTH_READ,
+
+            /// <summary>
+            /// The resource is used with a shader other than the pixel shader. A subresource must be
+            /// in this state before being read by any stage (except for the pixel shader stage) via a
+            /// shader resource view. You can still use the resource in a pixel shader with this flag as
+            /// long as it also has the flag PixelShaderResource set. This is a read-only state.
+            /// </summary>
+            NonPixelShaderResource = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+
+            /// <summary>
+            /// The resource is used with a pixel shader. A subresource must be in this state before
+            /// being read by the pixel shader via a shader resource view. This is a read-only state.
+            /// </summary>
+            PixelShaderResource = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+
+            /// <summary>
+            /// The resource is used with stream output. A subresource must be in this state when it
+            /// is accessed by the 3D pipeline as a stream-out target. This is a write-only state.
+            /// </summary>
+            StreamOut = D3D12_RESOURCE_STATE_STREAM_OUT,
+
+            /// <summary>
+            /// The resource is used as an indirect argument.
+            /// Subresources must be in this state when they are used as the argument buffer passed to
+            /// the indirect drawing method D3D12GraphicsCommandList::ExecuteIndirect.
+            /// This is a read-only state.
+            /// </summary>
+            IndirectArgument = D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT,
+
+            /// <summary>
+            /// The resource is used as the destination in a copy operation.
+            /// Subresources must be in this state when they are used as the destination of copy
+            /// operation, or a blt operation.
+            /// This is a write-only state.
+            /// </summary>
+            CopyDest = D3D12_RESOURCE_STATE_COPY_DEST,
+
+            /// <summary>
+            /// The resource is used as the source in a copy operation.
+            /// Subresources must be in this state when they are used as the source of copy operation,
+            /// or a blt operation.
+            /// This is a read-only state.
+            /// </summary>
+            CopySource = D3D12_RESOURCE_STATE_COPY_SOURCE,
+
+            /// <summary>
+            /// The resource is used as the destination in a resolve operation.
+            /// </summary>
+            ResolveDest = D3D12_RESOURCE_STATE_RESOLVE_DEST,
+
+            /// <summary>
+            /// The resource is used as the source in a resolve operation.
+            /// </summary>
+            ResolveSource = D3D12_RESOURCE_STATE_RESOLVE_SOURCE,
+
+            /// <summary>
+            /// When a buffer is created with this as its initial state, it indicates that the resource
+            /// is a raytracing acceleration structure, for use in
+            /// D3D12GraphicsCommandList4::BuildRaytracingAccelerationStructure,
+            /// D3D12GraphicsCommandList4::CopyRaytracingAccelerationStructure, or
+            /// D3D12Device::CreateShaderResourceView for the
+            /// D3D12SrvDimensionRaytracingAccelerationStreucture dimension.
+            /// </summary>
+            RaytracingAccelerationStructure = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
+
+            /// <summary>
+            /// Starting with Windows 10, version 1903 (10.0; Build 18362), indicates that the resource
+            /// is a screen-space shading-rate image for variable-rate shading (VRS).
+            /// </summary>
+            ShadingRateSource = D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE,
+
+            /// <summary>
+            /// D3D12_RESOURCE_STATE_GENERIC_READ is a logically OR'd combination of other read-state
+            /// bits. This is the required starting state for an upload heap. Your application should
+            /// generally avoid transitioning to GenericRead when possible, since that can result in
+            /// premature cache flushes, or resource layout changes (for example, compress/decompress),
+            /// causing unnecessary pipeline stalls. You should instead transition resources only to the
+            /// actually-used states.
+            /// </summary>
+            GenericRead = D3D12_RESOURCE_STATE_GENERIC_READ,
+            AllShaderResource = D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE,
+
+            /// <summary>
+            /// Synonymous with D3D12_RESOURCE_STATE_COMMON.
+            /// </summary>
+            Present = D3D12_RESOURCE_STATE_PRESENT,
+
+            /// <summary>
+            /// The resource is used for Predication.
+            /// </summary>
+            Predication = D3D12_RESOURCE_STATE_PREDICATION,
+
+            /// <summary>
+            /// The resource is used as a source in a decode operation. Examples include reading the
+            /// compressed bitstream and reading from decode references.
+            /// </summary>
+            VideoDecodeRead = D3D12_RESOURCE_STATE_VIDEO_DECODE_READ,
+
+            /// <summary>
+            /// The resource is used as a destination in the decode operation. This state is used
+            /// for decode output and histograms.
+            /// </summary>
+            VideoDecodeWrite = D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE,
+
+            /// <summary>
+            /// The resource is used to read video data during video processing; that is, the resource
+            /// is used as the source in a processing operation such as video encoding (compression).
+            /// </summary>
+            VideoProcessRead = D3D12_RESOURCE_STATE_VIDEO_PROCESS_READ,
+
+            /// <summary>
+            /// The resource is used to write video data during video processing; that is, the resource
+            /// is used as the destination in a processing operation such as video encoding (compression).
+            /// </summary>
+            VideoProcessWrite = D3D12_RESOURCE_STATE_VIDEO_PROCESS_WRITE,
+
+            /// <summary>
+            /// The resource is used as the source in an encode operation. This state is used for
+            /// the input and reference of motion estimation.
+            /// </summary>
+            VideoEncodeRead = D3D12_RESOURCE_STATE_VIDEO_ENCODE_READ,
+
+            /// <summary>
+            /// This resource is used as the destination in an encode operation. This state is used
+            /// for the destination texture of a resolve motion vector heap operation.
+            /// </summary>
+            VideoEncodeWrite = D3D12_RESOURCE_STATE_VIDEO_ENCODE_WRITE
+        };
+
+        /// <summary>
+        /// Specifies options for a heap.
+        /// </summary>
+        [Flags]
+        public enum class D3D12DescriptorHeapFlags : UINT
+        {
+            /// <summary>
+            /// Indicates default usage of a heap.
+            /// </summary>
+            None = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+
+            /// <summary>
+            /// The flag ShaderVisible can optionally be set on a descriptor heap to indicate it is be
+            /// bound on a command list for reference by shaders. Descriptor heaps created without this
+            /// flag allow applications the option to stage descriptors in CPU memory before copying them
+            /// to a shader visible descriptor heap, as a convenience. But it is also fine for
+            /// applications to directly create descriptors into shader visible descriptor heaps with no
+            /// requirement to stage anything on the CPU.
+            /// Descriptor heaps bound via D3D12GraphicsCommandList::SetDescriptorHeaps must have the
+            /// ShaderVisible flag set, else the debug layer will produce an error.
+            /// Descriptor heaps with the ShaderVisible flag can't be used as the source heaps in calls
+            /// to D3D12Device::CopyDescriptors or D3D12Device::CopyDescriptorsSimple, because they
+            /// could be resident in WRITE_COMBINE memory or GPU-local memory, which is very inefficient
+            /// to read from.
+            /// This flag only applies to CBV / SRV / UAV descriptor heaps, and sampler descriptor
+            /// heaps.It does not apply to other descriptor heap types since shaders do not directly
+            /// reference the other types.Attempting to create an RTV / DSV heap with
+            /// ShaderVisible results in a debug layer error.
+            /// </summary>
+            ShaderVisible = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
+        };
+
+        /// <summary>
+        /// Specifies what to clear from the depth stencil view.
+        /// </summary>
+        [Flags]
+        public enum class D3D12ClearFlags : UINT
+        {
+            None = 0,
+
+            /// <summary>
+            /// Indicates the depth buffer should be cleared.
+            /// </summary>
+            Depth = D3D12_CLEAR_FLAG_DEPTH,
+
+            /// <summary>
+            /// Indicates the stencil buffer should be cleared.
+            /// </summary>
+            Stencil = D3D12_CLEAR_FLAG_STENCIL
+        };
+
+        /// <summary>
+        /// Specifies the type of query.
+        /// </summary>
+        public enum class D3D12QueryType : UINT
+        {
+            /// <summary>
+            /// Indicates the query is for depth/stencil occlusion counts.
+            /// </summary>
+            Occlusion = D3D12_QUERY_TYPE_OCCLUSION,
+
+            /// <summary>
+            /// Indicates the query is for a binary depth/stencil occlusion statistics.
+            /// </summary>
+            BinaryOcclusion = D3D12_QUERY_TYPE_BINARY_OCCLUSION,
+
+            /// <summary>
+            /// Indicates the query is for high definition GPU and CPU timestamps.
+            /// </summary>
+            Timestamp = D3D12_QUERY_TYPE_TIMESTAMP,
+
+            /// <summary>
+            /// Indicates the query type is for graphics pipeline statistics.
+            /// </summary>
+            PipelineStatistics = D3D12_QUERY_TYPE_PIPELINE_STATISTICS,
+
+            /// <summary>
+            /// Stream 0 output statistics. In Direct3D 12 there is no single stream output (SO)
+            /// overflow query for all the output streams. Apps need to issue multiple single-stream
+            /// queries, and then correlate the results. Stream output is the ability of the GPU to write
+            /// vertices to a buffer. The stream output counters monitor progress.
+            /// </summary>
+            SOStatisticsStream0 = D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0,
+
+            /// <summary>
+            /// Stream 1 output statistics.
+            /// </summary>
+            SOStatisticsStream1 = D3D12_QUERY_TYPE_SO_STATISTICS_STREAM1,
+
+            /// <summary>
+            /// Stream 2 output statistics.
+            /// </summary>
+            SOStatisticsStream2 = D3D12_QUERY_TYPE_SO_STATISTICS_STREAM2,
+
+            /// <summary>
+            /// Stream 3 output statistics.
+            /// </summary>
+            SOStatisticsStream3 = D3D12_QUERY_TYPE_SO_STATISTICS_STREAM3,
+
+            /// <summary>
+            /// Video decode statistics.
+            /// </summary>
+            VideoDecodeStatistics = D3D12_QUERY_TYPE_VIDEO_DECODE_STATISTICS,
+            PipelineStatistics1 = D3D12_QUERY_TYPE_PIPELINE_STATISTICS1
+        };
+
+        /// <summary>
+        /// Specifies the predication operation to apply.
+        /// </summary>
+        public enum class D3D12PredicationOp : UINT
+        {
+            /// <summary>
+            /// Enables predication if all 64-bits are zero.
+            /// </summary>
+            EqualZero = D3D12_PREDICATION_OP_EQUAL_ZERO,
+
+            /// <summary>
+            /// Enables predication if at least one of the 64-bits are not zero.
+            /// </summary>
+            NotEqualZero = D3D12_PREDICATION_OP_NOT_EQUAL_ZERO
+        };
+
+        /// <summary>
+        /// Identifies the type of resource that will be viewed as a shader resource.
+        /// </summary>
+        public enum class D3D12SrvDimension : UINT
+        {
+            Unknown = D3D12_SRV_DIMENSION_UNKNOWN,
+            Buffer = D3D12_SRV_DIMENSION_BUFFER,
+            Texture1D = D3D12_SRV_DIMENSION_TEXTURE1D,
+            Texture1DArray = D3D12_SRV_DIMENSION_TEXTURE1DARRAY,
+            Texture2D = D3D12_SRV_DIMENSION_TEXTURE2D,
+            Texture2DArray = D3D12_SRV_DIMENSION_TEXTURE2DARRAY,
+            Texture2DMS = D3D12_SRV_DIMENSION_TEXTURE2DMS,
+            Texture2DMSArray = D3D12_SRV_DIMENSION_TEXTURE2DMSARRAY,
+            Texture3D = D3D12_SRV_DIMENSION_TEXTURE3D,
+            TextureCube = D3D12_SRV_DIMENSION_TEXTURECUBE,
+            TextureCubeArray = D3D12_SRV_DIMENSION_TEXTURECUBEARRAY,
+            RaytracingAccelerationStructure = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE
+        };
+
+        /// <summary>
+        /// Identifies how to view a buffer resource.
+        /// </summary>
+        [Flags]
+        public enum class D3D12BufferSrvFlags : UINT
+        {
+            /// <summary>
+            /// Indicates a default view.
+            /// </summary>
+            None = D3D12_BUFFER_SRV_FLAG_NONE,
+
+            /// <summary>
+            /// View the buffer as raw.
+            /// </summary>
+            Raw = D3D12_BUFFER_SRV_FLAG_RAW
+        };
+
+        /// <summary>
+        /// Specifies how memory gets routed by a shader resource view (SRV).
+        /// </summary>
+        public enum class D3D12ShaderComponentMapping : UINT
+        {
+            /// <summary>
+            /// Indicates return component 0 (red).
+            /// </summary>
+            FromMemoryComponent0 = D3D12_SHADER_COMPONENT_MAPPING_FROM_MEMORY_COMPONENT_0,
+
+            /// <summary>
+            /// Indicates return component 1 (green).
+            /// </summary>
+            FromMemoryComponent1 = D3D12_SHADER_COMPONENT_MAPPING_FROM_MEMORY_COMPONENT_1,
+
+            /// <summary>
+            /// Indicates return component 2 (blue).
+            /// </summary>
+            FromMemoryComponent2 = D3D12_SHADER_COMPONENT_MAPPING_FROM_MEMORY_COMPONENT_2,
+
+            /// <summary>
+            /// Indicates return component 3 (alpha).
+            /// </summary>
+            FromMemoryComponent3 = D3D12_SHADER_COMPONENT_MAPPING_FROM_MEMORY_COMPONENT_3,
+
+            /// <summary>
+            /// Indicates forcing the resulting value to 0.
+            /// </summary>
+            ForceValue0 = D3D12_SHADER_COMPONENT_MAPPING_FORCE_VALUE_0,
+
+            /// <summary>
+            /// Indicates forcing the resulting value 1. The value of forcing 1 is either 0x1 or 1.0f
+            /// depending on the format type for that component in the source format.
+            /// </summary>
+            ForceValue1 = D3D12_SHADER_COMPONENT_MAPPING_FORCE_VALUE_1
+        };
+
+        /// <summary>
+        /// Identifies unordered-access view options.
+        /// </summary>
+        public enum class D3D12UavDimension : UINT
+        {
+            Unknown = D3D12_UAV_DIMENSION_UNKNOWN,
+            Buffer = D3D12_UAV_DIMENSION_BUFFER,
+            Texture1D = D3D12_UAV_DIMENSION_TEXTURE1D,
+            Texture1DArray = D3D12_UAV_DIMENSION_TEXTURE1DARRAY,
+            Texture2D = D3D12_UAV_DIMENSION_TEXTURE2D,
+            Texture2DArray = D3D12_UAV_DIMENSION_TEXTURE2DARRAY,
+            Texture3D = D3D12_UAV_DIMENSION_TEXTURE3D
+        };
+
+        /// <summary>
+        /// Identifies how to view a buffer resource.
+        /// </summary>
+        [Flags]
+        public enum class D3D12BufferUavFlags : UINT
+        {
+            /// <summary>
+            /// Indicates a default view.
+            /// </summary>
+            None = D3D12_BUFFER_UAV_FLAG_NONE,
+
+            /// <summary>
+            /// Resource contains raw, unstructured data.
+            /// </summary>
+            Raw = D3D12_BUFFER_UAV_FLAG_RAW
+        };
+
+        /// <summary>
+        /// Describes the subresources from a resource that are accessible by using a render-target view.
+        /// </summary>
+        public enum class D3D12RtvDimension : UINT
+        {
+            Unknown = D3D12_RTV_DIMENSION_UNKNOWN,
+            Buffer = D3D12_RTV_DIMENSION_BUFFER,
+            Texture1D = D3D12_RTV_DIMENSION_TEXTURE1D,
+            Texture1DArray = D3D12_RTV_DIMENSION_TEXTURE1DARRAY,
+            Texture2D = D3D12_RTV_DIMENSION_TEXTURE2D,
+            Texture2DArray = D3D12_RTV_DIMENSION_TEXTURE2DARRAY,
+            Texture2DMS = D3D12_RTV_DIMENSION_TEXTURE2DMS,
+            Texture2DMSArray = D3D12_RTV_DIMENSION_TEXTURE2DMSARRAY,
+            Texture3D = D3D12_RTV_DIMENSION_TEXTURE3D
+        };
+
+        /// <summary>
+        /// Specifies how to access a resource used in a depth-stencil view.
+        /// </summary>
+        public enum class D3D12DsvDimension : UINT
+        {
+            Unknown = D3D12_DSV_DIMENSION_UNKNOWN,
+            Texture1D = D3D12_DSV_DIMENSION_TEXTURE1D,
+            Texture1DArray = D3D12_DSV_DIMENSION_TEXTURE1DARRAY,
+            Texture2D = D3D12_DSV_DIMENSION_TEXTURE2D,
+            Texture2DArray = D3D12_DSV_DIMENSION_TEXTURE2DARRAY,
+            Texture2DMS = D3D12_DSV_DIMENSION_TEXTURE2DMS,
+            Texture2DMSArray = D3D12_DSV_DIMENSION_TEXTURE2DMSARRAY,
+        };
+
+        /// <summary>
+        /// Specifies depth-stencil view options.
+        /// </summary>
+        [Flags]
+        public enum class D3D12DsvFlags : UINT
+        {
+            /// <summary>
+            /// Indicates a default view.
+            /// </summary>
+            None = D3D12_DSV_FLAG_NONE,
+
+            /// <summary>
+            /// Indicates that depth values are read only.
+            /// </summary>
+            ReadOnlyDepth = D3D12_DSV_FLAG_READ_ONLY_DEPTH,
+
+            /// <summary>
+            /// Indicates that stencil values are read only.
+            /// </summary>
+            ReadOnlyStencil = D3D12_DSV_FLAG_READ_ONLY_STENCIL
+        };
+
+        /// <summary>
+        /// Specifies fence options.
+        /// </summary>
+        [Flags]
+        public enum class D3D12FenceFlags : UINT
+        {
+            /// <summary>
+            /// No options are specified.
+            /// </summary>
+            None = D3D12_FENCE_FLAG_NONE,
+
+            /// <summary>
+            /// The fence is shared.
+            /// </summary>
+            Shared = D3D12_FENCE_FLAG_SHARED,
+
+            /// <summary>
+            /// The fence is shared with another GPU adapter.
+            /// </summary>
+            SharedCrossAdapter = D3D12_FENCE_FLAG_SHARED_CROSS_ADAPTER,
+
+            /// <summary>
+            /// The fence is of the non-monitored type. Non-monitored fences should only be used when
+            /// the adapter doesn't support monitored fences, or when a fence is shared with an adapter
+            /// that doesn't support monitored fences.
+            /// </summary>
+            NonMonitored = D3D12_FENCE_FLAG_NON_MONITORED
+        };
+
+        /// <summary>
+        /// Specifies filtering options during texture sampling.
+        /// </summary>
+        public enum class D3D12Filter : UINT
+        {
+            MinMagMipPoint             = D3D12_FILTER_MIN_MAG_MIP_POINT,
+            MinMagPointMipLinear       = D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR,
+            MinPointMagLinearMipPoint  = D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            MinPointMagMipLinear       = D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR,
+            MinLinearMagMipPoint       = D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT,
+            MinLinearMagPointMipLinear = D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
+            MinMagLinearMipPoint       = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,
+            MinMagMipLinear            = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+            Anisotropic                = D3D12_FILTER_ANISOTROPIC,
+            ComparisonMinMagMipPoint              = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT,
+            ComparisionMinMagPointMipLinear       = D3D12_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR,
+            ComparisionMinPointMagLinearMipPoint  = D3D12_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            ComparisionMinPointMagMipLinear       = D3D12_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR,
+            ComparisionMinLinearMagMipPoint       = D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT,
+            ComparisionMinLinearMagPointMipLinear = D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
+            ComparisionMinMagLinearMipPoint       = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
+            ComparisionMinMagMipLinear            = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR,
+            ComparisionAnisotropic                = D3D12_FILTER_COMPARISON_ANISOTROPIC,
+            MinimumMinMagMipPoint             = D3D12_FILTER_MINIMUM_MIN_MAG_MIP_POINT,
+            MinimumMinMagPointMipLinear       = D3D12_FILTER_MINIMUM_MIN_MAG_POINT_MIP_LINEAR,
+            MinimumMinPointMagLinearMipPoint  = D3D12_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            MinimumMinPointMagMipLinear       = D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR,
+            MinimumMinLinearMagMipPoint       = D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT,
+            MinimumMinLinearMagPointMipLinear = D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
+            MinimumMinMagLinearMipPoint       = D3D12_FILTER_MINIMUM_MIN_MAG_LINEAR_MIP_POINT,
+            MinimumMinMagMipLinear            = D3D12_FILTER_MINIMUM_MIN_MAG_MIP_LINEAR,
+            MinimumAnisotropic                = D3D12_FILTER_MINIMUM_ANISOTROPIC,
+            MaximumMinMagMipPoint             = D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_POINT,
+            MaximumMinMagPointMipLinear       = D3D12_FILTER_MAXIMUM_MIN_MAG_POINT_MIP_LINEAR,
+            MaximumMinPointMagLinearMipPoint  = D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            MaximumMinPointMagMipLinear       = D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_MIP_LINEAR,
+            MaximumMinLinearMagMipPoint       = D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_MIP_POINT,
+            MaximumMinLinearMagPointMipLinear = D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
+            MaximumMinMagLinearMipPoint       = D3D12_FILTER_MAXIMUM_MIN_MAG_LINEAR_MIP_POINT,
+            MaximumMinMagMipLinear            = D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR,
+            MaximumAnisotropic                = D3D12_FILTER_MAXIMUM_ANISOTROPIC
+        };
+
+        /// <summary>
+        /// Identifies a technique for resolving texture coordinates that are outside of the boundaries
+        /// of a texture.
+        /// </summary>
+        public enum class D3D12TextureAddressMode : UINT
+        {
+            /// <summary>
+            /// Tile the texture at every (u,v) integer junction.
+            /// For example, for u values between 0 and 3, the texture is repeated three times.
+            /// </summary>
+            Wrap = D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+
+            /// <summary>
+            /// Flip the texture at every (u,v) integer junction.
+            ///For u values between 0 and 1, for example, the texture is addressed normally; between 1
+            /// and 2, the texture is flipped(mirrored); between 2 and 3, the texture is normal again;
+            /// and so on.
+            /// </summary>
+            Mirror = D3D12_TEXTURE_ADDRESS_MODE_MIRROR,
+
+            /// <summary>
+            /// Texture coordinates outside the range [0.0, 1.0] are set to the texture color at 0.0
+            /// or 1.0, respectively.
+            /// </summary>
+            Clamp = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+
+            /// <summary>
+            /// Texture coordinates outside the range [0.0, 1.0] are set to the border color specified
+            /// in D3D12SamplerDesc or HLSL code.
+            /// </summary>
+            Border = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+
+            /// <summary>
+            /// Similar to Mirror and Clamp.
+            /// Takes the absolute value of the texture coordinate(thus, mirroring around 0), and
+            /// then clamps to the maximum value.
+            /// </summary>
+            MirrorOnce = D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE
+        };
+
+        /// <summary>
+        /// Specifies the type of query heap to create.
+        /// </summary>
+        public enum class D3D12QueryHeapType : UINT
+        {
+            /// <summary>
+            /// This returns a binary 0/1 result: 0 indicates that no samples passed depth and stencil
+            /// testing, 1 indicates that at least one sample passed depth and stencil testing. This
+            /// enables occlusion queries to not interfere with any GPU performance optimization
+            /// associated with depth/stencil testing.
+            /// </summary>
+            Occlusion = D3D12_QUERY_HEAP_TYPE_OCCLUSION,
+
+            /// <summary>
+            /// Indicates that the heap is for high-performance timing data.
+            /// </summary>
+            Timestamp = D3D12_QUERY_HEAP_TYPE_TIMESTAMP,
+
+            /// <summary>
+            /// Indicates the heap is to contain pipeline data.
+            /// </summary>
+            PipelineStatistics = D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS,
+
+            /// <summary>
+            /// Indicates the heap is to contain stream output data.
+            /// </summary>
+            SOStatistics = D3D12_QUERY_HEAP_TYPE_SO_STATISTICS,
+
+            /// <summary>
+            /// Indicates the heap is to contain video decode statistics data.
+            /// </summary>
+            VideoDecodeStatistics = D3D12_QUERY_HEAP_TYPE_VIDEO_DECODE_STATISTICS,
+
+            /// <summary>
+            /// Indicates the heap is to contain timestamp queries emitted exclusively by copy command
+            /// lists. Copy queue timestamps can only be queried from a copy command list, and a copy
+            /// command list can not emit to a regular timestamp query Heap.
+            /// </summary>
+            CopyQueueTimestamp = D3D12_QUERY_HEAP_TYPE_COPY_QUEUE_TIMESTAMP,
+            PipelineStatistics1 = D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS1
+        };
+
 
 
         /// <summary>
@@ -1364,6 +2615,14 @@ namespace DirectXNet
         /// Interface that indicates the struct is for receiving DirectX12 feature data.
         /// </summary>
         public interface class ID3D12FeatureData
+        {
+
+        };
+
+        /// <summary>
+        /// Interface that indicates the struct is for receiving DirectX12 query data.
+        /// </summary>
+        public interface class ID3D12QueryData
         {
 
         };
@@ -2307,11 +3566,11 @@ namespace DirectXNet
             /// Initializes a D3D12CPUDescriptorHandle structure with an offset, using the
             /// specified number of descriptors of the given size.
             /// </summary>
-            /// <param name="handle">Output of the initialized structure.</param>
+            /// <param name="handle">Structure to initialize.</param>
             /// <param name="base">Address used in initialization.</param>
             /// <param name="offsetScaledByIncrementSize">Offset from the base address.</param>
             static void InitOffsetted(
-                [Out] D3D12CPUDescriptorHandle% handle, [In][IsReadOnly] D3D12CPUDescriptorHandle% base,
+                D3D12CPUDescriptorHandle% handle, [In][IsReadOnly] D3D12CPUDescriptorHandle% base,
                 int offsetScaledByIncrementSize
             );
 
@@ -2319,14 +3578,14 @@ namespace DirectXNet
             /// Initializes a D3D12CPUDescriptorHandle structure with an offset, using the
             /// specified number of descriptors of the given size.
             /// </summary>
-            /// <param name="handle">Output of the initialized structure.</param>
+            /// <param name="handle">Structure to initialize.</param>
             /// <param name="base">Address used in initialization.</param>
             /// <param name="offsetInDescriptors">The number of descriptors by which to increment. from
             /// other address.</param>
             /// <param name="descriptorIncrementSize">The amount by which to increment for
             /// each descriptor, including padding.</param>
             static void InitOffsetted(
-                [Out] D3D12CPUDescriptorHandle% handle, [In][IsReadOnly] D3D12CPUDescriptorHandle% base,
+                D3D12CPUDescriptorHandle% handle, [In][IsReadOnly] D3D12CPUDescriptorHandle% base,
                 int offsetInDescriptors, unsigned int descriptorIncrementSize
             );
         };
@@ -2457,7 +3716,7 @@ namespace DirectXNet
             D3D12ResourceFlags Flags;
 
             /// <summary>
-            /// Creates a new instance of a CD3DX12_RESOURCE_DESC
+            /// Creates a new instance of a D3D12ResourceDesc
             /// </summary>
             D3D12ResourceDesc(
                 D3D12ResourceDimension dimension,
@@ -2846,7 +4105,7 @@ namespace DirectXNet
                 [In][IsReadOnly] D3D12HeapProperties% properties,
                 [Optional] Nullable<D3D12HeapFlags> flags
             );
-            
+
             /// <summary>
             /// Initialize heap description with given resource allocation info and heap type.
             /// </summary>
@@ -2988,6 +4247,2448 @@ namespace DirectXNet
                 unsigned short height,
                 unsigned short depth
             );
+        };
+
+        /// <summary>
+        /// Describes shader data.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12ShaderBytecode
+        {
+            /// <summary>
+            /// A pointer to a memory block that contains the shader data.
+            /// </summary>
+            IntPtr pShaderBytecode;
+
+            /// <summary>
+            /// The size, in bytes, of the shader data that the pShaderBytecode member points to.
+            /// </summary>
+            SIZE_T BytecodeLength;
+
+            /// <summary>
+            /// Initializes the structure with shader blob.
+            /// </summary>
+            /// <param name="shaderBlob">Blob that contains the shader byte code.</param>
+            D3D12ShaderBytecode(D3D10Blob^ shaderBlob);
+
+            D3D12ShaderBytecode(IntPtr pShaderBytecode, SIZE_T bytecodeLength);
+        };
+
+        /// <summary>
+        /// Describes a vertex element in a vertex buffer in an output slot.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12SODeclarationEntry
+        {
+            /// <summary>
+            /// Zero-based, stream number.
+            /// </summary>
+            unsigned int Stream;
+
+            /// <summary>
+            /// Type of output element; possible values include: "POSITION", "NORMAL", or "TEXCOORD0".
+            /// Note that if SemanticName is null then ComponentCount can be greater than 4 and the
+            /// described entry will be a gap in the stream out where no data will be written.
+            /// </summary>
+            LPSTR SemanticName;
+
+            /// <summary>
+            /// Output element's zero-based index. Use, for example, if you have more than one
+            /// texture coordinate stored in each vertex.
+            /// </summary>
+            unsigned int SemanticIndex;
+
+            /// <summary>
+            /// The component of the entry to begin writing out to. Valid values are 0 to 3. For
+            /// example, if you only wish to output to the y and z components of a position,
+            /// StartComponent is 1 and ComponentCount is 2.
+            /// </summary>
+            BYTE StartComponent;
+
+            /// <summary>
+            /// The number of components of the entry to write out to. Valid values are 1 to 4. For
+            /// example, if you only wish to output to the y and z components of a position,
+            /// StartComponent is 1 and ComponentCount is 2. Note that if SemanticName is null then
+            /// ComponentCount can be greater than 4 and the described entry will be a gap in the stream
+            /// out where no data will be written.
+            /// </summary>
+            BYTE ComponentCount;
+
+            /// <summary>
+            /// The associated stream output buffer that is bound to the pipeline. The valid range
+            /// for OutputSlot is 0 to 3.
+            /// </summary>
+            BYTE OutputSlot;
+
+            /// <summary>
+            /// Initialize the structure.
+            /// </summary>
+            /// <param name="semanticNameHandle">Handle to the marshal context that is needed
+            /// for SemanticName. Free the handle after finishing using this structure.</param>
+            D3D12SODeclarationEntry(
+                unsigned int stream,
+                String^ semanticName,
+                unsigned int semanticIndex,
+                BYTE startComponent,
+                BYTE componentCount,
+                BYTE outputSlot,
+                [Out] GCHandle% semanticNameHandle
+            );
+        };
+
+        /// <summary>
+        /// Describes a streaming output buffer.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12StreamOutputDesc
+        {
+            /// <summary>
+            /// A pointer to an array of D3D12SODeclarationEntry structures. Can't be null if
+            /// NumEntries > 0.
+            /// </summary>
+            D3D12SODeclarationEntry* pSODeclaration;
+
+            /// <summary>
+            /// The number of entries in the stream output declaration array that the
+            /// pSODeclaration member points to.
+            /// </summary>
+            unsigned int NumEntries;
+
+            /// <summary>
+            /// A pointer to an array of buffer strides; each stride is the size of an element for
+            /// that buffer.
+            /// </summary>
+            unsigned int* pBufferStrides;
+
+            /// <summary>
+            /// The number of strides (or buffers) that the pBufferStrides member points to.
+            /// </summary>
+            unsigned int NumStrides;
+
+            /// <summary>
+            /// The index number of the stream to be sent to the rasterizer stage.
+            /// </summary>
+            unsigned int RasterizedStream;
+
+            /// <summary>
+            /// Initializes the structure.
+            /// </summary>
+            /// <param name="soDeclaration">An array of D3D12SODeclarationEntry structures. If not
+            /// needed, this can be null.</param>
+            /// <param name="bufferStrides">An array of buffer strides. If not needed, this can be null.
+            /// </param>
+            /// <param name="rasterizedStream">The index number of the stream to be sent to the
+            /// rasterizer stage.</param>
+            /// <param name="soDeclarationPinPtr">The pin pointer to soDeclaration. If soDeclaration is
+            /// null, the handle is not allocated. Else, free the handle after using the structure.
+            /// </param>
+            /// <param name="bufferStridesPinPtr">The pin pointer to bufferStrides. If bufferStrides is
+            /// null, the handle is not allocated. Else, free the handle after using the structure.
+            /// </param>
+            D3D12StreamOutputDesc(
+                array<D3D12SODeclarationEntry>^ soDeclaration,
+                array<unsigned int>^ bufferStrides,
+                unsigned int rasterizedStream,
+                [Out] GCHandle% soDeclarationPinPtr,
+                [Out] GCHandle% bufferStridesPinPtr
+            );
+        };
+
+        /// <summary>
+        /// Describes the blend state for a render target.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12RenderTargetBlendDesc
+        {
+            /// <summary>
+            /// Specifies whether to enable (or disable) blending. Set to True to enable blending.
+            /// </summary>
+            CBool BlendEnable;
+
+            /// <summary>
+            /// Specifies whether to enable (or disable) a logical operation. Set to True to enable
+            /// a logical operation.
+            /// It's not valid for LogicOpEnable and BlendEnable to both be True.
+            /// </summary>
+            CBool LogicOpEnable;
+
+            /// <summary>
+            /// A D3D12Blend-typed value that specifies the operation to perform on the RGB value that
+            /// the pixel shader outputs. The BlendOp member defines how to combine the SrcBlend
+            /// and DestBlend operations.
+            /// </summary>
+            D3D12Blend SrcBlend;
+
+            /// <summary>
+            /// A D3D12Blend-typed value that specifies the operation to perform on the current RGB
+            /// value in the render target. The BlendOp member defines how to combine the SrcBlend
+            /// and DestBlend operations.
+            /// </summary>
+            D3D12Blend DestBlend;
+
+            /// <summary>
+            /// A D3D12BlendOp-typed value that defines how to combine the SrcBlend and
+            /// DestBlend operations.
+            /// </summary>
+            D3D12BlendOp BlendOp;
+
+            /// <summary>
+            /// A D3D12Blend-typed value that specifies the operation to perform on the alpha value
+            /// that the pixel shader outputs. Blend options that end in _COLOR are not allowed.
+            /// The BlendOpAlpha member defines how to combine the SrcBlendAlpha and
+            /// DestBlendAlpha operations.
+            /// </summary>
+            D3D12Blend SrcBlendAlpha;
+
+            /// <summary>
+            /// A D3D12Blend-typed value that specifies the operation to perform on the current
+            /// alpha value in the render target. Blend options that end in _COLOR are not allowed.
+            /// The BlendOpAlpha member defines how to combine the SrcBlendAlpha and DestBlendAlpha
+            /// operations.
+            /// </summary>
+            D3D12Blend DestBlendAlpha;
+
+            /// <summary>
+            /// A D3D12BlendOp-typed value that defines how to combine the SrcBlendAlpha
+            /// and DestBlendAlpha operations.
+            /// </summary>
+            D3D12BlendOp BlendOpAlpha;
+
+            /// <summary>
+            /// A D3D12LogicOp-typed value that specifies the logical operation to configure for
+            /// the render target.
+            /// </summary>
+            D3D12LogicOp LogicOp;
+
+            /// <summary>
+            /// A combination of D3D12_COLOR_WRITE_ENABLE-typed values that are combined by using
+            /// a bitwise OR operation. The resulting value specifies a write mask.
+            /// </summary>
+            D3D12ColorWriteEnable RenderTargetWriteMask;
+
+            /// <summary>
+            /// Initializes the structure to default value(disable blend and logic operaions.
+            /// </summary>
+            D3D12RenderTargetBlendDesc(D3DDefault);
+        };
+
+        /// <summary>
+        /// Describes the blend state.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12BlendDesc
+        {
+            /// <summary>
+            /// Specifies whether to use alpha-to-coverage as a multisampling technique when setting
+            /// a pixel to a render target.
+            /// </summary>
+            CBool AlphaToCoverageEnable;
+
+            /// <summary>
+            /// Specifies whether to enable independent blending in simultaneous render targets.
+            /// Set to True to enable independent blending. If set to False, only the RenderTarget0
+            /// members are used; RenderTarget1...7 are ignored.
+            /// </summary>
+            CBool IndependentBlendEnable;
+
+            /// <summary>
+            /// An D3D12RenderTargetBlendDesc structure that describe the blend state for render
+            /// target 0.
+            /// </summary>
+            D3D12RenderTargetBlendDesc RenderTarget0;
+
+            /// <summary>
+            /// An D3D12RenderTargetBlendDesc structure that describe the blend state for render
+            /// target 1.
+            /// </summary>
+            D3D12RenderTargetBlendDesc RenderTarget1;
+
+            /// <summary>
+            /// An D3D12RenderTargetBlendDesc structure that describe the blend state for render
+            /// target 2.
+            /// </summary>
+            D3D12RenderTargetBlendDesc RenderTarget2;
+
+            /// <summary>
+            /// An D3D12RenderTargetBlendDesc structure that describe the blend state for render
+            /// target 3.
+            /// </summary>
+            D3D12RenderTargetBlendDesc RenderTarget3;
+
+            /// <summary>
+            /// An D3D12RenderTargetBlendDesc structure that describe the blend state for render
+            /// target 4.
+            /// </summary>
+            D3D12RenderTargetBlendDesc RenderTarget4;
+
+            /// <summary>
+            /// An D3D12RenderTargetBlendDesc structure that describe the blend state for render
+            /// target 5.
+            /// </summary>
+            D3D12RenderTargetBlendDesc RenderTarget5;
+
+            /// <summary>
+            /// An D3D12RenderTargetBlendDesc structure that describe the blend state for render
+            /// target 6.
+            /// </summary>
+            D3D12RenderTargetBlendDesc RenderTarget6;
+
+            /// <summary>
+            /// An D3D12RenderTargetBlendDesc structure that describe the blend state for render
+            /// target 7.
+            /// </summary>
+            D3D12RenderTargetBlendDesc RenderTarget7;
+
+            /// <summary>
+            /// Gets and sets the render target blend description at specified index. The index is
+            /// from 0 to 7.
+            /// </summary>
+            property D3D12RenderTargetBlendDesc default[int]
+            {
+                D3D12RenderTargetBlendDesc get(int index);
+                void set(int index, D3D12RenderTargetBlendDesc value);
+            }
+
+                /// <summary>
+                /// Creates a new instance of a D3D12BlendDesc, initialized with default parameters.
+                /// </summary>
+            D3D12BlendDesc(D3DDefault);
+        };
+
+        /// <summary>
+        /// Describes rasterizer state.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12RasterizerDesc
+        {
+            /// <summary>
+            /// A D3D12FillMode-typed value that specifies the fill mode to use when rendering.
+            /// </summary>
+            D3D12FillMode FillMode;
+
+            /// <summary>
+            /// A D3D12CullMode-typed value that specifies that triangles facing the specified
+            /// direction are not drawn.
+            /// </summary>
+            D3D12CullMode CullMode;
+
+            /// <summary>
+            /// Determines if a triangle is front- or back-facing. If this member is True, a triangle
+            /// will be considered front-facing if its vertices are counter-clockwise on the render
+            /// target and considered back-facing if they are clockwise. If this parameter is False,
+            /// the opposite is true.
+            /// </summary>
+            CBool FrontCounterClockwise;
+
+            /// <summary>
+            /// Depth value added to a given pixel.
+            /// </summary>
+            int DepthBias;
+
+            /// <summary>
+            /// Maximum depth bias of a pixel.
+            /// </summary>
+            float DepthBiasClamp;
+
+            /// <summary>
+            /// Scalar on a given pixel's slope.
+            /// </summary>
+            float SlopeScaledDepthBias;
+
+            /// <summary>
+            /// Specifies whether to enable clipping based on distance. The hardware always performs x
+            /// and y clipping of rasterized coordinates. When DepthClipEnable is set to the
+            /// default–True, the hardware also clips the z value.
+            /// </summary>
+            CBool DepthClipEnable;
+
+            /// <summary>
+            /// Specifies whether to use the quadrilateral or alpha line anti-aliasing algorithm
+            /// on multisample antialiasing (MSAA) render targets. Set to True to use the
+            /// quadrilateral line anti-aliasing algorithm and to False to use the alpha line
+            /// anti-aliasing algorithm.
+            /// </summary>
+            CBool MultisampleEnable;
+
+            /// <summary>
+            /// Specifies whether to enable line antialiasing; only applies if doing line drawing
+            /// and MultisampleEnable is False.
+            /// </summary>
+            CBool AntialiasedLineEnable;
+
+            /// <summary>
+            /// The sample count that is forced while UAV rendering or rasterizing. Valid values are
+            /// 0, 1, 2, 4, 8, and optionally 16. 0 indicates that the sample count is not forced.
+            /// </summary>
+            unsigned int ForcedSampleCount;
+
+            /// <summary>
+            /// A D3D12ConservativeRasterizationMode-typed value that identifies whether
+            /// conservative rasterization is on or off.
+            /// </summary>
+            D3D12ConservativeRasterizationMode ConservativeRaster;
+
+            /// <summary>
+            /// Creates a new instance of a D3D12RasterizerDesc, initialized with default parameters.
+            /// </summary>
+            D3D12RasterizerDesc(D3DDefault);
+        };
+
+        /// <summary>
+        /// Describes stencil operations that can be performed based on the results of stencil test.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12DepthStencilOpDesc
+        {
+            /// <summary>
+            /// A D3D12StencilOp-typed value that identifies the stencil operation to perform when
+            /// stencil testing fails.
+            /// </summary>
+            D3D12StencilOp StencilFailOp;
+
+            /// <summary>
+            /// A D3D12StencilOp-typed value that identifies the stencil operation to perform when
+            /// stencil testing passes and depth testing fails.
+            /// </summary>
+            D3D12StencilOp StencilDepthFailOp;
+
+            /// <summary>
+            /// A D3D12StencilOp-typed value that identifies the stencil operation to perform when
+            /// stencil testing and depth testing both pass.
+            /// </summary>
+            D3D12StencilOp StencilPassOp;
+
+            /// <summary>
+            /// A D3D12ComparisonFunc-typed value that identifies the function that compares stencil
+            /// data against existing stencil data.
+            /// </summary>
+            D3D12ComparisonFunc StencilFunc;
+
+            /// <summary>
+            /// Creates a new instance of a D3D12DepthStencilopDesc, initialized with default parameters.
+            /// </summary>
+            D3D12DepthStencilOpDesc(D3DDefault);
+        };
+
+        /// <summary>
+        /// Describes depth-stencil state.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12DepthStencilDesc
+        {
+            /// <summary>
+            /// Specifies whether to enable depth testing. Set this member to True to enable
+            /// depth testing.
+            /// </summary>
+            CBool DepthEnable;
+
+            /// <summary>
+            /// A D3D12DepthWriteMask-typed value that identifies a portion of the depth-stencil
+            /// buffer that can be modified by depth data.
+            /// </summary>
+            D3D12DepthWriteMask DepthWriteMask;
+
+            /// <summary>
+            /// A D3D12ComparisonFunc-typed value that identifies a function that compares depth
+            /// data against existing depth data.
+            /// </summary>
+            D3D12ComparisonFunc DepthFunc;
+
+            /// <summary>
+            /// Specifies whether to enable stencil testing. Set this member to True to enable
+            /// stencil testing.
+            /// </summary>
+            CBool StencilEnable;
+
+            /// <summary>
+            /// Identify a portion of the depth-stencil buffer for reading stencil data.
+            /// </summary>
+            unsigned char StencilReadMask;
+
+            /// <summary>
+            /// Identify a portion of the depth-stencil buffer for writing stencil data.
+            /// </summary>
+            unsigned char StencilWriteMask;
+
+            /// <summary>
+            /// A D3D12DepthStencilOpDesc structure that describes how to use the results of the
+            /// depth test and the stencil test for pixels whose surface normal is facing towards
+            /// the camera.
+            /// </summary>
+            D3D12DepthStencilOpDesc FrontFace;
+
+            /// <summary>
+            /// A D3D12DepthStencilOpDesc structure that describes how to use the results of the
+            /// depth test and the stencil test for pixels whose surface normal is facing away from
+            /// the camera.
+            /// </summary>
+            D3D12DepthStencilOpDesc BackFace;
+
+            /// <summary>
+            /// Creates a new instance of a D3D12DepthStencilDesc, initialized with default
+            /// parameters.
+            /// </summary>
+            D3D12DepthStencilDesc(D3DDefault);
+        };
+
+        /// <summary>
+        /// Describes a single element for the input-assembler stage of the graphics pipeline.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12InputElementDesc
+        {
+            /// <summary>
+            /// The HLSL semantic associated with this element in a shader input-signature.
+            /// </summary>
+            LPSTR SemanticName;
+
+            /// <summary>
+            /// The semantic index for the element. A semantic index modifies a semantic, with an integer
+            /// index number. A semantic index is only needed in a case where there is more than one
+            /// element with the same semantic. For example, a 4x4 matrix would have four components each
+            /// with the semantic name matrix, however each of the four component would have different
+            /// semantic indices (0, 1, 2, and 3).
+            /// </summary>
+            unsigned int SemanticIndex;
+
+            /// <summary>
+            /// A DXGIFormat-typed value that specifies the format of the element data.
+            /// </summary>
+            DXGIFormat Format;
+
+            /// <summary>
+            /// An integer value that identifies the input-assembler. Valid values are between 0 and 15.
+            /// </summary>
+            unsigned int InputSlot;
+
+            /// <summary>
+            /// Optional. Offset, in bytes, to this element from the start of the vertex.
+            /// Use 0xffffffff for convenience to define the current element directly after the
+            /// previous one, including any packing if necessary.
+            /// </summary>
+            unsigned int AlignedByteOffset;
+
+            /// <summary>
+            /// A value that identifies the input data class for a single input slot.
+            /// </summary>
+            D3D12InputClassification InputSlotClass;
+
+            /// <summary>
+            /// The number of instances to draw using the same per-instance data before advancing in
+            /// the buffer by one element. This value must be 0 for an element that contains
+            /// per-vertex data (the slot class is set to the PerVertexData member
+            /// of D3D12InputClassification).
+            /// </summary>
+            unsigned int InstanceDataStepRate;
+
+            /// <summary>
+            /// Initialize the structure.
+            /// </summary>
+            /// <param name="semanticNameHandle">Handle to the marshal context that is needed
+            /// for SemanticName. Free the handle after using this structure.</param>
+            D3D12InputElementDesc(
+                String^ semanticName,
+                unsigned int semanticIndex,
+                DXGIFormat format,
+                unsigned int inputSlot,
+                unsigned int alignedByteOffset,
+                D3D12InputClassification inputSlotClass,
+                unsigned int instanceDataStepRate,
+                [Out] GCHandle% semanticNameHandle
+            );
+        };
+
+        /// <summary>
+        /// Describes the input-buffer data for the input-assembler stage.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12InputLayoutDesc
+        {
+            /// <summary>
+            /// A pointer to an array of D3D12InputElementDesc structures that describe the data types
+            /// of the input-assembler stage.
+            /// </summary>
+            D3D12InputElementDesc* pInputElementDescs;
+
+            /// <summary>
+            /// The number of input-data types in the array of input elements that the
+            /// pInputElementDescs member points to.
+            /// </summary>
+            unsigned int NumElements;
+
+            /// <summary>
+            /// Initializes the structure.
+            /// </summary>
+            /// <param name="inputElementDescs">An array of D3D12InputElementDesc structures that
+            /// describe the data types of the input-assembler stage.</param>
+            /// <param name="inputElementDescsPinPtr">Pin pointer to the inputElementDescs array.
+            /// Free the handle after using this structure.</param>
+            D3D12InputLayoutDesc(
+                array<D3D12InputElementDesc>^ inputElementDescs,
+                [Out] GCHandle% inputElementDescsPinPtr
+            );
+        };
+
+        /// <summary>
+        /// Stores a pipeline state.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12CachedPipelineState
+        {
+            /// <summary>
+            /// Specifies pointer that references the memory location of the cache.
+            /// </summary>
+            IntPtr pCachedBlob;
+
+            /// <summary>
+            /// Specifies the size of the cache in bytes.
+            /// </summary>
+            SIZE_T CachedBlobSizeInBytes;
+
+            /// <summary>
+            /// Initializes the structure with the blob from D3D12PipelineState::CachedBlob
+            /// </summary>
+            /// <param name="cachedBlob">Cached blob</param>
+            D3D12CachedPipelineState(D3D10Blob^ cachedBlob);
+        };
+
+        /// <summary>
+        /// Describes a graphics pipeline state object.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12GraphicsPipelineStateDesc
+        {
+            /// <summary>
+            /// A pointer to the native ID3D12RootSignature object. This can be obtained by
+            /// D3D12RootSignature::NativeRootSignature property.
+            /// </summary>
+            IntPtr pRootSignature;
+
+            /// <summary>
+            /// A D3D12ShaderBytecode structure that describes the vertex shader.
+            /// </summary>
+            D3D12ShaderBytecode VS;
+
+            /// <summary>
+            /// A D3D12ShaderBytecode structure that describes the pixel shader.
+            /// </summary>
+            D3D12ShaderBytecode PS;
+
+            /// <summary>
+            /// A D3D12ShaderBytecode structure that describes the domain shader.
+            /// </summary>
+            D3D12ShaderBytecode DS;
+
+            /// <summary>
+            /// A D3D12ShaderBytecode structure that describes the hull shader.
+            /// </summary>
+            D3D12ShaderBytecode HS;
+
+            /// <summary>
+            /// A D3D12ShaderBytecode structure that describes the geometry shader.
+            /// </summary>
+            D3D12ShaderBytecode GS;
+
+            /// <summary>
+            /// A D3D12StreamOutputDesc structure that describes a streaming output buffer.
+            /// </summary>
+            D3D12StreamOutputDesc StreamOutput;
+
+            /// <summary>
+            /// A D3D12BlendDesc structure that describes the blend state.
+            /// </summary>
+            D3D12BlendDesc BlendState;
+
+            /// <summary>
+            /// The sample mask for the blend state.
+            /// </summary>
+            unsigned int SampleMask;
+
+            /// <summary>
+            /// A D3D12RasterizerDesc structure that describes the rasterizer state.
+            /// </summary>
+            D3D12RasterizerDesc RasterizerState;
+
+            /// <summary>
+            /// A D3D12DepthStencilDesc structure that describes the depth-stencil state.
+            /// </summary>
+            D3D12DepthStencilDesc DepthStencilState;
+
+            /// <summary>
+            /// A D3D12InputLayoutDesc structure that describes the input-buffer data for the
+            /// input-assembler stage.
+            /// </summary>
+            D3D12InputLayoutDesc InputLayout;
+
+            /// <summary>
+            /// Specifies the properties of the index buffer in a D3D12IndexBufferStripCutValue.
+            /// </summary>
+            D3D12IndexBufferStripCutValue IBStripCutValue;
+
+            /// <summary>
+            /// A D3D12PrimitiveTopologyType-typed value for the type of primitive, and ordering of
+            /// the primitive data.
+            /// </summary>
+            D3D12PrimitiveTopologyType PrimitiveTopologyType;
+
+            /// <summary>
+            /// The number of render target formats in the RTVFormat0...7 member.
+            /// </summary>
+            unsigned int NumRenderTargets;
+
+            /// <summary>
+            /// An DXGIFormat-typed value for the render target 0 format.
+            /// </summary>
+            DXGIFormat RTVFormat0;
+
+            /// <summary>
+            /// An DXGIFormat-typed value for the render target 1 format.
+            /// </summary>
+            DXGIFormat RTVFormat1;
+
+            /// <summary>
+            /// An DXGIFormat-typed value for the render target 2 format.
+            /// </summary>
+            DXGIFormat RTVFormat2;
+
+            /// <summary>
+            /// An DXGIFormat-typed value for the render target 3 format.
+            /// </summary>
+            DXGIFormat RTVFormat3;
+
+            /// <summary>
+            /// An DXGIFormat-typed value for the render target 4 format.
+            /// </summary>
+            DXGIFormat RTVFormat4;
+
+            /// <summary>
+            /// An DXGIFormat-typed value for the render target 5 format.
+            /// </summary>
+            DXGIFormat RTVFormat5;
+
+            /// <summary>
+            /// An DXGIFormat-typed value for the render target 6 format.
+            /// </summary>
+            DXGIFormat RTVFormat6;
+
+            /// <summary>
+            /// An DXGIFormat-typed value for the render target 7 format.
+            /// </summary>
+            DXGIFormat RTVFormat7;
+
+            /// <summary>
+            /// A DXGIFormat-typed value for the depth-stencil format.
+            /// </summary>
+            DXGIFormat DSVFormat;
+
+            /// <summary>
+            /// A DXGISampleDesc structure that specifies multisampling parameters.
+            /// </summary>
+            DXGISampleDesc SampleDesc;
+
+            /// <summary>
+            /// For single GPU operation, set this to zero. If there are multiple GPU nodes, set bits
+            /// to identify the nodes (the device's physical adapters) for which the graphics
+            /// pipeline state is to apply. Each bit in the mask corresponds to a single node.
+            /// </summary>
+            unsigned int NodeMask;
+
+            /// <summary>
+            /// A cached pipeline state object, as a D3D12CachedPipelineState structure. pCachedBlob
+            /// and CachedBlobSizeInBytes may be set to null and 0 respectively.
+            /// </summary>
+            D3D12CachedPipelineState CachedPSO;
+
+            /// <summary>
+            /// A D3D12PipelineStateFlags enumeration constant such as for "tool debug".
+            /// </summary>
+            D3D12PipelineStateFlags Flags;
+        };
+
+        /// <summary>
+        /// Describes a compute pipeline state object.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12ComputePipelineStateDesc
+        {
+            /// <summary>
+            /// A pointer to the native ID3D12RootSignature object. This can be obtained by
+            /// D3D12RootSignature::NativeRootSignature property.
+            /// </summary>
+            IntPtr pRootSignature;
+
+            /// <summary>
+            /// A D3D12_SHADER_BYTECODE structure that describes the compute shader.
+            /// </summary>
+            D3D12ShaderBytecode CS;
+
+            /// <summary>
+            /// For single GPU operation, set this to zero. If there are multiple GPU nodes, set
+            /// bits to identify the nodes (the device's physical adapters) for which the compute
+            /// pipeline state is to apply. Each bit in the mask corresponds to a single node.
+            /// </summary>
+            unsigned int NodeMask;
+
+            /// <summary>
+            /// A cached pipeline state object, as a D3D12CachedPipelineState structure. pCachedBlob
+            /// and CachedBlobSizeInBytes may be set to null and 0 respectively.
+            /// </summary>
+            D3D12CachedPipelineState CachedPSO;
+
+            /// <summary>
+            /// A D3D12PipelineStateFlags enumeration constant such as for "tool debug".
+            /// </summary>
+            D3D12PipelineStateFlags Flags;
+        };
+
+        /// <summary>
+        /// Describes the format, width, height, depth, and row-pitch of the subresource into the
+        /// parent resource.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12SubresourceFootprint
+        {
+            /// <summary>
+            /// A DXGIFormat-typed value that specifies the viewing format.
+            /// </summary>
+            DXGIFormat Format;
+
+            /// <summary>
+            /// The width of the subresource.
+            /// </summary>
+            unsigned int Width;
+
+            /// <summary>
+            /// The height of the subresource.
+            /// </summary>
+            unsigned int Height;
+
+            /// <summary>
+            /// The depth of the subresource.
+            /// </summary>
+            unsigned int Depth;
+
+            /// <summary>
+            /// The row pitch, or width, or physical size, in bytes, of the subresource data. This must
+            /// be a multiple of 256, and must be greater than or equal to the size of the data within
+            /// a row.
+            /// </summary>
+            unsigned int RowPitch;
+
+            D3D12SubresourceFootprint(
+                DXGIFormat format,
+                unsigned int width,
+                unsigned int height,
+                unsigned int depth,
+                unsigned int rowPitch
+            );
+
+            /// <summary>
+            /// Initializes the structure.
+            /// </summary>
+            /// <param name="resDesc">The parent resource description.</param>
+            /// <param name="rowPitch">Row pitch.</param>
+            D3D12SubresourceFootprint(
+                [In][IsReadOnly] D3D12ResourceDesc% resDesc,
+                unsigned int rowPitch
+            );
+        };
+
+        /// <summary>
+        /// Describes the footprint of a placed subresource, including the offset and the
+        /// D3D12SubresourceFootprint.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12PlacedSubresourceFootprint
+        {
+            /// <summary>
+            /// The offset of the subresource within the parent resource, in bytes. The offset between the
+            /// start of the parent resource and this subresource.
+            /// </summary>
+            unsigned long long Offset;
+
+            /// <summary>
+            /// The format, width, height, depth, and row-pitch of the subresource, as a
+            /// D3D12SubresourceFootprint structure.
+            /// </summary>
+            D3D12SubresourceFootprint Footprint;
+        };
+
+        /// <summary>
+        /// Describes a portion of a texture for the purpose of texture copies.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 48)]
+        public value struct D3D12TextureCopyLocation
+        {
+            /// <summary>
+            /// Specifies the resource which will be used for the copy operation.
+            /// This can be obtained with D3D12Resource::NativeResource property.
+            /// When Type is D3D12TextureCopyType::PlacedFootprint, pResource must point to a
+            /// buffer resource.
+            /// When Type is D3D12TextureCopyType::SubresourceIndex, pResource must point to a
+            /// texture resource.
+            /// </summary>
+            [FieldOffset(0)] IntPtr pResource;
+
+            /// <summary>
+            /// Specifies which type of resource location this is: a subresource of a texture,
+            /// or a description of a texture layout which can be applied to a buffer. This
+            /// D3D12TextureCopyType enum indicates which field to use.
+            /// </summary>
+            [FieldOffset(8)] D3D12TextureCopyType Type;
+
+            /// <summary>
+            /// Specifies a texture layout, with offset, dimensions, and pitches, for the hardware
+            /// to understand how to treat a section of a buffer resource as a multi-dimensional
+            /// texture. To fill-in the correct data for a CopyTextureRegion call, see
+            /// D3D12PlacedSubresourceFootprint.
+            /// </summary>
+            [FieldOffset(16)] D3D12PlacedSubresourceFootprint PlacedFootprint;
+
+            /// <summary>
+            /// Specifies the index of the subresource of an arrayed, mip-mapped, or planar texture
+            /// should be used for the copy operation.
+            /// </summary>
+            [FieldOffset(16)] unsigned int SubresourceIndex;
+
+            /// <summary>
+            /// Creates a new instance of a D3D12TextureCopyLocation with the resource and uses
+            /// subresource index 0.
+            /// </summary>
+            /// <param name="res">Resource.</param>
+            D3D12TextureCopyLocation(D3D12Resource^ res);
+
+            /// <summary>
+            /// Creates a new instance of a D3D12TextureCopyLocation with the resource and uses
+            /// footprint.
+            /// </summary>
+            /// <param name="res">Resource.</param>
+            /// <param name="footprint">Footprint/</param>
+            D3D12TextureCopyLocation(
+                D3D12Resource^ res,
+                [In][IsReadOnly] D3D12PlacedSubresourceFootprint% footprint
+            );
+
+            /// <summary>
+            /// Creates a new instance of a D3D12TextureCopyLocation with the resource and uses
+            /// subresource index.
+            /// </summary>
+            /// <param name="res">Resource.</param>
+            /// <param name="sub">Subresource index.</param>
+            D3D12TextureCopyLocation(D3D12Resource^ res, unsigned int sub);
+        };
+
+        /// <summary>
+        /// Describes the dimensions of a viewport.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Viewport
+        {
+            /// <summary>
+            /// X position of the left hand side of the viewport.
+            /// </summary>
+            float TopLeftX;
+
+            /// <summary>
+            /// Y position of the top of the viewport.
+            /// </summary>
+            float TopLeftY;
+
+            /// <summary>
+            /// Width of the viewport.
+            /// </summary>
+            float Width;
+
+            /// <summary>
+            /// Height of the viewport.
+            /// </summary>
+            float Height;
+
+            /// <summary>
+            /// Minimum depth of the viewport. Ranges between 0 and 1.
+            /// </summary>
+            float MinDepth;
+
+            /// <summary>
+            /// Maximum depth of the viewport. Ranges between 0 and 1.
+            /// </summary>
+            float MaxDepth;
+
+            /// <summary>
+            /// Initializes the viewport.
+            /// </summary>
+            /// <param name="minDepth">Optional min depth. The default value is 0.</param>
+            /// <param name="maxDepth">Optional max depth. The default value is 1.</param>
+            D3D12Viewport(
+                float topLeftX,
+                float topLeftY,
+                float width,
+                float height,
+                [Optional] Nullable<float> minDepth,
+                [Optional] Nullable<float> maxDepth
+            );
+
+            /// <summary>
+            /// Initializes the viewport with given resource.
+            /// </summary>
+            /// <param name="resource">Resource used to initialize the viewport.</param>
+            /// <param name="mipSlice">The number of mip slice. The default value is 0.</param>
+            /// <param name="topLeftX">The default value is 0.</param>
+            /// <param name="topLeftY">The default value is 0.</param>
+            /// <param name="minDepth">The default value is 0.</param>
+            /// <param name="maxDepth">The default value is 1.</param>
+            D3D12Viewport(
+                D3D12Resource^ resource,
+                [Optional] Nullable<unsigned int> mipSlice,
+                [Optional] Nullable<float> topLeftX,
+                [Optional] Nullable<float> topLeftY,
+                [Optional] Nullable<float> minDepth,
+                [Optional] Nullable<float> maxDepth
+            );
+        };
+
+        /// <summary>
+        /// Describes the transition of subresources between different usages.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12ResourceTransitionBarrier
+        {
+            /// <summary>
+            /// A pointer to the ID3D12Resource object that represents the resource used in
+            /// the transition. This can be obtained with D3D12Resource::NativeResource property.
+            /// </summary>
+            IntPtr pResource;
+
+            /// <summary>
+            /// The index of the subresource for the transition. Use 0xffffffff to transition all
+            /// subresources in a resource at the same time.
+            /// </summary>
+            unsigned int Subresource;
+
+            /// <summary>
+            /// The "before" usages of the subresources, as a bitwise-OR'd combination of
+            /// D3D12ResourceStates enumeration constants.
+            /// </summary>
+            D3D12ResourceStates StateBefore;
+
+            /// <summary>
+            /// The "after" usages of the subresources, as a bitwise-OR'd combination of
+            /// D3D12ResourceStates enumeration constants.
+            /// </summary>
+            D3D12ResourceStates StateAfter;
+
+            D3D12ResourceTransitionBarrier(
+                D3D12Resource^ resource,
+                unsigned int subresource,
+                D3D12ResourceStates stateBefore,
+                D3D12ResourceStates stateAfter
+            );
+        };
+
+        /// <summary>
+        /// Describes the transition between usages of two different resources that have mappings into
+        /// the same heap.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12ResourceAliasingBarrier
+        {
+            /// <summary>
+            /// A pointer to the ID3D12Resource object that represents the before resource used in
+            /// the transition. This can be obtained with D3D12Resource::NativeResource property.
+            /// </summary>
+            IntPtr pResourceBefore;
+
+            /// <summary>
+            /// A pointer to the ID3D12Resource object that represents the after resource used in
+            /// the transition. This can be obtained with D3D12Resource::NativeResource property.
+            /// </summary>
+            IntPtr pResourceAfter;
+
+            D3D12ResourceAliasingBarrier(
+                D3D12Resource^ before,
+                D3D12Resource^ after
+            );
+        };
+
+        /// <summary>
+        /// Represents a resource in which all UAV accesses must complete before any future UAV
+        /// accesses can begin.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12ResourceUavBarrier
+        {
+            /// <summary>
+            /// The resource used in the transition, as a pointer to ID3D12Resource.
+            /// This can be obtained with D3D12Resource::NativeResource property.
+            /// </summary>
+            IntPtr pResource;
+
+            D3D12ResourceUavBarrier(D3D12Resource^ resource);
+        };
+
+        /// <summary>
+        /// Describes a resource barrier (transition in resource use).
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 32)]
+        public value struct D3D12ResourceBarrier
+        {
+            /// <summary>
+            /// A D3D12ResourceBarrierType-typed value that specifies the type of resource barrier.
+            /// This member determines which type to use in the union below.
+            /// </summary>
+            [FieldOffset(0)] D3D12ResourceBarrierType Type;
+
+            /// <summary>
+            /// Specifies a D3D12ResourceBarrierFlags enumeration constant such as for "begin only" or
+            /// "end only".
+            /// </summary>
+            [FieldOffset(4)] D3D12ResourceBarrierFlags Flags;
+
+            /// <summary>
+            /// A D3D12ResourceTransitionBarrier structure that describes the transition of subresources
+            /// between different usages.
+            /// Members specify the beforeand after usages of the subresources.
+            /// </summary>
+            [FieldOffset(8)] D3D12ResourceTransitionBarrier _Transition;
+
+            /// <summary>
+            /// A D3D12ResourceAliasingBarrier structure that describes the transition between usages of
+            /// two different resources that have mappings into the same heap.
+            /// </summary>
+            [FieldOffset(8)] D3D12ResourceAliasingBarrier _Aliasing;
+
+            /// <summary>
+            /// A D3D12ResourceUavBarrier structure that describes a resource in which all UAV accesses
+            /// (reads or writes) must complete before any future UAV accesses (read or write) can begin.
+            /// </summary>
+            [FieldOffset(8)] D3D12ResourceUavBarrier _UAV;
+
+            /// <summary>
+            /// Make a transition barrier.
+            /// </summary>
+            /// <param name="resource">Resource to make a barrier.</param>
+            /// <param name="stateBefore">Before state.</param>
+            /// <param name="stateAfter">After state.</param>
+            /// <param name="subresource">The index of the subresource for the transition.
+            /// The default value is 0xffffffff.</param>
+            /// <param name="flags">Additional flags. The default value is
+            /// D3D12ResourceBarrierFlags::None.</param>
+            /// <returns>Resource barrier structure.</returns>
+            static D3D12ResourceBarrier Transition(
+                D3D12Resource^ resource,
+                D3D12ResourceStates stateBefore,
+                D3D12ResourceStates stateAfter,
+                [Optional] Nullable<unsigned int> subresource,
+                [Optional] Nullable<D3D12ResourceBarrierFlags> flags
+            );
+
+            /// <summary>
+            /// Make a aliasing barrier.
+            /// </summary>
+            /// <param name="resourceBefore">Before resource.</param>
+            /// <param name="resourceAfter">After resource.</param>
+            /// <returns>Resource barrier structure.</returns>
+            static D3D12ResourceBarrier Aliasing(
+                D3D12Resource^ resourceBefore,
+                D3D12Resource^ resourceAfter
+            );
+
+            /// <summary>
+            /// Make a UAV barrier.
+            /// </summary>
+            /// <param name="resource">Resource to make a barrier.</param>
+            /// <returns>Resource barrier structure.</returns>
+            static D3D12ResourceBarrier UAV(D3D12Resource^ resource);
+        };
+
+        /// <summary>
+        /// Describes the descriptor heap.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12DescriptorHeapDesc
+        {
+            /// <summary>
+            /// A D3D12DescriptorHeapType-typed value that specifies the types of descriptors in the heap.
+            /// </summary>
+            D3D12DescriptorHeapType Type;
+
+            /// <summary>
+            /// The number of descriptors in the heap.
+            /// </summary>
+            unsigned int NumDescriptors;
+
+            /// <summary>
+            /// A combination of D3D12DescriptorHeapFlags-typed values that are combined by using a
+            /// bitwise OR operation. The resulting value specifies options for the heap.
+            /// </summary>
+            D3D12DescriptorHeapFlags Flags;
+
+            /// <summary>
+            /// For single-adapter operation, set this to zero. If there are multiple adapter nodes,
+            /// set a bit to identify the node (one of the device's physical adapters) to which the
+            /// descriptor heap applies. Each bit in the mask corresponds to a single node. Only one bit
+            /// must be set.
+            /// </summary>
+            unsigned int NodeMask;
+        };
+
+        /// <summary>
+        /// Describes a GPU descriptor handle. All the methods can be used similarly with
+        /// D3D12CPUDescriptorHandle.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12GPUDescriptorHandle : IEquatable<D3D12GPUDescriptorHandle>
+        {
+            /// <summary>
+            /// The address of the descriptor.
+            /// </summary>
+            unsigned long long ptr;
+
+            /// <summary>
+            /// Creates a new instance of a D3D12GPUDescriptorHandle, initialized with default
+            /// parameters (sets the pointer to zero).
+            /// </summary>
+            D3D12GPUDescriptorHandle(D3DDefault);
+
+            D3D12GPUDescriptorHandle(D3D12GPUDescriptorHandle other, int offsetScaledByIncrementSize);
+
+            D3D12GPUDescriptorHandle(
+                D3D12GPUDescriptorHandle other,
+                int offsetInDescriptors,
+                unsigned int descriptorIncrementSize
+            );
+
+            void Offset(int offsetInDescriptors, unsigned int descriptorIncrementSize);
+
+            void Offset(int offsetScaledByIncrementSize);
+
+            static bool operator==(
+                D3D12GPUDescriptorHandle lhs, D3D12GPUDescriptorHandle rhs
+                );
+
+            static bool operator!=(
+                D3D12GPUDescriptorHandle lhs, D3D12GPUDescriptorHandle rhs
+                );
+
+            virtual bool Equals(Object^ other) override;
+
+            virtual bool Equals(D3D12GPUDescriptorHandle other);
+
+            void InitOffsetted(
+                [In][IsReadOnly] D3D12GPUDescriptorHandle% base,
+                int offsetScaledByIncrementSize
+            );
+
+            void InitOffsetted(
+                [In][IsReadOnly] D3D12GPUDescriptorHandle% base,
+                int offsetInDescriptors,
+                unsigned int descriptorIncrementSize
+            );
+
+            static void InitOffsetted(
+                D3D12GPUDescriptorHandle% handle,
+                [In][IsReadOnly] D3D12GPUDescriptorHandle% base,
+                int offsetScaledByIncrementSize
+            );
+
+            static void InitOffsetted(
+                D3D12GPUDescriptorHandle% handle,
+                [In][IsReadOnly] D3D12GPUDescriptorHandle% base,
+                int offsetInDescriptors,
+                unsigned int descriptorIncrementSize
+            );
+        };
+
+        /// <summary>
+        /// Describes the index buffer to view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12IndexBufferView
+        {
+            /// <summary>
+            /// The GPU virtual address of the index buffer.
+            /// </summary>
+            D3D12_GPU_VIRTUAL_ADDRESS BufferLocation;
+
+            /// <summary>
+            /// The size in bytes of the index buffer.
+            /// </summary>
+            unsigned int SizeInBytes;
+
+            /// <summary>
+            /// A DXGIFormat-typed value for the index-buffer format.
+            /// </summary>
+            DXGIFormat Format;
+        };
+
+        /// <summary>
+        /// Describes a vertex buffer view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12VertexBufferView
+        {
+            /// <summary>
+            /// Specifies a D3D12_GPU_VIRTUAL_ADDRESS that identifies the address of the buffer.
+            /// </summary>
+            D3D12_GPU_VIRTUAL_ADDRESS BufferLocation;
+
+            /// <summary>
+            /// Specifies the size in bytes of the buffer.
+            /// </summary>
+            unsigned int SizeInBytes;
+
+            /// <summary>
+            /// Specifies the size in bytes of each vertex entry.
+            /// </summary>
+            unsigned int StrideInBytes;
+        };
+
+        /// <summary>
+        /// Describes a stream output buffer.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12StreamOutputBufferView
+        {
+            /// <summary>
+            /// A D3D12_GPU_VIRTUAL_ADDRESS (a UINT64) that points to the stream output buffer.
+            /// If SizeInBytes is 0, this member isn't used and can be any value.
+            /// </summary>
+            D3D12_GPU_VIRTUAL_ADDRESS BufferLocation;
+
+            /// <summary>
+            /// The size of the stream output buffer in bytes.
+            /// </summary>
+            unsigned long long SizeInBytes;
+
+            /// <summary>
+            /// The location of the value of how much data has been filled into the buffer, as a
+            /// D3D12_GPU_VIRTUAL_ADDRESS (a UINT64). This member can't be 0; a filled size location
+            /// must be supplied (which the hardware will increment as data is output). If SizeInBytes
+            /// is 0, this member isn't used and can be any value.
+            /// </summary>
+            D3D12_GPU_VIRTUAL_ADDRESS BufferFilledSizeLocation;
+        };
+
+        /// <summary>
+        /// Describes details for the discard-resource operation.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12DiscardRegion
+        {
+            /// <summary>
+            /// The number of rectangles in the array that the pRects member specifies.
+            /// </summary>
+            unsigned int NumRects;
+
+            /// <summary>
+            /// A pointer to an array of Rect structures for the rectangles in the resource to discard.
+            /// If null, DiscardResource discards the entire resource.
+            /// </summary>
+            Rect* pRects;
+
+            /// <summary>
+            /// Index of the first subresource in the resource to discard.
+            /// </summary>
+            unsigned int FirstSubresource;
+
+            /// <summary>
+            /// The number of subresources in the resource to discard.
+            /// </summary>
+            unsigned int NumSubresources;
+
+            /// <summary>
+            /// Initializes the structure with rect array.
+            /// </summary>
+            /// <param name="rects">Rect structures for the rectangles in the resource to discard.
+            /// This can not be null.</param>
+            /// <param name="firstSubresource">Index of the first subresource in the resource to
+            /// discard.</param>
+            /// <param name="numSubresource">The number of subresources in the resource to discard.
+            /// </param>
+            /// <param name="rectsPinPtr">Pin pointer to the rects array. Free the handle after
+            /// using this structure.</param>
+            D3D12DiscardRegion(
+                array<Rect>^ rects,
+                unsigned int firstSubresource,
+                unsigned int numSubresource,
+                [Out] GCHandle% rectsPinPtr
+            );
+
+            /// <summary>
+            /// Initializes the structure without rectangles.
+            /// </summary>
+            /// <param name="firstSubresource">Index of the first subresource in the resource to
+            /// discard.</param>
+            /// <param name="numSubresource">The number of subresources in the resource to discard.
+            /// </param>
+            D3D12DiscardRegion(
+                unsigned int firstSubresource,
+                unsigned int numSubresource
+            );
+        };
+
+        /// <summary>
+        /// Query information about graphics-pipeline activity in between calls to BeginQuery
+        /// and EndQuery.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12QueryDataPipelineStatistics : ID3D12QueryData
+        {
+            /// <summary>
+            /// Number of vertices read by input assembler.
+            /// </summary>
+            unsigned long long IAVertices;
+
+            /// <summary>
+            /// Number of primitives read by the input assembler. This number can be different depending
+            /// on the primitive topology used. For example, a triangle strip with 6 vertices will
+            /// produce 4 triangles, however a triangle list with 6 vertices will produce 2 triangles.
+            /// </summary>
+            unsigned long long IAPrimitives;
+
+            /// <summary>
+            /// Specifies the number of vertex shader invocations. Direct3D invokes the vertex shader
+            /// once per vertex.
+            /// </summary>
+            unsigned long long VSInvocations;
+
+            /// <summary>
+            /// Specifies the number of geometry shader invocations. When the geometry shader is set to
+            /// null, this statistic may or may not increment depending on the graphics adapter.
+            /// </summary>
+            unsigned long long GSInvocations;
+
+            /// <summary>
+            /// Specifies the number of geometry shader output primitives.
+            /// </summary>
+            unsigned long long GSPrimitives;
+
+            /// <summary>
+            /// Number of primitives that were sent to the rasterizer. When the rasterizer is disabled,
+            /// this will not increment.
+            /// </summary>
+            unsigned long long CInvocations;
+
+            /// <summary>
+            /// Number of primitives that were rendered. This may be larger or smaller than CInvocations
+            /// because after a primitive is clipped sometimes it is either broken up into more than one
+            /// primitive or completely culled.
+            /// </summary>
+            unsigned long long CPrimitives;
+
+            /// <summary>
+            /// Specifies the number of pixel shader invocations.
+            /// </summary>
+            unsigned long long PSInvocations;
+
+            /// <summary>
+            /// Specifies the number of hull shader invocations.
+            /// </summary>
+            unsigned long long HSInvocations;
+
+            /// <summary>
+            /// Specifies the number of domain shader invocations.
+            /// </summary>
+            unsigned long long DSInvocations;
+
+            /// <summary>
+            /// Specifies the number of compute shader invocations.
+            /// </summary>
+            unsigned long long CSInvocations;
+        };
+
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12QueryDataPipelineStatistics1 : ID3D12QueryData
+        {
+            unsigned long long IAVertices;
+            unsigned long long IAPrimitives;
+            unsigned long long VSInvocations;
+            unsigned long long GSInvocations;
+            unsigned long long GSPrimitives;
+            unsigned long long CInvocations;
+            unsigned long long CPrimitives;
+            unsigned long long PSInvocations;
+            unsigned long long HSInvocations;
+            unsigned long long DSInvocations;
+            unsigned long long CSInvocations;
+            unsigned long long ASInvocations;
+            unsigned long long MSInvocations;
+            unsigned long long MSPrimitives;
+        };
+
+        /// <summary>
+        /// Describes query data about the amount of data streamed out to the stream-output buffers.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12QueryDataSOStatistics : ID3D12QueryData
+        {
+            /// <summary>
+            /// The number of primitives (that is, points, lines, and triangles) that were actually
+            /// written to the stream output resource.
+            /// </summary>
+            unsigned long long NumPrimitivesWritten;
+
+            /// <summary>
+            /// If the stream output resource is large enough, then PrimitivesStorageNeeded represents
+            /// the total number of primitives written to the stream output resource. Otherwise, it
+            /// represents the total number of primitives that would have been written to the
+            /// stream-output resource had there been enough space for them all.
+            /// </summary>
+            unsigned long long PrimitivesStorageNeeded;
+        };
+
+        /// <summary>
+        /// Describes the elements in a buffer resource to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12BufferSrv
+        {
+            /// <summary>
+            /// The index of the first element to be accessed by the view.
+            /// </summary>
+            unsigned long long FirstElement;
+
+            /// <summary>
+            /// The number of elements in the resource.
+            /// </summary>
+            unsigned int NumElements;
+
+            /// <summary>
+            /// The size of each element in the buffer structure (in bytes) when the buffer represents
+            /// a structured buffer.
+            /// </summary>
+            unsigned int StructureByteStride;
+
+            /// <summary>
+            /// A D3D12BufferSrvFlags-typed value that identifies view options for the buffer. Currently,
+            /// the only option is to identify a raw view of the buffer.
+            /// </summary>
+            D3D12BufferSrvFlags Flags;
+        };
+
+        /// <summary>
+        /// Specifies the subresource from a 1D texture to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex1DSrv
+        {
+            /// <summary>
+            /// Index of the most detailed mipmap level to use; this number is between 0 and MipLevels
+            /// (from the original Texture1D for which D3D12Device::CreateShaderResourceView creates
+            /// a view) -1.
+            /// </summary>
+            unsigned int MostDetailedMip;
+
+            /// <summary>
+            /// The maximum number of mipmap levels for the view of the texture. See the remarks. Set
+            /// to -1 to indicate all the mipmap levels from MostDetailedMip on down to least detailed.
+            /// </summary>
+            unsigned int MipLevels;
+
+            /// <summary>
+            /// A value to clamp sample LOD values to. For example, if you specify 2.0f for the clamp
+            /// value, you ensure that no individual sample accesses a mip level less than 2.0f.
+            /// </summary>
+            float ResourceMinLODClamp;
+        };
+
+        /// <summary>
+        /// Specifies the subresource from a 1D texture array to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex1DArraySrv
+        {
+            /// <summary>
+            /// Index of the most detailed mipmap level to use; this number is between 0 and MipLevels
+            /// (from the original Texture1D for which D3D12Device::CreateShaderResourceView creates
+            /// a view) -1.
+            /// </summary>
+            unsigned int MostDetailedMip;
+
+            /// <summary>
+            /// The maximum number of mipmap levels for the view of the texture. See the remarks. Set
+            /// to -1 to indicate all the mipmap levels from MostDetailedMip on down to least detailed.
+            /// </summary>
+            unsigned int MipLevels;
+
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures in the array.
+            /// </summary>
+            unsigned int ArraySize;
+
+            /// <summary>
+            /// A value to clamp sample LOD values to. For example, if you specify 2.0f for the clamp
+            /// value, you ensure that no individual sample accesses a mip level less than 2.0f.
+            /// </summary>
+            float ResourceMinLODClamp;
+        };
+
+        /// <summary>
+        /// Specifies the subresource from a 2D texture to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DSrv
+        {
+            /// <summary>
+            /// Index of the most detailed mipmap level to use; this number is between 0 and MipLevels
+            /// (from the original Texture1D for which D3D12Device::CreateShaderResourceView creates
+            /// a view) -1.
+            /// </summary>
+            unsigned int MostDetailedMip;
+
+            /// <summary>
+            /// The maximum number of mipmap levels for the view of the texture. See the remarks. Set
+            /// to -1 to indicate all the mipmap levels from MostDetailedMip on down to least detailed.
+            /// </summary>
+            unsigned int MipLevels;
+
+            /// <summary>
+            /// The index (plane slice number) of the plane to use in the texture.
+            /// </summary>
+            unsigned int PlaneSlice;
+
+            /// <summary>
+            /// A value to clamp sample LOD values to. For example, if you specify 2.0f for the clamp
+            /// value, you ensure that no individual sample accesses a mip level less than 2.0f.
+            /// </summary>
+            float ResourceMinLODClamp;
+        };
+
+        /// <summary>
+        /// Specifies the subresource from a 2D texture array to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DArraySrv
+        {
+            /// <summary>
+            /// Index of the most detailed mipmap level to use; this number is between 0 and MipLevels
+            /// (from the original Texture1D for which D3D12Device::CreateShaderResourceView creates
+            /// a view) -1.
+            /// </summary>
+            unsigned int MostDetailedMip;
+
+            /// <summary>
+            /// The maximum number of mipmap levels for the view of the texture. See the remarks. Set
+            /// to -1 to indicate all the mipmap levels from MostDetailedMip on down to least detailed.
+            /// </summary>
+            unsigned int MipLevels;
+
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures in the array.
+            /// </summary>
+            unsigned int ArraySize;
+
+            /// <summary>
+            /// The index (plane slice number) of the plane to use in the texture.
+            /// </summary>
+            unsigned int PlaneSlice;
+
+            /// <summary>
+            /// A value to clamp sample LOD values to. For example, if you specify 2.0f for the clamp
+            /// value, you ensure that no individual sample accesses a mip level less than 2.0f.
+            /// </summary>
+            float ResourceMinLODClamp;
+        };
+
+        /// <summary>
+        /// Specifies the subresource from a 3D texture to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex3DSrv
+        {
+            /// <summary>
+            /// Index of the most detailed mipmap level to use; this number is between 0 and MipLevels
+            /// (from the original Texture1D for which D3D12Device::CreateShaderResourceView creates
+            /// a view) -1.
+            /// </summary>
+            unsigned int MostDetailedMip;
+
+            /// <summary>
+            /// The maximum number of mipmap levels for the view of the texture. See the remarks. Set
+            /// to -1 to indicate all the mipmap levels from MostDetailedMip on down to least detailed.
+            /// </summary>
+            unsigned int MipLevels;
+
+            /// <summary>
+            /// A value to clamp sample LOD values to. For example, if you specify 2.0f for the clamp
+            /// value, you ensure that no individual sample accesses a mip level less than 2.0f.
+            /// </summary>
+            float ResourceMinLODClamp;
+        };
+
+        /// <summary>
+        /// Specifies the subresource from a cube texture to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12TexCubeSrv
+        {
+            /// <summary>
+            /// Index of the most detailed mipmap level to use; this number is between 0 and MipLevels
+            /// (from the original Texture1D for which D3D12Device::CreateShaderResourceView creates
+            /// a view) -1.
+            /// </summary>
+            unsigned int MostDetailedMip;
+
+            /// <summary>
+            /// The maximum number of mipmap levels for the view of the texture. See the remarks. Set
+            /// to -1 to indicate all the mipmap levels from MostDetailedMip on down to least detailed.
+            /// </summary>
+            unsigned int MipLevels;
+
+            /// <summary>
+            /// A value to clamp sample LOD values to. For example, if you specify 2.0f for the clamp
+            /// value, you ensure that no individual sample accesses a mip level less than 2.0f.
+            /// </summary>
+            float ResourceMinLODClamp;
+        };
+
+        /// <summary>
+        /// Specifies the subresource from a cube texture array to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12TexCubeArraySrv
+        {
+            /// <summary>
+            /// Index of the most detailed mipmap level to use; this number is between 0 and MipLevels
+            /// (from the original Texture1D for which D3D12Device::CreateShaderResourceView creates
+            /// a view) -1.
+            /// </summary>
+            unsigned int MostDetailedMip;
+
+            /// <summary>
+            /// The maximum number of mipmap levels for the view of the texture. See the remarks. Set
+            /// to -1 to indicate all the mipmap levels from MostDetailedMip on down to least detailed.
+            /// </summary>
+            unsigned int MipLevels;
+
+            /// <summary>
+            /// Index of the first 2D texture to use.
+            /// </summary>
+            unsigned int First2DArrayFace;
+
+            /// <summary>
+            /// Number of cube textures in the array.
+            /// </summary>
+            unsigned int NumCubes;
+
+            /// <summary>
+            /// A value to clamp sample LOD values to. For example, if you specify 2.0f for the clamp
+            /// value, you ensure that no individual sample accesses a mip level less than 2.0f.
+            /// </summary>
+            float ResourceMinLODClamp;
+        };
+
+        /// <summary>
+        /// Describes the subresources from a multi sampled 2D texture to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 4)]
+        public value struct D3D12Tex2DMSSrv
+        {
+
+        };
+
+        /// <summary>
+        /// Describes the subresources from an array of multi sampled 2D textures to use in a
+        /// shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DMSArraySrv
+        {
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures to use.
+            /// </summary>
+            unsigned int ArraySize;
+        };
+
+        /// <summary>
+        /// A shader resource view (SRV) structure for storing a raytracing acceleration structure.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12RaytracingAccelerationStructureSrv
+        {
+            /// <summary>
+            /// The GPU virtual address of the SRV.
+            /// </summary>
+            D3D12_GPU_VIRTUAL_ADDRESS Location;
+        };
+
+        /// <summary>
+        /// Describes the subresources from a multi sampled 2D texture to use in a shader-resource view.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 40)]
+        public value struct D3D12ShaderResourceViewDesc
+        {
+            /// <summary>
+            /// A DXGIFormat-typed value that specifies the viewing format.
+            /// </summary>
+            [FieldOffset(0)] DXGIFormat Format;
+
+            /// <summary>
+            /// A D3D12SrvDimension-typed value that specifies the resource type of the view. This type
+            /// is the same as the resource type of the underlying resource. This member also determines
+            /// which Srv to use in the union below.
+            /// </summary>
+            [FieldOffset(4)] D3D12SrvDimension ViewDimension;
+
+            /// <summary>
+            /// A value, constructed using the D3D12::EncodeShader4ComponentMapping method.
+            /// The D3D12ShaderComponentMapping enumeration specifies what values from memory should
+            /// be returned when the texture is accessed in a shader via this shader resource view (SRV).
+            /// For example, it can route component 1 (green) from memory, or the constant 0, into
+            /// component 2 (.b) of the value given to the shader. Use
+            /// D3D12::DefaultShader4ComponentMapping for default value.
+            /// </summary>
+            [FieldOffset(8)] unsigned int Shader4ComponentMapping;
+
+            [FieldOffset(16)] D3D12BufferSrv Buffer;
+            [FieldOffset(16)] D3D12Tex1DSrv Texture1D;
+            [FieldOffset(16)] D3D12Tex1DArraySrv Texture1DArray;
+            [FieldOffset(16)] D3D12Tex2DSrv Texture2D;
+            [FieldOffset(16)] D3D12Tex2DArraySrv Texture2DArray;
+            [FieldOffset(16)] D3D12Tex2DMSSrv Texture2DMS;
+            [FieldOffset(16)] D3D12Tex2DMSArraySrv Texture2DMSArray;
+            [FieldOffset(16)] D3D12Tex3DSrv Texture3D;
+            [FieldOffset(16)] D3D12TexCubeSrv TextureCube;
+            [FieldOffset(16)] D3D12TexCubeArraySrv TextureCubeArray;
+            [FieldOffset(16)] D3D12RaytracingAccelerationStructureSrv RaytracingAccelerationStructure;
+        };
+
+        /// <summary>
+        /// Describes the elements in a buffer to use in a unordered-access view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12BufferUav
+        {
+            /// <summary>
+            /// The zero-based index of the first element to be accessed.
+            /// </summary>
+            unsigned long long FirstElement;
+
+            /// <summary>
+            /// The number of elements in the resource. For structured buffers, this is the number
+            /// of structures in the buffer.
+            /// </summary>
+            unsigned int NumElements;
+
+            /// <summary>
+            /// The size of each element in the buffer structure (in bytes) when the buffer represents
+            /// a structured buffer.
+            /// </summary>
+            unsigned int StructureByteStride;
+
+            /// <summary>
+            /// The counter offset, in bytes.
+            /// </summary>
+            unsigned long long CounterOffsetInBytes;
+
+            /// <summary>
+            /// A D3D12BufferUavFlags-typed value that specifies the view options for the resource.
+            /// </summary>
+            D3D12BufferUavFlags Flags;
+        };
+
+        /// <summary>
+        /// Describes a unordered-access 1D texture resource.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex1DUav
+        {
+            /// <summary>
+            /// The mipmap slice index.
+            /// </summary>
+            unsigned int MipSlice;
+        };
+
+        /// <summary>
+        /// Describes an array of unordered-access 1D texture resources.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex1DArrayUav
+        {
+            /// <summary>
+            /// The mipmap slice index.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The zero-based index of the first array slice to be accessed.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// The number of slices in the array.
+            /// </summary>
+            unsigned int ArraySize;
+        };
+
+        /// <summary>
+        /// Describes a unordered-access 2D texture resource.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DUav
+        {
+            /// <summary>
+            /// The mipmap slice index.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The index (plane slice number) of the plane to use in the texture.
+            /// </summary>
+            unsigned int PlaneSlice;
+        };
+
+        /// <summary>
+        /// Describes an array of unordered-access 2D texture resources.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DArrayUav
+        {
+            /// <summary>
+            /// The mipmap slice index.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The zero-based index of the first array slice to be accessed.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// The number of slices in the array.
+            /// </summary>
+            unsigned int ArraySize;
+
+            /// <summary>
+            /// The index (plane slice number) of the plane to use in the texture.
+            /// </summary>
+            unsigned int PlaneSlice;
+        };
+
+        /// <summary>
+        /// Describes a unordered-access 3D texture resource.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex3DUav
+        {
+            /// <summary>
+            /// The mipmap slice index.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The zero-based index of the first depth slice to be accessed.
+            /// </summary>
+            unsigned int FirstWSlice;
+
+            /// <summary>
+            /// The number of depth slices.
+            /// </summary>
+            unsigned int WSize;
+        };
+
+        /// <summary>
+        /// Describes the subresources from a resource that are accessible by using an
+        /// unordered-access view.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 40)]
+        public value struct D3D12UnorderedAccessViewDesc
+        {
+            /// <summary>
+            /// A DXGIFormat-typed value that specifies the viewing format.
+            /// </summary>
+            [FieldOffset(0)] DXGIFormat Format;
+
+            /// <summary>
+            /// A D3D12UavDimension-typed value that specifies the resource type of the view. This type
+            /// specifies how the resource will be accessed. This member also determines which Uav to
+            /// use in the union below.
+            /// </summary>
+            [FieldOffset(4)] D3D12UavDimension ViewDimension;
+
+            [FieldOffset(8)] D3D12BufferUav Buffer;
+            [FieldOffset(8)] D3D12Tex1DUav Texture1D;
+            [FieldOffset(8)] D3D12Tex1DArrayUav Texture1DArray;
+            [FieldOffset(8)] D3D12Tex2DUav Texture2D;
+            [FieldOffset(8)] D3D12Tex2DArrayUav Texture2DArray;
+            [FieldOffset(8)] D3D12Tex3DUav Texture3D;
+        };
+
+        /// <summary>
+        /// Describes the elements in a buffer resource to use in a render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12BufferRtv
+        {
+            /// <summary>
+            /// Number of bytes between the beginning of the buffer and the first element to access.
+            /// </summary>
+            unsigned long long FirstElement;
+
+            /// <summary>
+            /// The total number of elements in the view.
+            /// </summary>
+            unsigned int NumElements;
+        };
+
+        /// <summary>
+        /// Describes the subresource from a 1D texture to use in a render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex1DRtv
+        {
+            /// <summary>
+            /// The index of the mipmap level to use mip slice.
+            /// </summary>
+            unsigned int MipSlice;
+        };
+
+        /// <summary>
+        /// Describes the subresources from an array of 1D textures to use in a render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex1DArrayRtv
+        {
+            /// <summary>
+            /// The index of the mipmap level to use mip slice.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures to use.
+            /// </summary>
+            unsigned int ArraySize;
+        };
+
+        /// <summary>
+        /// Describes the subresource from a 2D texture to use in a render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DRtv
+        {
+            /// <summary>
+            /// The index of the mipmap level to use mip slice.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The index (plane slice number) of the plane to use in the texture.
+            /// </summary>
+            unsigned int PlaneSlice;
+        };
+
+        /// <summary>
+        /// Describes the subresource from a multi sampled 2D texture to use in a render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 4)]
+        public value struct D3D12Tex2DMSRtv
+        {
+
+        };
+
+        /// <summary>
+        /// Describes the subresources from an array of 2D textures to use in a render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DArrayRtv
+        {
+            /// <summary>
+            /// The index of the mipmap level to use mip slice.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures in the array to use in the render target view, starting
+            /// from FirstArraySlice.
+            /// </summary>
+            unsigned int ArraySize;
+
+            /// <summary>
+            /// The index (plane slice number) of the plane to use in the texture.
+            /// </summary>
+            unsigned int PlaneSlice;
+        };
+
+        /// <summary>
+        /// Describes the subresources from an array of multi sampled 2D textures to use in a
+        /// render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DMSArrayRtv
+        {
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures to use.
+            /// </summary>
+            unsigned int ArraySize;
+        };
+
+        /// <summary>
+        /// Describes the subresources from a 3D texture to use in a render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex3DRtv
+        {
+            /// <summary>
+            /// The index of the mipmap level to use mip slice.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// First depth level to use.
+            /// </summary>
+            unsigned int FirstWSlice;
+
+            /// <summary>
+            /// Number of depth levels to use in the render-target view, starting from FirstWSlice.
+            /// A value of -1 indicates all of the slices along the w axis, starting from FirstWSlice.
+            /// </summary>
+            unsigned int WSize;
+        };
+
+        /// <summary>
+        /// Describes the subresources from a resource that are accessible by using a render-target view.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 24)]
+        public value struct D3D12RenderTargetViewDesc
+        {
+            /// <summary>
+            /// A DXGIFormat-typed value that specifies the viewing format.
+            /// </summary>
+            [FieldOffset(0)] DXGIFormat Format;
+
+            /// <summary>
+            /// A D3D12RtvDimension-typed value that specifies how the render-target resource will be
+            /// accessed. This type specifies how the resource will be accessed. This member also
+            /// determines which Rtv to use in the following union.
+            /// </summary>
+            [FieldOffset(4)] D3D12RtvDimension ViewDimension;
+
+            [FieldOffset(8)] D3D12BufferRtv Buffer;
+            [FieldOffset(8)] D3D12Tex1DRtv Texture1D;
+            [FieldOffset(8)] D3D12Tex1DArrayRtv Texture1DArray;
+            [FieldOffset(8)] D3D12Tex2DRtv Texture2D;
+            [FieldOffset(8)] D3D12Tex2DArrayRtv Texture2DArray;
+            [FieldOffset(8)] D3D12Tex2DMSRtv Texture2DMS;
+            [FieldOffset(8)] D3D12Tex2DMSArrayRtv Texture2DMSArray;
+            [FieldOffset(8)] D3D12Tex3DRtv Texture3D;
+        };
+
+        /// <summary>
+        /// Describes the subresource from a 1D texture that is accessible to a depth-stencil view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex1DDsv
+        {
+            /// <summary>
+            /// The index of the first mipmap level to use.
+            /// </summary>
+            unsigned int MipSlice;
+        };
+
+        /// <summary>
+        /// Describes the subresources from an array of 1D textures to use in a depth-stencil view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex1DArrayDsv
+        {
+            /// <summary>
+            /// The index of the first mipmap level to use.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures to use.
+            /// </summary>
+            unsigned int ArraySize;
+        };
+
+        /// <summary>
+        /// Describes the subresource from a 2D texture that is accessible to a depth-stencil view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DDsv
+        {
+            /// <summary>
+            /// The index of the first mipmap level to use.
+            /// </summary>
+            unsigned int MipSlice;
+        };
+
+        /// <summary>
+        /// Describes the subresources from an array of 2D textures that are accessible to a
+        /// depth-stencil view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DArrayDsv
+        {
+            /// <summary>
+            /// The index of the first mipmap level to use.
+            /// </summary>
+            unsigned int MipSlice;
+
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures to use.
+            /// </summary>
+            unsigned int ArraySize;
+        };
+
+        /// <summary>
+        /// Describes the subresource from a multi sampled 2D texture that is accessible to a
+        /// depth-stencil view.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 4)]
+        public value struct D3D12Tex2DMSDsv
+        {
+
+        };
+
+        /// <summary>
+        /// Describes the subresources from an array of multi sampled 2D textures for a
+        /// depth-stencil view.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12Tex2DMSArrayDsv
+        {
+            /// <summary>
+            /// The index of the first texture to use in an array of textures.
+            /// </summary>
+            unsigned int FirstArraySlice;
+
+            /// <summary>
+            /// Number of textures to use.
+            /// </summary>
+            unsigned int ArraySize;
+        };
+
+        /// <summary>
+        /// Describes the subresources of a texture that are accessible from a depth-stencil view.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 24)]
+        public value struct D3D12DepthStencilViewDesc
+        {
+            /// <summary>
+            /// A DXGIFormat-typed value that specifies the viewing format.
+            /// These are valid formats for a depth-stencil view:
+            /// <para>FORMAT_D16_UNORM</para>
+            /// <para>FORMAT_D24_UNORM_S8_UINT</para>
+            /// <para>FORMAT_D32_FLOAT</para>
+            /// <para>FORMAT_D32_FLOAT_S8X24_UINT</para>
+            /// <para>FORMAT_UNKNOWN</para>
+            /// <para>A depth-stencil view can't use a typeless format. If the format chosen is
+            /// FORMAT_UNKNOWN, the format of the parent resource is used.</para>
+            /// </summary>
+            [FieldOffset(0)] DXGIFormat Format;
+
+            /// <summary>
+            /// A D3D12DsvDimension-typed value that specifies how the depth-stencil resource will be
+            /// accessed. This member also determines which Dsv to use in the following union.
+            /// </summary>
+            [FieldOffset(4)] D3D12DsvDimension ViewDimension;
+
+            /// <summary>
+            /// A combination of D3D12_DSV_FLAGS enumeration constants that are combined by using a
+            /// bitwise OR operation. The resulting value specifies whether the texture is read only.
+            /// Pass 0 to specify that it isn't read only; otherwise, pass one or more of the members of
+            /// the D3D12DsvFlags enumerated type.
+            /// </summary>
+            [FieldOffset(8)] D3D12DsvFlags Flags;
+
+            [FieldOffset(12)] D3D12Tex1DDsv Texture1D;
+            [FieldOffset(12)] D3D12Tex1DArrayDsv Texture1DArray;
+            [FieldOffset(12)] D3D12Tex2DDsv Texture2D;
+            [FieldOffset(12)] D3D12Tex2DArrayDsv Texture2DArray;
+            [FieldOffset(12)] D3D12Tex2DMSDsv Texture2DMS;
+            [FieldOffset(12)] D3D12Tex2DMSArrayDsv Texture2DMSArray;
+        };
+
+        /// <summary>
+        /// Specifies a depth and stencil value.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12DepthStencilValue
+        {
+            /// <summary>
+            /// Specifies the depth value.
+            /// </summary>
+            float Depth;
+
+            /// <summary>
+            /// Specifies the stencil value.
+            /// </summary>
+            unsigned char Stencil;
+        };
+
+        /// <summary>
+        /// Describes a value used to optimize clear operations for a particular resource.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 20)]
+        public value struct D3D12ClearValue
+        {
+            /// <summary>
+            /// Specifies one member of the DXGI_FORMAT enum.
+            /// The format of the commonly cleared color follows the same validation rules as a
+            /// view / descriptor creation. In general, the format of the clear color can be any format
+            /// in the same typeless group that the resource format belongs to. 
+            /// This Format must match the format of the view used during the clear operation. It
+            /// indicates whether the Color or the DepthStencil member is valid and how to convert the
+            /// values for usage with the resource.
+            /// </summary>
+            [FieldOffset(0)] DXGIFormat Format;
+
+            /// <summary>
+            /// Specifies RGBA value.
+            /// </summary>
+            [FieldOffset(4)] D3DColorValue Color;
+
+            /// <summary>
+            /// Specifies one member of D3D12DepthStencilValue. These values match the semantics of
+            /// Depth and Stencil in ClearDepthStencilView.
+            /// </summary>
+            [FieldOffset(4)] D3D12DepthStencilValue DepthStencil;
+
+            /// <summary>
+            /// Initializes the structure with a color.
+            /// </summary>
+            D3D12ClearValue(DXGIFormat format, D3DColorValue color);
+
+            /// <summary>
+            /// Initializes the structure with depth and stencil.
+            /// </summary>
+            D3D12ClearValue(DXGIFormat format, float depth, unsigned char stencil);
+        };
+
+        /// <summary>
+        /// Describes a sampler state.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12SamplerDesc
+        {
+            /// <summary>
+            /// A D3D12_FILTER-typed value that specifies the filtering method to use when sampling
+            /// a texture.
+            /// </summary>
+            D3D12Filter Filter;
+
+            /// <summary>
+            /// A D3D12TextureAddressMode-typed value that specifies the method to use for resolving
+            /// a u texture coordinate that is outside the 0 to 1 range.
+            /// </summary>
+            D3D12TextureAddressMode AddressU;
+
+            /// <summary>
+            /// A D3D12TextureAddressMode-typed value that specifies the method to use for resolving
+            /// a v texture coordinate that is outside the 0 to 1 range.
+            /// </summary>
+            D3D12TextureAddressMode AddressV;
+
+            /// <summary>
+            /// A D3D12TextureAddressMode-typed value that specifies the method to use for resolving
+            /// a w texture coordinate that is outside the 0 to 1 range.
+            /// </summary>
+            D3D12TextureAddressMode AddressW;
+
+            /// <summary>
+            /// Offset from the calculated mipmap level. For example, if the runtime calculates that
+            /// a texture should be sampled at mipmap level 3 and MipLODBias is 2, the texture will be
+            /// sampled at mipmap level 5.
+            /// </summary>
+            float MipLODBias;
+
+            /// <summary>
+            /// Clamping value used if D3D12Filter::Anisotropic or D3D12Filter::ComparisonAnisotropic
+            /// is specified in Filter. Valid values are between 1 and 16.
+            /// </summary>
+            unsigned int MaxAnisotropy;
+
+            /// <summary>
+            /// A D3D12ComparisonFunc-typed value that specifies a function that compares sampled
+            /// data against existing sampled data.
+            /// </summary>
+            D3D12ComparisonFunc ComparisonFunc;
+
+            /// <summary>
+            /// Border color to use if D3D12TextureAddressMode::Border is specified for AddressU,
+            /// AddressV, or AddressW. Range must be between 0.0 and 1.0 inclusive.
+            /// </summary>
+            D3DColorValue BorderColor;
+
+            /// <summary>
+            /// Lower end of the mipmap range to clamp access to, where 0 is the largest and most
+            /// detailed mipmap level and any level higher than that is less detailed.
+            /// </summary>
+            float MinLOD;
+
+            /// <summary>
+            /// Upper end of the mipmap range to clamp access to, where 0 is the largest and most
+            /// detailed mipmap level and any level higher than that is less detailed. This value must
+            /// be greater than or equal to MinLOD. To have no upper limit on LOD, set this member to
+            /// a large value.
+            /// </summary>
+            float MaxLOD;
+        };
+
+        /// <summary>
+        /// Describes the purpose of a query heap. A query heap contains an array of individual queries.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12QueryHeapDesc
+        {
+            /// <summary>
+            /// Specifies one member of D3D12QueryHeapType.
+            /// </summary>
+            D3D12QueryHeapType Type;
+
+            /// <summary>
+            /// Specifies the number of queries the heap should contain.
+            /// </summary>
+            unsigned int Count;
+
+            /// <summary>
+            /// For single GPU operation, set this to zero. If there are multiple GPU nodes, set a bit
+            /// to identify the node (the device's physical adapter) to which the query heap applies.
+            /// Each bit in the mask corresponds to a single node. Only 1 bit must be set.
+            /// </summary>
+            unsigned int NodeMask;
         };
     }
 }

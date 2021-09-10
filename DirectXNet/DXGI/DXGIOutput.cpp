@@ -8,14 +8,13 @@ using namespace DirectXNet::DXGI;
 DirectXNet::DXGI::DXGIOutput::DXGIOutput(::IDXGIOutput* pOutput)
     : DXGIObject((::IDXGIObject*)pOutput)
 {
-    this->pOutput.Attach(pOutput);
+    this->pOutput = pOutput;
 }
 
 void DirectXNet::DXGI::DXGIOutput::AttatchComObj(::IUnknown* pComObj)
 {
     DXGI::DXGIObject::AttatchComObj(pComObj);
-    pOutput.Release();
-    pOutput.Attach((::IDXGIOutput*)pComObj);
+    pOutput = (::IDXGIOutput*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGIOutput::GetGuid()

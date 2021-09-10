@@ -25,7 +25,7 @@ namespace DirectXNet
         public ref class D3D12CommandList : D3D12DeviceChild
         {
         private:
-            com::ptr<::ID3D12CommandList> pList;
+            ::ID3D12CommandList* pList;
 
         internal:
             D3D12CommandList(::ID3D12CommandList* pList);

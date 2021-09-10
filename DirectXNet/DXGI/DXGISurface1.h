@@ -24,7 +24,7 @@ namespace DirectXNet
         public ref class DXGISurface1 : DXGISurface
         {
         private:
-            com::ptr<::IDXGISurface1> pSurface1;
+            ::IDXGISurface1* pSurface1;
 
         internal:
             DXGISurface1(::IDXGISurface1* pSurface1);

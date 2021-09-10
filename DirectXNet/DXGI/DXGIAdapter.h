@@ -25,7 +25,7 @@ namespace DirectXNet
         public ref class DXGIAdapter : DXGIObject
         {
         private:
-            com::ptr<::IDXGIAdapter> pAdapter;
+            ::IDXGIAdapter* pAdapter;
 
         internal:
             DXGIAdapter(::IDXGIAdapter* pAdapter);

@@ -9,14 +9,13 @@ using namespace DirectXNet::DirectX12;
 DirectXNet::DirectX12::D3D12Fence::D3D12Fence(::ID3D12Fence* pFence)
     : D3D12Pageable((::ID3D12Pageable*)pFence)
 {
-    this->pFence.Attach(pFence);
+    this->pFence = pFence;
 }
 
 void DirectXNet::DirectX12::D3D12Fence::AttatchComObj(::IUnknown* pComObj)
 {
     D3D12Pageable::AttatchComObj(pComObj);
-    pFence.Release();
-    pFence.Attach((::ID3D12Fence*)pComObj);
+    pFence = (::ID3D12Fence*)pComObj;
 }
 
 Guid DirectXNet::DirectX12::D3D12Fence::GetGuid()

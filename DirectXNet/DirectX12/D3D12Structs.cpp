@@ -1,11 +1,15 @@
 #include "D3D12Structs.h"
 #include "D3D12.h"
 #include "D3D12Device.h"
+#include "D3D12Resource.h"
+#include "../Common/D3D10Blob.h"
+#include <msclr/marshal.h>
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace System::Runtime::CompilerServices;
 using namespace msclr;
+using namespace msclr::interop;
 using namespace DirectXNet::Common;
 using namespace DirectXNet::DirectX12;
 
@@ -39,8 +43,7 @@ DirectXNet::DirectX12::D3D12FeatureDataFeatureLevels::D3D12FeatureDataFeatureLev
     array<D3D::D3DFeatureLevel>^ featureLevelsRequested, GCHandle% featureLevelArrayPinPtr)
 {
     NumFeatureLevels = featureLevelsRequested->Length;
-    featureLevelArrayPinPtr = GCHandle();
-    featureLevelArrayPinPtr.Alloc(featureLevelsRequested[0], GCHandleType::Pinned);
+    featureLevelArrayPinPtr = GCHandle::Alloc(featureLevelsRequested[0], GCHandleType::Pinned);
     pFeatureLevelsRequested = (D3D::D3DFeatureLevel*)featureLevelArrayPinPtr.AddrOfPinnedObject().ToPointer();
 }
 
@@ -79,8 +82,7 @@ DirectXNet::DirectX12::D3D12FeatureDataProtectedResourceSessionTypes::D3D12Featu
     : NodeIndex(nodeIndex)
 {
     Count = buffer->Length;
-    bufferPtr = GCHandle();
-    bufferPtr.Alloc(buffer[0], GCHandleType::Pinned);
+    bufferPtr = GCHandle::Alloc(buffer[0], GCHandleType::Pinned);
     pTypes = (Guid*)bufferPtr.AddrOfPinnedObject().ToPointer();
 }
 
@@ -126,12 +128,12 @@ DirectXNet::DirectX12::D3D12CPUDescriptorHandle::D3D12CPUDescriptorHandle(
 void DirectXNet::DirectX12::D3D12CPUDescriptorHandle::Offset(
     int offsetInDescriptors, unsigned int descriptorIncrementSize)
 {
-    ptr = (SIZE_T)(ptr + (SIZE_T)offsetInDescriptors * (SIZE_T)descriptorIncrementSize);
+    ptr = (SIZE_T)((INT64)ptr + (INT64)offsetInDescriptors * (INT64)descriptorIncrementSize);
 }
 
 void DirectXNet::DirectX12::D3D12CPUDescriptorHandle::Offset(int offsetScaledByIncrementSize)
 {
-    ptr = (SIZE_T)(ptr + (SIZE_T)offsetScaledByIncrementSize);
+    ptr = (SIZE_T)((INT64)ptr + (INT64)offsetScaledByIncrementSize);
 }
 
 bool DirectXNet::DirectX12::D3D12CPUDescriptorHandle::operator==(
@@ -174,16 +176,14 @@ void DirectXNet::DirectX12::D3D12CPUDescriptorHandle::InitOffsetted(
 void DirectXNet::DirectX12::D3D12CPUDescriptorHandle::InitOffsetted(
     D3D12CPUDescriptorHandle% handle, D3D12CPUDescriptorHandle% base, int offsetScaledByIncrementSize)
 {
-    handle = D3D12CPUDescriptorHandle();
-    handle.ptr = (SIZE_T)(base.ptr + (SIZE_T)offsetScaledByIncrementSize);
+    handle.ptr = (SIZE_T)((INT64)base.ptr + (INT64)offsetScaledByIncrementSize);
 }
 
 void DirectXNet::DirectX12::D3D12CPUDescriptorHandle::InitOffsetted(
     D3D12CPUDescriptorHandle% handle, D3D12CPUDescriptorHandle% base, int offsetInDescriptors,
     unsigned int descriptorIncrementSize)
 {
-    handle = D3D12CPUDescriptorHandle();
-    handle.ptr = (SIZE_T)(base.ptr + (SIZE_T)offsetInDescriptors * (SIZE_T)descriptorIncrementSize);
+    handle.ptr = (SIZE_T)((INT64)base.ptr + (INT64)offsetInDescriptors * (INT64)descriptorIncrementSize);
 }
 
 DirectXNet::DirectX12::D3D12Range::D3D12Range(SIZE_T begin, SIZE_T end)
@@ -635,4 +635,455 @@ DirectXNet::DirectX12::D3D12TileRegionSize::D3D12TileRegionSize(
     Depth(depth)
 {
     
+}
+
+DirectXNet::DirectX12::D3D12ShaderBytecode::D3D12ShaderBytecode(D3D10Blob^ shaderBlob)
+    : pShaderBytecode(shaderBlob->BufferPointer), BytecodeLength(shaderBlob->BufferSize)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12ShaderBytecode::D3D12ShaderBytecode(
+    IntPtr pShaderBytecode, SIZE_T bytecodeLength)
+    : pShaderBytecode(pShaderBytecode), BytecodeLength(bytecodeLength)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12SODeclarationEntry::D3D12SODeclarationEntry(
+    unsigned int stream, String^ semanticName, unsigned int semanticIndex, BYTE startComponent,
+    BYTE componentCount, BYTE outputSlot, GCHandle% semanticNameHandle)
+    : Stream(stream), SemanticIndex(semanticIndex), StartComponent(startComponent),
+    ComponentCount(componentCount), OutputSlot(outputSlot)
+{
+    marshal_context^ context = gcnew marshal_context();
+    SemanticName = const_cast<LPSTR>(context->marshal_as<LPCSTR>(semanticName));
+
+    semanticNameHandle = GCHandle::Alloc(context, GCHandleType::Normal);
+}
+
+DirectXNet::DirectX12::D3D12StreamOutputDesc::D3D12StreamOutputDesc(
+    array<D3D12SODeclarationEntry>^ soDeclaration, array<unsigned int>^ bufferStrides,
+    unsigned int rasterizedStream, GCHandle% soDeclarationPinPtr, GCHandle% bufferStridesPinPtr)
+    : RasterizedStream(rasterizedStream)
+{
+    if(soDeclaration == nullptr)
+    {
+        NumEntries = 0;
+        pSODeclaration = __nullptr;
+    }
+    else
+    {
+        NumEntries = soDeclaration->Length;
+        soDeclarationPinPtr = GCHandle::Alloc(soDeclaration[0], GCHandleType::Pinned);
+        pSODeclaration = (D3D12SODeclarationEntry*)soDeclarationPinPtr.AddrOfPinnedObject().ToPointer();
+    }
+
+    if(bufferStrides == nullptr)
+    {
+        NumStrides = 0;
+        pBufferStrides = __nullptr;
+    }
+    else
+    {
+        NumStrides = bufferStrides->Length;
+        bufferStridesPinPtr = GCHandle::Alloc(bufferStrides[0], GCHandleType::Pinned);
+        pBufferStrides = (unsigned int*)bufferStridesPinPtr.AddrOfPinnedObject().ToPointer();
+    }
+}
+
+DirectXNet::DirectX12::D3D12RenderTargetBlendDesc::D3D12RenderTargetBlendDesc(D3DDefault)
+    : BlendEnable(CBool::False), LogicOpEnable(CBool::False), SrcBlend(D3D12Blend::One),
+    DestBlend(D3D12Blend::Zero), BlendOp(D3D12BlendOp::Add), SrcBlendAlpha(D3D12Blend::One),
+    DestBlendAlpha(D3D12Blend::Zero), BlendOpAlpha(D3D12BlendOp::Add),
+    LogicOp(D3D12LogicOp::Noop), RenderTargetWriteMask(D3D12ColorWriteEnable::All)
+{
+    
+}
+
+D3D12RenderTargetBlendDesc DirectXNet::DirectX12::D3D12BlendDesc::default::get(int index)
+{
+    switch(index)
+    {
+    case 0:
+        return RenderTarget0;
+    case 1:
+        return RenderTarget1;
+    case 2:
+        return RenderTarget2;
+    case 3:
+        return RenderTarget3;
+    case 4:
+        return RenderTarget4;
+    case 5:
+        return RenderTarget5;
+    case 6:
+        return RenderTarget6;
+    case 7:
+        return RenderTarget7;
+    default:
+        throw gcnew IndexOutOfRangeException("Render target blend description out of range.");
+    }
+}
+
+void DirectXNet::DirectX12::D3D12BlendDesc::default::set(
+    int index, D3D12RenderTargetBlendDesc value)
+{
+    switch(index)
+    {
+    case 0:
+        RenderTarget0 = value;
+        return;
+    case 1:
+        RenderTarget1 = value;
+        return;
+    case 2:
+        RenderTarget2 = value;
+        return;
+    case 3:
+        RenderTarget3 = value;
+        return;
+    case 4:
+        RenderTarget4 = value;
+        return;
+    case 5:
+        RenderTarget5 = value;
+        return;
+    case 6:
+        RenderTarget6 = value;
+        return;
+    case 7:
+        RenderTarget7 = value;
+        return;
+    default:
+        throw gcnew IndexOutOfRangeException("Render target blend description out of range.");
+    }
+}
+
+DirectXNet::DirectX12::D3D12BlendDesc::D3D12BlendDesc(D3DDefault)
+    : AlphaToCoverageEnable(CBool::False), IndependentBlendEnable(CBool::False)
+{
+    for(int i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; i++)
+    {
+        (*this)[i] = D3D12RenderTargetBlendDesc(D3D12::Default);
+    }
+}
+
+DirectXNet::DirectX12::D3D12RasterizerDesc::D3D12RasterizerDesc(D3DDefault)
+    : FillMode(D3D12FillMode::Solid), CullMode(D3D12CullMode::Back),
+    FrontCounterClockwise(CBool::False), DepthBias(D3D12_DEFAULT_DEPTH_BIAS),
+    DepthBiasClamp(D3D12_DEFAULT_DEPTH_BIAS_CLAMP),
+    SlopeScaledDepthBias(D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS),
+    DepthClipEnable(CBool::True), MultisampleEnable(CBool::False),
+    AntialiasedLineEnable(CBool::False), ForcedSampleCount(0),
+    ConservativeRaster(D3D12ConservativeRasterizationMode::Off)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12DepthStencilOpDesc::D3D12DepthStencilOpDesc(D3DDefault)
+    : StencilFailOp(D3D12StencilOp::Keep), StencilDepthFailOp(D3D12StencilOp::Keep),
+    StencilPassOp(D3D12StencilOp::Keep), StencilFunc(D3D12ComparisonFunc::Always)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12DepthStencilDesc::D3D12DepthStencilDesc(D3DDefault)
+    : DepthEnable(CBool::True), DepthWriteMask(D3D12DepthWriteMask::All),
+    DepthFunc(D3D12ComparisonFunc::Less), StencilEnable(CBool::False),
+    StencilReadMask(D3D12_DEFAULT_STENCIL_READ_MASK),
+    StencilWriteMask(D3D12_DEFAULT_STENCIL_WRITE_MASK),
+    FrontFace(D3D12::Default), BackFace(D3D12::Default)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12InputElementDesc::D3D12InputElementDesc(
+    String^ semanticName, unsigned int semanticIndex, DXGIFormat format, unsigned int inputSlot,
+    unsigned int alignedByteOffset, D3D12InputClassification inputSlotClass,
+    unsigned int instanceDataStepRate, GCHandle% semanticNameHandle)
+    : SemanticIndex(semanticIndex), Format(format), InputSlot(inputSlot),
+    AlignedByteOffset(alignedByteOffset), InputSlotClass(inputSlotClass),
+    InstanceDataStepRate(instanceDataStepRate)
+{
+    marshal_context^ context = gcnew marshal_context();
+    SemanticName = const_cast<LPSTR>(context->marshal_as<LPCSTR>(semanticName));
+
+    semanticNameHandle = GCHandle::Alloc(context, GCHandleType::Normal);
+}
+
+DirectXNet::DirectX12::D3D12InputLayoutDesc::D3D12InputLayoutDesc(
+    array<D3D12InputElementDesc>^ inputElementDescs, GCHandle% inputElementDescsPinPtr)
+{
+    NumElements = inputElementDescs->Length;
+    inputElementDescsPinPtr = GCHandle::Alloc(inputElementDescs[0], GCHandleType::Pinned);
+    pInputElementDescs = (D3D12InputElementDesc*)inputElementDescsPinPtr.AddrOfPinnedObject().ToPointer();
+}
+
+DirectXNet::DirectX12::D3D12CachedPipelineState::D3D12CachedPipelineState(D3D10Blob^ cachedBlob)
+    : pCachedBlob(cachedBlob->BufferPointer), CachedBlobSizeInBytes(cachedBlob->BufferSize)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12SubresourceFootprint::D3D12SubresourceFootprint(
+    DXGIFormat format, unsigned int width, unsigned int height, unsigned int depth, unsigned int rowPitch)
+    : Format(format), Width(width), Height(height), Depth(depth), RowPitch(rowPitch)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12SubresourceFootprint::D3D12SubresourceFootprint(
+    D3D12ResourceDesc% resDesc, unsigned int rowPitch)
+    : Format(resDesc.Format), Width((unsigned int)resDesc.Width), Height(resDesc.Height),
+    Depth(resDesc.Dimension == D3D12ResourceDimension::Texture3D ? resDesc.DepthOrArraySize : 1),
+    RowPitch(rowPitch)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12TextureCopyLocation::D3D12TextureCopyLocation(D3D12Resource^ res)
+    : pResource(res->NativeResource), Type(D3D12TextureCopyType::SubresourceIndex)
+{
+    PlacedFootprint = D3D12PlacedSubresourceFootprint();
+}
+
+DirectXNet::DirectX12::D3D12TextureCopyLocation::D3D12TextureCopyLocation(
+    D3D12Resource^ res, D3D12PlacedSubresourceFootprint% footprint)
+    : pResource(res->NativeResource), Type(D3D12TextureCopyType::PlacedFootprint)
+{
+    PlacedFootprint = footprint;
+}
+
+DirectXNet::DirectX12::D3D12TextureCopyLocation::D3D12TextureCopyLocation(
+    D3D12Resource^ res, unsigned int sub)
+    : pResource(res->NativeResource), Type(D3D12TextureCopyType::SubresourceIndex)
+{
+    SubresourceIndex = sub;
+}
+
+DirectXNet::DirectX12::D3D12Viewport::D3D12Viewport(
+    float topLeftX, float topLeftY, float width, float height,
+    Nullable<float> minDepth, Nullable<float> maxDepth)
+    : TopLeftX(topLeftX), TopLeftY(topLeftY), Width(width), Height(height)
+{
+    if(!minDepth.HasValue)
+        minDepth = D3D12_MIN_DEPTH;
+    if(!maxDepth.HasValue)
+        maxDepth = D3D12_MAX_DEPTH;
+
+    MinDepth = minDepth.Value;
+    MaxDepth = maxDepth.Value;
+}
+
+DirectXNet::DirectX12::D3D12Viewport::D3D12Viewport(
+    D3D12Resource^ resource, Nullable<unsigned int> mipSlice, Nullable<float> topLeftX,
+    Nullable<float> topLeftY, Nullable<float> minDepth, Nullable<float> maxDepth)
+{
+    if(!mipSlice.HasValue)
+        mipSlice = 0;
+    if(!topLeftX.HasValue)
+        topLeftX = 0.0f;
+    if(!topLeftY.HasValue)
+        topLeftY = 0.0f;
+    if(!minDepth.HasValue)
+        minDepth = D3D12_MIN_DEPTH;
+    if(!maxDepth.HasValue)
+        maxDepth = D3D12_MAX_DEPTH;
+
+    D3D12ResourceDesc Desc = resource->ResourceDesc;
+    const UINT64 SubresourceWidth = Desc.Width >> mipSlice.Value;
+    const UINT64 SubresourceHeight = Desc.Height >> mipSlice.Value;
+    switch(Desc.Dimension)
+    {
+    case D3D12ResourceDimension::Buffer:
+        TopLeftX = topLeftX.Value;
+        TopLeftY = 0.0f;
+        Width = (float)Desc.Width - topLeftX.Value;
+        Height = 1.0f;
+        break;
+    case D3D12ResourceDimension::Texture1D:
+        TopLeftX = topLeftX.Value;
+        TopLeftY = 0.0f;
+        Width = (SubresourceWidth ? (float)SubresourceWidth : 1.0f) - topLeftX.Value;
+        Height = 1.0f;
+        break;
+    case D3D12ResourceDimension::Texture2D:
+    case D3D12ResourceDimension::Texture3D:
+        TopLeftX = topLeftX.Value;
+        TopLeftY = topLeftY.Value;
+        Width = (SubresourceWidth ? (float)SubresourceWidth : 1.0f) - topLeftX.Value;
+        Height = (SubresourceHeight ? (float)SubresourceWidth : 1.0f) - topLeftY.Value;
+        break;
+    default: break;
+    }
+
+    MinDepth = minDepth.Value;
+    MaxDepth = maxDepth.Value;
+}
+
+DirectXNet::DirectX12::D3D12ResourceTransitionBarrier::D3D12ResourceTransitionBarrier(
+    D3D12Resource^ resource, unsigned int subresource,
+    D3D12ResourceStates stateBefore, D3D12ResourceStates stateAfter)
+    : pResource(resource->NativeResource), Subresource(subresource),
+    StateBefore(stateBefore), StateAfter(stateAfter)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12ResourceAliasingBarrier::D3D12ResourceAliasingBarrier(
+    D3D12Resource^ before, D3D12Resource^ after)
+    : pResourceBefore(before->NativeResource), pResourceAfter(after->NativeResource)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12ResourceUavBarrier::D3D12ResourceUavBarrier(D3D12Resource^ resource)
+    : pResource(resource->NativeResource)
+{
+    
+}
+
+D3D12ResourceBarrier DirectXNet::DirectX12::D3D12ResourceBarrier::Transition(
+    D3D12Resource^ resource, D3D12ResourceStates stateBefore, D3D12ResourceStates stateAfter,
+    Nullable<unsigned int> subresource, Nullable<D3D12ResourceBarrierFlags> flags)
+{
+    if(!subresource.HasValue)
+        subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    if(!flags.HasValue)
+        flags = D3D12ResourceBarrierFlags::None;
+
+    D3D12ResourceBarrier result;
+    result.Type = D3D12ResourceBarrierType::Transition;
+    result.Flags = flags.Value;
+    result._Transition = D3D12ResourceTransitionBarrier(resource, subresource.Value, stateBefore, stateAfter);
+
+    return result;
+}
+
+D3D12ResourceBarrier DirectXNet::DirectX12::D3D12ResourceBarrier::Aliasing(
+    D3D12Resource^ resourceBefore, D3D12Resource^ resourceAfter)
+{
+    D3D12ResourceBarrier result;
+    result.Type = D3D12ResourceBarrierType::Aliasing;
+    result._Aliasing = D3D12ResourceAliasingBarrier(resourceBefore, resourceAfter);
+
+    return result;
+}
+
+D3D12ResourceBarrier DirectXNet::DirectX12::D3D12ResourceBarrier::UAV(D3D12Resource^ resource)
+{
+    D3D12ResourceBarrier result;
+    result.Type = D3D12ResourceBarrierType::Uav;
+    result._UAV = D3D12ResourceUavBarrier(resource);
+
+    return result;
+}
+
+DirectXNet::DirectX12::D3D12GPUDescriptorHandle::D3D12GPUDescriptorHandle(D3DDefault)
+    : ptr(0)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12GPUDescriptorHandle::D3D12GPUDescriptorHandle(
+    D3D12GPUDescriptorHandle other, int offsetScaledByIncrementSize)
+{
+    InitOffsetted(other, offsetScaledByIncrementSize);
+}
+
+DirectXNet::DirectX12::D3D12GPUDescriptorHandle::D3D12GPUDescriptorHandle(
+    D3D12GPUDescriptorHandle other, int offsetInDescriptors, unsigned int descriptorIncrementSize)
+{
+    InitOffsetted(other, offsetInDescriptors, descriptorIncrementSize);
+}
+
+void DirectXNet::DirectX12::D3D12GPUDescriptorHandle::Offset(
+    int offsetInDescriptors, unsigned int descriptorIncrementSize)
+{
+    ptr = (UINT64)((INT64)ptr + (INT64)offsetInDescriptors * (INT64)descriptorIncrementSize);
+}
+
+void DirectXNet::DirectX12::D3D12GPUDescriptorHandle::Offset(int offsetScaledByIncrementSize)
+{
+    ptr = (UINT64)((INT64)ptr + (INT64)offsetScaledByIncrementSize);
+}
+
+bool DirectXNet::DirectX12::D3D12GPUDescriptorHandle::operator==(
+    D3D12GPUDescriptorHandle lhs, D3D12GPUDescriptorHandle rhs)
+{
+    return lhs.ptr == rhs.ptr;
+}
+
+bool DirectXNet::DirectX12::D3D12GPUDescriptorHandle::operator!=(
+    D3D12GPUDescriptorHandle lhs, D3D12GPUDescriptorHandle rhs)
+{
+    return lhs.ptr != rhs.ptr;
+}
+
+bool DirectXNet::DirectX12::D3D12GPUDescriptorHandle::Equals(Object^ other)
+{
+    if(other->GetType() != D3D12GPUDescriptorHandle::typeid)
+        return false;
+
+    return *this == safe_cast<D3D12GPUDescriptorHandle>(other);
+}
+
+bool DirectXNet::DirectX12::D3D12GPUDescriptorHandle::Equals(D3D12GPUDescriptorHandle other)
+{
+    return *this == other;
+}
+
+void DirectXNet::DirectX12::D3D12GPUDescriptorHandle::InitOffsetted(
+    D3D12GPUDescriptorHandle% base, int offsetScaledByIncrementSize)
+{
+    InitOffsetted(*this, base, offsetScaledByIncrementSize);
+}
+
+void DirectXNet::DirectX12::D3D12GPUDescriptorHandle::InitOffsetted(
+    D3D12GPUDescriptorHandle% base, int offsetInDescriptors, unsigned int descriptorIncrementSize)
+{
+    InitOffsetted(*this, base, offsetInDescriptors, descriptorIncrementSize);
+}
+
+void DirectXNet::DirectX12::D3D12GPUDescriptorHandle::InitOffsetted(
+    D3D12GPUDescriptorHandle% handle, D3D12GPUDescriptorHandle% base, int offsetScaledByIncrementSize)
+{
+    handle.ptr = (UINT64)((INT64)base.ptr + (INT64)offsetScaledByIncrementSize);
+}
+
+void DirectXNet::DirectX12::D3D12GPUDescriptorHandle::InitOffsetted(
+    D3D12GPUDescriptorHandle% handle, D3D12GPUDescriptorHandle% base,
+    int offsetInDescriptors, unsigned int descriptorIncrementSize)
+{
+    handle.ptr = (UINT64)((INT64)base.ptr + (INT64)offsetInDescriptors * (INT64)descriptorIncrementSize);
+}
+
+DirectXNet::DirectX12::D3D12DiscardRegion::D3D12DiscardRegion(
+    array<Rect>^ rects, unsigned int firstSubresource, unsigned int numSubresource, GCHandle% rectsPinPtr)
+    : NumRects(rects->Length), FirstSubresource(firstSubresource), NumSubresources(numSubresource)
+{
+    rectsPinPtr = GCHandle::Alloc(rects[0], GCHandleType::Pinned);
+    pRects = (Rect*)rectsPinPtr.AddrOfPinnedObject().ToPointer();
+}
+
+DirectXNet::DirectX12::D3D12DiscardRegion::D3D12DiscardRegion(
+    unsigned int firstSubresource, unsigned int numSubresource)
+    : NumRects(0), pRects(__nullptr), FirstSubresource(firstSubresource), NumSubresources(numSubresource)
+{
+    
+}
+
+DirectXNet::DirectX12::D3D12ClearValue::D3D12ClearValue(DXGIFormat format, D3DColorValue color)
+{
+    Format = format;
+    Color = color;
+}
+
+DirectXNet::DirectX12::D3D12ClearValue::D3D12ClearValue(
+    DXGIFormat format, float depth, unsigned char stencil)
+{
+    Format = format;
+    DepthStencil.Depth = depth;
+    DepthStencil.Stencil = stencil;
 }

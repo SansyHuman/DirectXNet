@@ -10,14 +10,13 @@ using namespace DirectXNet::DirectX12;
 DirectXNet::DirectX12::D3D12DeviceChild::D3D12DeviceChild(::ID3D12DeviceChild* pDeviceChild)
     : D3D12Object((::ID3D12Object*)pDeviceChild)
 {
-    this->pDeviceChild.Attach(pDeviceChild);
+    this->pDeviceChild = pDeviceChild;
 }
 
 void DirectXNet::DirectX12::D3D12DeviceChild::AttatchComObj(::IUnknown* pComObj)
 {
     D3D12Object::AttatchComObj(pComObj);
-    pDeviceChild.Release();
-    pDeviceChild.Attach((::ID3D12DeviceChild*)pComObj);
+    pDeviceChild = (::ID3D12DeviceChild*)pComObj;
 }
 
 Guid DirectXNet::DirectX12::D3D12DeviceChild::GetGuid()

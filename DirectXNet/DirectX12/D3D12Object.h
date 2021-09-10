@@ -23,7 +23,7 @@ namespace DirectXNet
         public ref class D3D12Object : Common::Unknown
         {
         private:
-            com::ptr<::ID3D12Object> pD3D12Obj;
+            ::ID3D12Object* pD3D12Obj;
 
         internal:
             D3D12Object(::ID3D12Object* pD3D12Obj);

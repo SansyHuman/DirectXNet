@@ -8,14 +8,13 @@ using namespace DirectXNet::DXGI;
 DirectXNet::DXGI::DXGISurface::DXGISurface(::IDXGISurface* pSurface)
     : DXGIDeviceSubObject((::IDXGIDeviceSubObject*)pSurface)
 {
-    this->pSurface.Attach(pSurface);
+    this->pSurface = pSurface;
 }
 
 void DirectXNet::DXGI::DXGISurface::AttatchComObj(::IUnknown* pComObj)
 {
     DXGIDeviceSubObject::AttatchComObj(pComObj);
-    pSurface.Release();
-    pSurface.Attach((::IDXGISurface*)pComObj);
+    pSurface = (::IDXGISurface*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGISurface::GetGuid()

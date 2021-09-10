@@ -2,6 +2,8 @@
 
 #include "../pch.h"
 
+using namespace System::Runtime::CompilerServices;
+
 namespace DirectXNet
 {
 	namespace Common
@@ -16,14 +18,17 @@ namespace DirectXNet
 
 			property bool Succeeded
 			{
+				[MethodImpl(MethodImplOptions::AggressiveInlining)]
 				bool get();
 			}
 
 			property bool Failed
 			{
+				[MethodImpl(MethodImplOptions::AggressiveInlining)]
 				bool get();
 			}
 
+			[MethodImpl(MethodImplOptions::AggressiveInlining)]
 			void ThrowIfFailed();
 
 			property System::String^ Message
@@ -32,6 +37,7 @@ namespace DirectXNet
 			}
 
 		internal:
+			[MethodImpl(MethodImplOptions::AggressiveInlining)]
 			static void ThrowIfFailed(HRESULT result);
 		};
 	}

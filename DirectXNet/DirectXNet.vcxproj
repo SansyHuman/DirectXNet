@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
+    <ProjectConfiguration Include="Debug .NET Framework|x64">
+      <Configuration>Debug .NET Framework</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="Debug .NET|x64">
+      <Configuration>Debug .NET</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release .NET Framework|x64">
+      <Configuration>Release .NET Framework</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release .NET|x64">
+      <Configuration>Release .NET</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -25,30 +25,31 @@
     <RootNamespace>DirectXNet</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.20348.0</WindowsTargetPlatformVersion>
     <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET Framework|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CLRSupport>NetCore</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET Framework|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CLRSupport>NetCore</CLRSupport>
+    <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-    <CLRSupport>NetCore</CLRSupport>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
@@ -60,35 +61,36 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug .NET Framework|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release .NET Framework|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc11</LanguageStandard_C>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET|x64'">
+    <TargetName>$(ProjectName)_$(TargetFramework)_$(LibrariesArchitecture)_$(WindowsTargetPlatformVersion)</TargetName>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET Framework|x64'">
+    <TargetName>$(ProjectName)_netframework$(TargetFrameworkVersion)_$(LibrariesArchitecture)_$(WindowsTargetPlatformVersion)</TargetName>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET|x64'">
+    <TargetName>$(ProjectName)_$(TargetFramework)_$(LibrariesArchitecture)_$(WindowsTargetPlatformVersion)</TargetName>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET Framework|x64'">
+    <TargetName>$(ProjectName)_netframework$(TargetFrameworkVersion)_$(LibrariesArchitecture)_$(WindowsTargetPlatformVersion)</TargetName>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET Framework|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -102,12 +104,12 @@
       <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug .NET|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -116,7 +118,21 @@
       <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET Framework|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -134,23 +150,31 @@
     <ClInclude Include="Common\CommonStructs.h" />
     <ClInclude Include="Common\D3D10Blob.h" />
     <ClInclude Include="Common\D3DCompiler.h" />
+    <ClInclude Include="Common\DXResourceHandle.h" />
     <ClInclude Include="Common\Result.h" />
     <ClInclude Include="Common\Unknown.h" />
     <ClInclude Include="DirectX12\D3D12.h" />
+    <ClInclude Include="DirectX12\D3D12CommandAllocator.h" />
     <ClInclude Include="DirectX12\D3D12CommandList.h" />
     <ClInclude Include="DirectX12\D3D12CommandQueue.h" />
+    <ClInclude Include="DirectX12\D3D12CommandSignature.h" />
+    <ClInclude Include="DirectX12\D3D12DescriptorHeap.h" />
     <ClInclude Include="DirectX12\D3D12Device.h" />
     <ClInclude Include="DirectX12\D3D12DeviceChild.h" />
     <ClInclude Include="DirectX12\D3D12Fence.h" />
+    <ClInclude Include="DirectX12\D3D12GraphicsCommandList.h" />
     <ClInclude Include="DirectX12\D3D12Heap.h" />
     <ClInclude Include="DirectX12\D3D12Object.h" />
     <ClInclude Include="DirectX12\D3D12Pageable.h" />
+    <ClInclude Include="DirectX12\D3D12PipelineState.h" />
+    <ClInclude Include="DirectX12\D3D12QueryHeap.h" />
     <ClInclude Include="DirectX12\D3D12Resource.h" />
+    <ClInclude Include="DirectX12\D3D12RootSignature.h" />
     <ClInclude Include="DirectX12\D3D12Structs.h" />
     <ClInclude Include="DirectX12\d3dx12.h" />
-    <ClInclude Include="DXGI\Debug\DXGIDebug.h" />
-    <ClInclude Include="DXGI\Debug\DXGIDebugStructs.h" />
-    <ClInclude Include="DXGI\Debug\DXGIInfoQueue.h" />
+    <ClInclude Include="DXGI\Debugs\DXGIDebug.h" />
+    <ClInclude Include="DXGI\Debugs\DXGIDebugStructs.h" />
+    <ClInclude Include="DXGI\Debugs\DXGIInfoQueue.h" />
     <ClInclude Include="DXGI\DXGI.h" />
     <ClInclude Include="DXGI\DXGIAdapter.h" />
     <ClInclude Include="DXGI\DXGIAdapter1.h" />
@@ -175,22 +199,30 @@
     <ClCompile Include="Common\CommonStructs.cpp" />
     <ClCompile Include="Common\D3D10Blob.cpp" />
     <ClCompile Include="Common\D3DCompiler.cpp" />
+    <ClCompile Include="Common\DXResourceHandle.cpp" />
     <ClCompile Include="Common\Result.cpp" />
     <ClCompile Include="Common\Unknown.cpp" />
     <ClCompile Include="DirectX12\D3D12.cpp" />
+    <ClCompile Include="DirectX12\D3D12CommandAllocator.cpp" />
     <ClCompile Include="DirectX12\D3D12CommandList.cpp" />
     <ClCompile Include="DirectX12\D3D12CommandQueue.cpp" />
+    <ClCompile Include="DirectX12\D3D12CommandSignature.cpp" />
+    <ClCompile Include="DirectX12\D3D12DescriptorHeap.cpp" />
     <ClCompile Include="DirectX12\D3D12Device.cpp" />
     <ClCompile Include="DirectX12\D3D12DeviceChild.cpp" />
     <ClCompile Include="DirectX12\D3D12Fence.cpp" />
+    <ClCompile Include="DirectX12\D3D12GraphicsCommandList.cpp" />
     <ClCompile Include="DirectX12\D3D12Heap.cpp" />
     <ClCompile Include="DirectX12\D3D12Object.cpp" />
     <ClCompile Include="DirectX12\D3D12Pageable.cpp" />
+    <ClCompile Include="DirectX12\D3D12PipelineState.cpp" />
+    <ClCompile Include="DirectX12\D3D12QueryHeap.cpp" />
     <ClCompile Include="DirectX12\D3D12Resource.cpp" />
+    <ClCompile Include="DirectX12\D3D12RootSignature.cpp" />
     <ClCompile Include="DirectX12\D3D12Structs.cpp" />
-    <ClCompile Include="DXGI\Debug\DXGIDebug.cpp" />
-    <ClCompile Include="DXGI\Debug\DXGIDebugStructs.cpp" />
-    <ClCompile Include="DXGI\Debug\DXGIInfoQueue.cpp" />
+    <ClCompile Include="DXGI\Debugs\DXGIDebug.cpp" />
+    <ClCompile Include="DXGI\Debugs\DXGIDebugStructs.cpp" />
+    <ClCompile Include="DXGI\Debugs\DXGIInfoQueue.cpp" />
     <ClCompile Include="DXGI\DXGI.cpp" />
     <ClCompile Include="DXGI\DXGIAdapter.cpp" />
     <ClCompile Include="DXGI\DXGIAdapter1.cpp" />
@@ -208,10 +240,10 @@
     <ClCompile Include="DXGI\DXGISurface1.cpp" />
     <ClCompile Include="DXGI\DXGISwapChain.cpp" />
     <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug .NET Framework|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug .NET|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release .NET Framework|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release .NET|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +253,5 @@
     <Image Include="app.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

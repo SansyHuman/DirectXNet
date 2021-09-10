@@ -26,7 +26,7 @@ namespace DirectXNet
         public ref class DXGIFactory : DXGIObject
         {
         private:
-            com::ptr<::IDXGIFactory> pFactory;
+            ::IDXGIFactory* pFactory;
 
         internal:
             DXGIFactory(::IDXGIFactory* pFactory);

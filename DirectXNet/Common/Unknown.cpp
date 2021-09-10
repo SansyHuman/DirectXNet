@@ -6,18 +6,34 @@ using namespace System::Runtime::InteropServices;
 
 DirectXNet::Common::Unknown::Unknown(::IUnknown* pComObj)
 {
-    this->pComObj.Attach(pComObj);
+    this->pComObj = pComObj;
+    pComObj->AddRef();
+}
+
+DirectXNet::Common::Unknown::~Unknown()
+{
+    this->!Unknown();
+}
+
+DirectXNet::Common::Unknown::!Unknown()
+{
+    SAFE_RELEASE(this->pComObj);
 }
 
 void DirectXNet::Common::Unknown::AttatchComObj(::IUnknown* pComObj)
 {
-    this->pComObj.Release();
-    this->pComObj.Attach(pComObj);
+    SAFE_RELEASE(this->pComObj);
+    this->pComObj = pComObj;
+    pComObj->AddRef();
 }
 
 ::IUnknown* DirectXNet::Common::Unknown::GetNativeInterface()
 {
-    return pComObj.GetInterface();
+    if(this->pComObj == __nullptr)
+        return __nullptr;
+
+    this->pComObj->AddRef();
+    return this->pComObj;
 }
 
 Guid DirectXNet::Common::Unknown::GetGuid()
@@ -67,8 +83,8 @@ bool DirectXNet::Common::Unknown::NativeEquals(Unknown^ obj)
 
     try
     {
-        rhs = this->pComObj.GetInterface();
-        lhs = obj->pComObj.GetInterface();
+        rhs = this->GetNativeInterface();
+        lhs = obj->GetNativeInterface();
 
         if(rhs == __nullptr || lhs == __nullptr)
             return false;

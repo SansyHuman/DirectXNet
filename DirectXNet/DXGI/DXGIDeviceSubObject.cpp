@@ -9,14 +9,13 @@ using namespace DirectXNet::DXGI;
 DirectXNet::DXGI::DXGIDeviceSubObject::DXGIDeviceSubObject(::IDXGIDeviceSubObject* pSubObj)
     : DXGIObject((::IDXGIObject*)pSubObj)
 {
-    this->pSubObj.Attach(pSubObj);
+    this->pSubObj = pSubObj;
 }
 
 void DirectXNet::DXGI::DXGIDeviceSubObject::AttatchComObj(::IUnknown* pComObj)
 {
     DXGI::DXGIObject::AttatchComObj(pComObj);
-    pSubObj.Release();
-    pSubObj.Attach((::IDXGIDeviceSubObject*)pComObj);
+    pSubObj = (::IDXGIDeviceSubObject*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGIDeviceSubObject::GetGuid()

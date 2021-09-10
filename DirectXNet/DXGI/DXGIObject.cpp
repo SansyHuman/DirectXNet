@@ -6,14 +6,13 @@ using namespace System::Runtime::InteropServices;
 DirectXNet::DXGI::DXGIObject::DXGIObject(::IDXGIObject* pObj)
     : Common::Unknown((::IUnknown*)pObj)
 {
-    pDxgiObj.Attach(pObj);
+    pDxgiObj = pObj;
 }
 
 void DirectXNet::DXGI::DXGIObject::AttatchComObj(::IUnknown* pComObj)
 {
     Common::Unknown::AttatchComObj(pComObj);
-    pDxgiObj.Release();
-    pDxgiObj.Attach((::IDXGIObject*)pComObj);
+    pDxgiObj = (::IDXGIObject*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGIObject::GetGuid()

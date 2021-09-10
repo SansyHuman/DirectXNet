@@ -9,14 +9,13 @@ using namespace DirectXNet::DXGI;
 DirectXNet::DXGI::DXGISwapChain::DXGISwapChain(::IDXGISwapChain* pSwapchain)
     : DXGIDeviceSubObject((::IDXGIDeviceSubObject*)pSwapchain)
 {
-    this->pSwapchain.Attach(pSwapchain);
+    this->pSwapchain = pSwapchain;
 }
 
 void DirectXNet::DXGI::DXGISwapChain::AttatchComObj(::IUnknown* pComObj)
 {
     DXGIDeviceSubObject::AttatchComObj(pComObj);
-    pSwapchain.Release();
-    pSwapchain.Attach((::IDXGISwapChain*)pComObj);
+    pSwapchain = (::IDXGISwapChain*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGISwapChain::GetGuid()

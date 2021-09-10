@@ -21,7 +21,7 @@ namespace DirectXNet
         public ref class DXGISurface : DXGIDeviceSubObject
         {
         private:
-            com::ptr<::IDXGISurface> pSurface;
+            ::IDXGISurface* pSurface;
 
         internal:
             DXGISurface(::IDXGISurface* pSurface);

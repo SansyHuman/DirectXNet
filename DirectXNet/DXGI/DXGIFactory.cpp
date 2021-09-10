@@ -10,14 +10,13 @@ using namespace DirectXNet::DXGI;
 DirectXNet::DXGI::DXGIFactory::DXGIFactory(::IDXGIFactory* pFactory)
     : DXGI::DXGIObject((::IDXGIObject*)pFactory)
 {
-    this->pFactory.Attach(pFactory);
+    this->pFactory = pFactory;
 }
 
 void DirectXNet::DXGI::DXGIFactory::AttatchComObj(::IUnknown* pComObj)
 {
     DXGI::DXGIObject::AttatchComObj(pComObj);
-    pFactory.Release();
-    pFactory.Attach((::IDXGIFactory*)pComObj);
+    pFactory = (::IDXGIFactory*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGIFactory::GetGuid()

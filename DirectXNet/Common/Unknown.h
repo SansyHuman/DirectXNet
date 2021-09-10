@@ -14,11 +14,15 @@ namespace DirectXNet
 		public ref class Unknown
 		{
 		private:
-			com::ptr<::IUnknown> pComObj;
+			::IUnknown* pComObj;
 
 		internal:
 			Unknown(::IUnknown* pComObj);
 			Unknown() {};
+
+		public:
+			~Unknown();
+			!Unknown();
 
 		internal:
 			virtual void AttatchComObj(::IUnknown* pComObj);

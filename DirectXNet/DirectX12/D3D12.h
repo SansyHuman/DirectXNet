@@ -59,6 +59,7 @@ namespace DirectXNet
             /// <param name="format">The DXGIFormat for which to get the plane count.</param>
             /// <returns>The plane count for the specified format on the specified virtual adapter.
             /// </returns>
+            [MethodImpl(MethodImplOptions::AggressiveInlining)]
             static unsigned char GetFormatPlaneCount(D3D12Device^ device, DXGIFormat format);
 
             /// <summary>
@@ -72,6 +73,7 @@ namespace DirectXNet
             /// <param name="mipLevels">The number of mipmap levels in the resource.</param>
             /// <param name="arraySize">The number of elements in the array.</param>
             /// <returns>The index.</returns>
+            [MethodImpl(MethodImplOptions::AggressiveInlining)]
             static unsigned int CalcSubresource(
                 unsigned int mipSlice,
                 unsigned int arraySlice,
@@ -79,6 +81,36 @@ namespace DirectXNet
                 unsigned int mipLevels,
                 unsigned int arraySize
             );
+         
+            /// <summary>
+            /// Encode sharder 4-component mapping.
+            /// </summary>
+            /// <param name="src0">Mapping for first component.</param>
+            /// <param name="src1">Mapping for second component.</param>
+            /// <param name="src2">Mapping for third component.</param>
+            /// <param name="src3">Mapping for fourth component.</param>
+            /// <returns>Encoded mapping.</returns>
+            [MethodImpl(MethodImplOptions::AggressiveInlining)]
+            static unsigned int EncodeShader4ComponentMapping(
+                D3D12ShaderComponentMapping src0,
+                D3D12ShaderComponentMapping src1,
+                D3D12ShaderComponentMapping src2,
+                D3D12ShaderComponentMapping src3
+            );
+
+            /// <summary>
+            /// Decode shader 4-component mapping.
+            /// </summary>
+            /// <param name="componentToExtract">Component to obtain(0 to 3).</param>
+            /// <param name="mapping">Encoded mapping.</param>
+            /// <returns>Decoded mapping.</returns>
+            [MethodImpl(MethodImplOptions::AggressiveInlining)]
+            static D3D12ShaderComponentMapping DecodeShader4ComponentMapping(
+                unsigned int componentToExtract,
+                unsigned int mapping
+            );
+
+            literal unsigned int DefaultShader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
         };
     }
 }

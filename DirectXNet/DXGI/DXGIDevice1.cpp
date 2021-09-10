@@ -10,14 +10,13 @@ using namespace DirectXNet::DXGI;
 DirectXNet::DXGI::DXGIDevice1::DXGIDevice1(::IDXGIDevice1* pDevice1)
     : DXGIDevice((::IDXGIDevice*)pDevice1)
 {
-    this->pDevice1.Attach(pDevice1);
+    this->pDevice1 = pDevice1;
 }
 
 void DirectXNet::DXGI::DXGIDevice1::AttatchComObj(::IUnknown* pComObj)
 {
     DXGIDevice::AttatchComObj(pComObj);
-    pDevice1.Release();
-    pDevice1.Attach((::IDXGIDevice1*)pComObj);
+    pDevice1 = (::IDXGIDevice1*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGIDevice1::GetGuid()

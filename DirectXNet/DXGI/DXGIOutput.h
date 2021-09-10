@@ -24,7 +24,7 @@ namespace DirectXNet
         public ref class DXGIOutput : DXGIObject
         {
         private:
-            com::ptr<::IDXGIOutput> pOutput;
+            ::IDXGIOutput* pOutput;
 
         internal:
             DXGIOutput(::IDXGIOutput* pOutput);

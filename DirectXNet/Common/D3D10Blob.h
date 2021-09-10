@@ -17,7 +17,7 @@ namespace DirectXNet
 		public ref class D3D10Blob : Unknown
 		{
 		private:
-			com::ptr<::ID3D10Blob> pBlob;
+			::ID3D10Blob* pBlob;
 
 		internal:
 			D3D10Blob(::ID3D10Blob* pBlob);

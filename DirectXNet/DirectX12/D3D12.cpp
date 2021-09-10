@@ -1,15 +1,22 @@
 #include "D3D12.h"
 #include "../Common/Result.h"
 #include "../Common/Unknown.h"
+#include "D3D12CommandAllocator.h"
 #include "D3D12CommandList.h"
 #include "D3D12CommandQueue.h"
+#include "D3D12CommandSignature.h"
+#include "D3D12DescriptorHeap.h"
 #include "D3D12Device.h"
 #include "D3D12DeviceChild.h"
 #include "D3D12Fence.h"
+#include "D3D12GraphicsCommandList.h"
 #include "D3D12Heap.h"
 #include "D3D12Object.h"
 #include "D3D12Pageable.h"
+#include "D3D12PipelineState.h"
+#include "D3D12QueryHeap.h"
 #include "D3D12Resource.h"
+#include "D3D12RootSignature.h"
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
@@ -24,15 +31,22 @@ using namespace DirectXNet::DirectX12;
 DirectXNet::DirectX12::D3D12::D3D12()
 {
 #if defined(DEBUG) | defined (_DEBUG)
+    CHECK_D3D12_GUID(D3D12CommandAllocator);
     CHECK_D3D12_GUID(D3D12CommandList);
     CHECK_D3D12_GUID(D3D12CommandQueue);
+    CHECK_D3D12_GUID(D3D12CommandSignature);
+    CHECK_D3D12_GUID(D3D12DescriptorHeap);
     CHECK_D3D12_GUID(D3D12Device);
     CHECK_D3D12_GUID(D3D12DeviceChild);
     CHECK_D3D12_GUID(D3D12Fence);
+    CHECK_D3D12_GUID(D3D12GraphicsCommandList);
     CHECK_D3D12_GUID(D3D12Heap);
     CHECK_D3D12_GUID(D3D12Object);
     CHECK_D3D12_GUID(D3D12Pageable);
+    CHECK_D3D12_GUID(D3D12PipelineState);
+    CHECK_D3D12_GUID(D3D12QueryHeap);
     CHECK_D3D12_GUID(D3D12Resource);
+    CHECK_D3D12_GUID(D3D12RootSignature);
 #endif
 }
 
@@ -81,4 +95,17 @@ unsigned int DirectXNet::DirectX12::D3D12::CalcSubresource(
     unsigned int mipLevels, unsigned int arraySize)
 {
    return mipSlice + arraySlice * mipLevels + planeSlice * mipLevels * arraySize;
+}
+
+unsigned int DirectXNet::DirectX12::D3D12::EncodeShader4ComponentMapping(
+    D3D12ShaderComponentMapping src0, D3D12ShaderComponentMapping src1,
+    D3D12ShaderComponentMapping src2, D3D12ShaderComponentMapping src3)
+{
+    return D3D12_ENCODE_SHADER_4_COMPONENT_MAPPING((UINT)src0, (UINT)src1, (UINT)src2, (UINT)src3);
+}
+
+D3D12ShaderComponentMapping DirectXNet::DirectX12::D3D12::DecodeShader4ComponentMapping(
+    unsigned int componentToExtract, unsigned int mapping)
+{
+    return (D3D12ShaderComponentMapping)D3D12_DECODE_SHADER_4_COMPONENT_MAPPING(componentToExtract, mapping);
 }

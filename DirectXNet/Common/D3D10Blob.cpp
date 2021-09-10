@@ -8,14 +8,13 @@ using namespace System;
 DirectXNet::Common::D3D10Blob::D3D10Blob(::ID3D10Blob* pBlob)
     : Unknown((::IUnknown*)pBlob)
 {
-    this->pBlob.Attach(pBlob);
+    this->pBlob = pBlob;
 }
 
 void DirectXNet::Common::D3D10Blob::AttatchComObj(::IUnknown* pComObj)
 {
     Unknown::AttatchComObj(pComObj);
-    pBlob.Release();
-    pBlob.Attach((::ID3D10Blob*)pComObj);
+    pBlob = (::ID3D10Blob*)pComObj;
 }
 
 Guid DirectXNet::Common::D3D10Blob::GetGuid()

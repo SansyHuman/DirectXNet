@@ -8,14 +8,13 @@ using namespace msclr::interop;
 DirectXNet::DXGI::DXGIAdapter::DXGIAdapter(::IDXGIAdapter* pAdapter)
     : DXGIObject((::IDXGIObject*)pAdapter)
 {
-    this->pAdapter.Attach(pAdapter);
+    this->pAdapter = pAdapter;
 }
 
 void DirectXNet::DXGI::DXGIAdapter::AttatchComObj(::IUnknown* pComObj)
 {
     DXGIObject::AttatchComObj(pComObj);
-    pAdapter.Release();;
-    pAdapter.Attach((::IDXGIAdapter*)pComObj);
+    pAdapter = (::IDXGIAdapter*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGIAdapter::GetGuid()

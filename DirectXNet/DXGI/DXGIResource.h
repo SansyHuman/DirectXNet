@@ -23,7 +23,7 @@ namespace DirectXNet
         public ref class DXGIResource : DXGIDeviceSubObject
         {
         private:
-            com::ptr<::IDXGIResource> pResource;
+            ::IDXGIResource* pResource;
 
         public:
             literal unsigned int ResourcePriorityMinimum = DXGI_RESOURCE_PRIORITY_MINIMUM;

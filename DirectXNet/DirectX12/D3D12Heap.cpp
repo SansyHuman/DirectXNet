@@ -9,14 +9,13 @@ using namespace DirectXNet::DirectX12;
 DirectXNet::DirectX12::D3D12Heap::D3D12Heap(::ID3D12Heap* pHeap)
     : D3D12Pageable((::ID3D12Pageable*)pHeap)
 {
-    this->pHeap.Attach(pHeap);
+    this->pHeap = pHeap;
 }
 
 void DirectXNet::DirectX12::D3D12Heap::AttatchComObj(::IUnknown* pComObj)
 {
     D3D12Pageable::AttatchComObj(pComObj);
-    pHeap.Release();
-    pHeap.Attach((::ID3D12Heap*)pComObj);
+    pHeap = (::ID3D12Heap*)pComObj;
 }
 
 Guid DirectXNet::DirectX12::D3D12Heap::GetGuid()

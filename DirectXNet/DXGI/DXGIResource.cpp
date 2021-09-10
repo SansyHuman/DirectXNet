@@ -8,14 +8,13 @@ using namespace DirectXNet::DXGI;
 DirectXNet::DXGI::DXGIResource::DXGIResource(::IDXGIResource* pResource)
     : DXGIDeviceSubObject((::IDXGIDeviceSubObject*)pResource)
 {
-    this->pResource.Attach(pResource);
+    this->pResource = pResource;
 }
 
 void DirectXNet::DXGI::DXGIResource::AttatchComObj(::IUnknown* pComObj)
 {
     DXGIDeviceSubObject::AttatchComObj(pComObj);
-    pResource.Release();
-    pResource.Attach((::IDXGIResource*)pComObj);
+    pResource = (::IDXGIResource*)pComObj;
 }
 
 Guid DirectXNet::DXGI::DXGIResource::GetGuid()

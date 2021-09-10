@@ -9,19 +9,23 @@ using namespace DirectXNet::DirectX12;
 DirectXNet::DirectX12::D3D12Resource::D3D12Resource(::ID3D12Resource* pResource)
     : D3D12Pageable((::ID3D12Pageable*)pResource)
 {
-    this->pResource.Attach(pResource);
+    this->pResource = pResource;
 }
 
 void DirectXNet::DirectX12::D3D12Resource::AttatchComObj(::IUnknown* pComObj)
 {
     D3D12Pageable::AttatchComObj(pComObj);
-    pResource.Release();
-    pResource.Attach((::ID3D12Resource*)pComObj);
+    pResource = (::ID3D12Resource*)pComObj;
 }
 
 Guid DirectXNet::DirectX12::D3D12Resource::GetGuid()
 {
     return CAST_TO(__uuidof(::ID3D12Resource), Guid);
+}
+
+IntPtr DirectXNet::DirectX12::D3D12Resource::NativeResource::get()
+{
+    return IntPtr((void*)pResource);
 }
 
 IntPtr DirectXNet::DirectX12::D3D12Resource::Map(

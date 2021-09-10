@@ -23,7 +23,7 @@ namespace DirectXNet
         public ref class DXGIKeyedMutex : DXGIDeviceSubObject
         {
         private:
-            com::ptr<::IDXGIKeyedMutex> pMutex;
+            ::IDXGIKeyedMutex* pMutex;
 
         internal:
             DXGIKeyedMutex(::IDXGIKeyedMutex* pMutex);

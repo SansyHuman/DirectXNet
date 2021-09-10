@@ -24,7 +24,7 @@ namespace DirectXNet
         public ref class DXGIDevice : DXGIObject
         {
         private:
-            com::ptr<::IDXGIDevice> pDevice;
+            ::IDXGIDevice* pDevice;
 
         internal:
             DXGIDevice(::IDXGIDevice* pDevice);

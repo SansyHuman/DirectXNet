@@ -25,7 +25,7 @@ namespace DirectXNet
         public ref class DXGISwapChain : DXGIDeviceSubObject
         {
         private:
-            com::ptr<::IDXGISwapChain> pSwapchain;
+            ::IDXGISwapChain* pSwapchain;
 
         internal:
             DXGISwapChain(::IDXGISwapChain* pSwapchain);

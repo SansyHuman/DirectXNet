@@ -28,14 +28,14 @@
     <Filter Include="헤더 파일\DirectX12">
       <UniqueIdentifier>{f9a0166c-fef9-4509-855e-992cb66574a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\DXGI\Debug">
-      <UniqueIdentifier>{6fe3d9df-15c4-4454-962f-46042d392185}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\DXGI\Debug">
-      <UniqueIdentifier>{d5073e4d-58e0-4b30-8ebd-953dc1f82bfb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\DirectX12">
       <UniqueIdentifier>{ab9b6a20-e5a4-42d6-917c-1d547cc4a522}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\DXGI\Debugs">
+      <UniqueIdentifier>{6fe3d9df-15c4-4454-962f-46042d392185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\DXGI\Debugs">
+      <UniqueIdentifier>{d5073e4d-58e0-4b30-8ebd-953dc1f82bfb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -102,15 +102,6 @@
     <ClInclude Include="DXGI\DXGISurface1.h">
       <Filter>헤더 파일\DXGI</Filter>
     </ClInclude>
-    <ClInclude Include="DXGI\Debug\DXGIDebug.h">
-      <Filter>헤더 파일\DXGI\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="DXGI\Debug\DXGIDebugStructs.h">
-      <Filter>헤더 파일\DXGI\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="DXGI\Debug\DXGIInfoQueue.h">
-      <Filter>헤더 파일\DXGI\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="DirectX12\D3D12Object.h">
       <Filter>헤더 파일\DirectX12</Filter>
     </ClInclude>
@@ -151,6 +142,39 @@
       <Filter>헤더 파일\Common</Filter>
     </ClInclude>
     <ClInclude Include="Common\D3DCompiler.h">
+      <Filter>헤더 파일\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12CommandAllocator.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12PipelineState.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12RootSignature.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12GraphicsCommandList.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12DescriptorHeap.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12QueryHeap.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12CommandSignature.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\Debugs\DXGIDebug.h">
+      <Filter>헤더 파일\DXGI\Debugs</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\Debugs\DXGIDebugStructs.h">
+      <Filter>헤더 파일\DXGI\Debugs</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGI\Debugs\DXGIInfoQueue.h">
+      <Filter>헤더 파일\DXGI\Debugs</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DXResourceHandle.h">
       <Filter>헤더 파일\Common</Filter>
     </ClInclude>
   </ItemGroup>
@@ -218,15 +242,6 @@
     <ClCompile Include="DXGI\DXGISurface1.cpp">
       <Filter>소스 파일\DXGI</Filter>
     </ClCompile>
-    <ClCompile Include="DXGI\Debug\DXGIDebug.cpp">
-      <Filter>소스 파일\DXGI\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="DXGI\Debug\DXGIDebugStructs.cpp">
-      <Filter>소스 파일\DXGI\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="DXGI\Debug\DXGIInfoQueue.cpp">
-      <Filter>소스 파일\DXGI\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="DirectX12\D3D12Object.cpp">
       <Filter>소스 파일\DirectX12</Filter>
     </ClCompile>
@@ -264,6 +279,39 @@
       <Filter>소스 파일\Common</Filter>
     </ClCompile>
     <ClCompile Include="Common\D3DCompiler.cpp">
+      <Filter>소스 파일\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12CommandAllocator.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12PipelineState.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12RootSignature.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12GraphicsCommandList.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12DescriptorHeap.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12QueryHeap.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12CommandSignature.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\Debugs\DXGIDebugStructs.cpp">
+      <Filter>소스 파일\DXGI\Debugs</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\Debugs\DXGIInfoQueue.cpp">
+      <Filter>소스 파일\DXGI\Debugs</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGI\Debugs\DXGIDebug.cpp">
+      <Filter>소스 파일\DXGI\Debugs</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DXResourceHandle.cpp">
       <Filter>소스 파일\Common</Filter>
     </ClCompile>
   </ItemGroup>

@@ -9,14 +9,13 @@ using namespace DirectXNet::DirectX12;
 DirectXNet::DirectX12::D3D12Object::D3D12Object(::ID3D12Object* pD3D12Obj)
     : DirectXNet::Common::Unknown((::IUnknown*)pD3D12Obj)
 {
-    this->pD3D12Obj.Attach(pD3D12Obj);
+    this->pD3D12Obj = pD3D12Obj;
 }
 
 void DirectXNet::DirectX12::D3D12Object::AttatchComObj(::IUnknown* pComObj)
 {
     DirectXNet::Common::Unknown::AttatchComObj(pComObj);
-    pD3D12Obj.Release();
-    pD3D12Obj.Attach((::ID3D12Object*)pComObj);
+    pD3D12Obj = (::ID3D12Object*)pComObj;
 }
 
 Guid DirectXNet::DirectX12::D3D12Object::GetGuid()

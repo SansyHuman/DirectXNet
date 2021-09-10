@@ -19,7 +19,7 @@ namespace DirectXNet
         public ref class DXGIObject : Common::Unknown
         {
         private:
-            com::ptr<::IDXGIObject> pDxgiObj;
+            ::IDXGIObject* pDxgiObj;
 
         internal:
             DXGIObject(::IDXGIObject* pObj);

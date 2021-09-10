@@ -13,14 +13,13 @@ using namespace DirectXNet::DirectX12;
 DirectXNet::DirectX12::D3D12CommandQueue::D3D12CommandQueue(::ID3D12CommandQueue* pQueue)
     : D3D12Pageable((::ID3D12Pageable*)pQueue)
 {
-    this->pQueue.Attach(pQueue);
+    this->pQueue = pQueue;
 }
 
 void DirectXNet::DirectX12::D3D12CommandQueue::AttatchComObj(::IUnknown* pComObj)
 {
     D3D12Pageable::AttatchComObj(pComObj);
-    pQueue.Release();
-    pQueue.Attach((::ID3D12CommandQueue*)pComObj);
+    pQueue = (::ID3D12CommandQueue*)pComObj;
 }
 
 Guid DirectXNet::DirectX12::D3D12CommandQueue::GetGuid()

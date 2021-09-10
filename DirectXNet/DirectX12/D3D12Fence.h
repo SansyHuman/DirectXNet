@@ -22,7 +22,7 @@ namespace DirectXNet
         public ref class D3D12Fence : D3D12Pageable
         {
         private:
-            com::ptr<::ID3D12Fence> pFence;
+            ::ID3D12Fence* pFence;
 
         internal:
             D3D12Fence(::ID3D12Fence* pFence);

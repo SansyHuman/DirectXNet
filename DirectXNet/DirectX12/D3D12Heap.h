@@ -25,7 +25,7 @@ namespace DirectXNet
         public ref class D3D12Heap : D3D12Pageable
         {
         private:
-            com::ptr<::ID3D12Heap> pHeap;
+            ::ID3D12Heap* pHeap;
 
         internal:
             D3D12Heap(::ID3D12Heap* pHeap);

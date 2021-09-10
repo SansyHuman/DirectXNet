@@ -29,7 +29,7 @@ namespace DirectXNet
         public ref class D3D12CommandQueue : D3D12Pageable
         {
         private:
-            com::ptr<::ID3D12CommandQueue> pQueue;
+            ::ID3D12CommandQueue* pQueue;
 
         internal:
             D3D12CommandQueue(::ID3D12CommandQueue* pQueue);
