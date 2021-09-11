@@ -37,6 +37,18 @@
     <Filter Include="소스 파일\DXGI\Debugs">
       <UniqueIdentifier>{d5073e4d-58e0-4b30-8ebd-953dc1f82bfb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\HLSL">
+      <UniqueIdentifier>{33f33c8a-85f2-4065-aa41-41cfaf8a540d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\HLSL">
+      <UniqueIdentifier>{5efc3031-31c3-421c-8475-daf09a26da95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Math">
+      <UniqueIdentifier>{aefaca9f-1ab8-491f-9060-c064076e6a2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Math">
+      <UniqueIdentifier>{e8305e37-d857-419a-b03d-526221cefe2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -141,9 +153,6 @@
     <ClInclude Include="Common\D3D10Blob.h">
       <Filter>헤더 파일\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Common\D3DCompiler.h">
-      <Filter>헤더 파일\Common</Filter>
-    </ClInclude>
     <ClInclude Include="DirectX12\D3D12CommandAllocator.h">
       <Filter>헤더 파일\DirectX12</Filter>
     </ClInclude>
@@ -176,6 +185,15 @@
     </ClInclude>
     <ClInclude Include="Common\DXResourceHandle.h">
       <Filter>헤더 파일\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSL\D3DCompiler.h">
+      <Filter>헤더 파일\HLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\DirectXMathTypes.h">
+      <Filter>헤더 파일\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\VectorOperations.h">
+      <Filter>헤더 파일\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -278,9 +296,6 @@
     <ClCompile Include="Common\D3D10Blob.cpp">
       <Filter>소스 파일\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Common\D3DCompiler.cpp">
-      <Filter>소스 파일\Common</Filter>
-    </ClCompile>
     <ClCompile Include="DirectX12\D3D12CommandAllocator.cpp">
       <Filter>소스 파일\DirectX12</Filter>
     </ClCompile>
@@ -313,6 +328,15 @@
     </ClCompile>
     <ClCompile Include="Common\DXResourceHandle.cpp">
       <Filter>소스 파일\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="HLSL\D3DCompiler.cpp">
+      <Filter>소스 파일\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\DirectXMathTypes.cpp">
+      <Filter>소스 파일\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\VectorOperations.cpp">
+      <Filter>소스 파일\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

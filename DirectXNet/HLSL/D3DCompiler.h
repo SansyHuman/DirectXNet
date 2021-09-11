@@ -10,7 +10,12 @@ namespace DirectXNet
     namespace Common
     {
         ref class D3D10Blob;
+    }
 
+    using namespace DirectXNet::Common;
+
+    namespace HLSL
+    {
         /// <summary>
         /// Class that contains functions in d3dcompiler.h
         /// </summary>

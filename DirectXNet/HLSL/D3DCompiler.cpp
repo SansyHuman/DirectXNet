@@ -1,12 +1,12 @@
 #include "D3DCompiler.h"
-#include "D3D10Blob.h"
-#include "Result.h"
+#include "../Common/D3D10Blob.h"
+#include "../Common/Result.h"
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace DirectXNet::Common;
 
-D3D10Blob^ DirectXNet::Common::D3DCompiler::CreateBlob(SIZE_T size)
+D3D10Blob^ DirectXNet::HLSL::D3DCompiler::CreateBlob(SIZE_T size)
 {
     ::ID3D10Blob* pBlob = __nullptr;
 
