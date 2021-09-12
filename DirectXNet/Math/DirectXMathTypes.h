@@ -18,6 +18,11 @@ using namespace System::Numerics;
 #define HXMVector FXMVector
 #define CXMVector FXMVector
 
+#define FXMMatrix [In][IsReadOnly] XMMatrix%
+#define CXMMatrix FXMMatrix
+
+#define __INLINE [MethodImpl(MethodImplOptions::AggressiveInlining)]
+
 namespace DirectXNet
 {
     namespace Math
@@ -83,13 +88,64 @@ namespace DirectXNet
 #else
             __Vector4 vector;
 #endif
-            static XMVector operator+(FXMVector v);
+            
+            __INLINE static XMVector operator+(FXMVector v);
 
-            static XMVector operator-(FXMVector v);
+            __INLINE static XMVector operator-(FXMVector v);
 
-            static XMVector operator+(FXMVector v1, FXMVector v2);
+            __INLINE static XMVector operator+(FXMVector v1, FXMVector v2);
 
-            static XMVector operator-(FXMVector v1, FXMVector v2);
+            __INLINE static XMVector operator-(FXMVector v1, FXMVector v2);
+
+            __INLINE static XMVector operator*(FXMVector v1, FXMVector v2);
+
+            __INLINE static XMVector operator/(FXMVector v1, FXMVector v2);
+
+            __INLINE static XMVector operator*(FXMVector v, float s);
+
+            __INLINE static XMVector operator*(float s, FXMVector v);
+
+            __INLINE static XMVector operator/(FXMVector v, float s);
+        };
+
+        /// <summary>
+        /// XMMATRIX in .NET.
+        /// </summary>
+#ifdef _NETCORE
+        [StructLayout(LayoutKind::Sequential, Pack = 16)]
+#else
+        [StructLayout(LayoutKind::Explicit, Size = 64)]
+#endif
+        public value struct XMMatrix
+        {
+#ifdef _NETCORE
+            XMVector r0;
+            XMVector r1;
+            XMVector r2;
+            XMVector r3;
+#else
+            [FieldOffset(0)] XMVector r0;
+            [FieldOffset(4)] XMVector r1;
+            [FieldOffset(8)] XMVector r2;
+            [FieldOffset(12)] XMVector r3;
+            [FieldOffset(0)] Matrix4x4 matrix;
+#endif
+            __INLINE XMMatrix(
+                FXMVector r0, FXMVector r1, FXMVector r2, CXMVector r3);
+
+            __INLINE XMMatrix(float m00, float m01, float m02, float m03,
+                     float m10, float m11, float m12, float m13,
+                     float m20, float m21, float m22, float m23,
+                     float m30, float m31, float m32, float m33);
+            
+            __INLINE static XMMatrix operator+(FXMMatrix m);
+            __INLINE static XMMatrix operator-(FXMMatrix m);
+            __INLINE static XMMatrix operator+(FXMMatrix m1, CXMMatrix m2);
+            __INLINE static XMMatrix operator-(FXMMatrix m1, CXMMatrix m2);
+            __INLINE static XMMatrix operator*(FXMMatrix m1, CXMMatrix m2);
+            __INLINE static XMMatrix operator*(FXMMatrix m, float s);
+            __INLINE static XMMatrix operator*(float s, FXMMatrix m);
+            __INLINE static XMMatrix operator/(FXMMatrix m, float s);
         };
     }
 }
