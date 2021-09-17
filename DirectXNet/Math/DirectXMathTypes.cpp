@@ -217,3 +217,45 @@ XMMatrix DirectXNet::Math::XMMatrix::operator/(FXMMatrix m, float s)
     );
 #endif
 }
+
+DirectXNet::Math::XMFloat2::operator XMFloat2(Vector2 v)
+{
+    return XMFloat2(v.X, v.Y);
+}
+
+DirectXNet::Math::XMFloat2::operator Vector2(XMFloat2 v)
+{
+    return Vector2(v.x, v.y);
+}
+
+DirectXNet::Math::XMFloat3::operator XMFloat3(Vector3 v)
+{
+    return XMFloat3(v.X, v.Y, v.Z);
+}
+
+DirectXNet::Math::XMFloat3::operator Vector3(XMFloat3 v)
+{
+    return Vector3(v.x, v.y, v.z);
+}
+
+DirectXNet::Math::XMFloat4::operator XMFloat4(Vector4 v)
+{
+    return XMFloat4(v.X, v.Y, v.Z, v.W);
+}
+
+DirectXNet::Math::XMFloat4::operator Vector4(XMFloat4 v)
+{
+    return Vector4(v.x, v.y, v.z, v.w);
+}
+
+DirectXNet::Math::XMFloat4X4::operator XMFloat4X4(Matrix4x4% v)
+{
+    pin_ptr<Matrix4x4> pV = &v;
+    return *((XMFloat4X4*)pV);
+}
+
+DirectXNet::Math::XMFloat4X4::operator Matrix4x4(XMFloat4X4% v)
+{
+    pin_ptr<XMFloat4X4> pV = &v;
+    return *((Matrix4x4*)pV);
+}

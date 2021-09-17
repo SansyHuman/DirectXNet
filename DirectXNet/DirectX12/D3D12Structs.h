@@ -2600,6 +2600,139 @@ namespace DirectXNet
             PipelineStatistics1 = D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS1
         };
 
+        /// <summary>
+        /// Specifies the type of root signature slot.
+        /// </summary>
+        public enum class D3D12RootParameterType : UINT
+        {
+            /// <summary>
+            /// The slot is for a descriptor table.
+            /// </summary>
+            DescriptorTable = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE,
+
+            /// <summary>
+            /// The slot is for root constants.
+            /// </summary>
+            Constants = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS,
+
+            /// <summary>
+            /// The slot is for a constant-buffer view (CBV).
+            /// </summary>
+            Cbv = D3D12_ROOT_PARAMETER_TYPE_CBV,
+
+            /// <summary>
+            /// The slot is for a shader-resource view (SRV).
+            /// </summary>
+            Srv = D3D12_ROOT_PARAMETER_TYPE_SRV,
+
+            /// <summary>
+            /// The slot is for a unordered-access view (UAV).
+            /// </summary>
+            Uav = D3D12_ROOT_PARAMETER_TYPE_UAV
+        };
+
+        /// <summary>
+        /// Specifies a range so that, for example, if part of a descriptor table has 100
+        /// shader-resource views (SRVs) that range can be declared in one entry rather than 100.
+        /// </summary>
+        public enum class D3D12DescriptorRangeType : UINT
+        {
+            /// <summary>
+            /// Specifies a range of SRVs.
+            /// </summary>
+            Srv = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+
+            /// <summary>
+            /// Specifies a range of unordered-access views (UAVs).
+            /// </summary>
+            Uav = D3D12_DESCRIPTOR_RANGE_TYPE_UAV,
+
+            /// <summary>
+            /// Specifies a range of constant-buffer views (CBVs).
+            /// </summary>
+            Cbv = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+
+            /// <summary>
+            /// Specifies a range of samplers.
+            /// </summary>
+            Sampler = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER
+        };
+
+        /// <summary>
+        /// Specifies the shaders that can access the contents of a given root signature slot.
+        /// </summary>
+        public enum class D3D12ShaderVisibility : UINT
+        {
+            /// <summary>
+            /// Specifies that all shader stages can access whatever is bound at the root
+            /// signature slot.
+            /// </summary>
+            All = D3D12_SHADER_VISIBILITY_ALL,
+
+            /// <summary>
+            /// Specifies that the vertex shader stage can access whatever is bound at the root
+            /// signature slot.
+            /// </summary>
+            Vertex = D3D12_SHADER_VISIBILITY_VERTEX,
+
+            /// <summary>
+            /// Specifies that the hull shader stage can access whatever is bound at the root
+            /// signature slot.
+            /// </summary>
+            Hull = D3D12_SHADER_VISIBILITY_HULL,
+
+            /// <summary>
+            /// Specifies that the domain shader stage can access whatever is bound at the root
+            /// signature slot.
+            /// </summary>
+            Domain = D3D12_SHADER_VISIBILITY_DOMAIN,
+
+            /// <summary>
+            /// Specifies that the geometry shader stage can access whatever is bound at the root
+            /// signature slot.
+            /// </summary>
+            Geometry = D3D12_SHADER_VISIBILITY_GEOMETRY,
+
+            /// <summary>
+            /// Specifies that the pixel shader stage can access whatever is bound at the root
+            /// signature slot.
+            /// </summary>
+            Pixel = D3D12_SHADER_VISIBILITY_PIXEL,
+
+            /// <summary>
+            /// Specifies that the amplification shader stage can access whatever is bound at the
+            /// root signature slot.
+            /// </summary>
+            Amplification = D3D12_SHADER_VISIBILITY_AMPLIFICATION,
+
+            /// <summary>
+            /// Specifies that the mesh shader stage can access whatever is bound at the root
+            /// signature slot.
+            /// </summary>
+            Mesh = D3D12_SHADER_VISIBILITY_MESH
+        };
+
+        /// <summary>
+        /// Specifies the border color for a static sampler.
+        /// </summary>
+        public enum class D3D12StaticBorderColor : UINT
+        {
+            /// <summary>
+            /// Indicates black, with the alpha component as fully transparent.
+            /// </summary>
+            TransparentBlack = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+
+            /// <summary>
+            /// Indicates black, with the alpha component as fully opaque.
+            /// </summary>
+            OpaqueBlack = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK,
+
+            /// <summary>
+            /// Indicates white, with the alpha component as fully opaque.
+            /// </summary>
+            OpaqueWhite = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE
+        };
+
 
 
         /// <summary>
@@ -6668,7 +6801,8 @@ namespace DirectXNet
         };
 
         /// <summary>
-        /// Describes the purpose of a query heap. A query heap contains an array of individual queries.
+        /// Describes the purpose of a query heap. A query heap contains an array of individual
+        /// queries.
         /// </summary>
         [StructLayout(LayoutKind::Sequential)]
         public value struct D3D12QueryHeapDesc
@@ -6689,6 +6823,482 @@ namespace DirectXNet
             /// Each bit in the mask corresponds to a single node. Only 1 bit must be set.
             /// </summary>
             unsigned int NodeMask;
+        };
+
+        /// <summary>
+        /// Describes a descriptor range.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12DescriptorRange
+        {
+            /// <summary>
+            /// A D3D12DescriptorRangeType-typed value that specifies the type of descriptor range.
+            /// </summary>
+            D3D12DescriptorRangeType RangeType;
+
+            /// <summary>
+            /// The number of descriptors in the range. Use -1 or UInt32::MaxValue to specify an
+            /// unbounded size. If a given descriptor range is unbounded, then it must either be the
+            /// last range in the table definition, or else the following range in the table
+            /// definition must have a value for OffsetInDescriptorsFromTableStart that is not
+            /// D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND(0xffffffff).
+            /// </summary>
+            unsigned int NumDescriptors;
+
+            /// <summary>
+            /// The base shader register in the range. For example, for shader-resource views
+            /// (SRVs), 3 maps to ": register(t3);" in HLSL.
+            /// </summary>
+            unsigned int BaseShaderRegister;
+
+            /// <summary>
+            /// The register space. Can typically be 0, but allows multiple descriptor arrays of
+            /// unknown size to not appear to overlap. For example, for SRVs, by extending the
+            /// example in the BaseShaderRegister member description, 5 maps to ": register
+            /// (t3,space5);" in HLSL.
+            /// </summary>
+            unsigned int RegisterSpace;
+
+            /// <summary>
+            /// The offset in descriptors, from the start of the descriptor table which was set as
+            /// the root argument value for this parameter slot. This value can be
+            /// D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND(0xffffffff), which indicates this range should
+            /// immediately follow the preceding range.
+            /// </summary>
+            unsigned int OffsetInDescriptorsFromTableStart;
+
+            /// <summary>
+            /// Initializes the descriptor range.
+            /// </summary>
+            /// <param name="registerSpace">The default value is 0.</param>
+            /// <param name="offsetInDescriptorsFromTableStart">The default value is
+            /// D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND.</param>
+            D3D12DescriptorRange(
+                D3D12DescriptorRangeType rangeType,
+                unsigned int numDescriptors,
+                unsigned int baseShaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<unsigned int> offsetInDescriptorsFromTableStart
+            );
+
+            /// <summary>
+            /// Initializes the descriptor range.
+            /// </summary>
+            /// <param name="registerSpace">The default value is 0.</param>
+            /// <param name="offsetInDescriptorsFromTableStart">The default value is
+            /// D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND.</param>
+            void Init(
+                D3D12DescriptorRangeType rangeType,
+                unsigned int numDescriptors,
+                unsigned int baseShaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<unsigned int> offsetInDescriptorsFromTableStart
+            );
+
+            /// <summary>
+            /// Initializes the descriptor range.
+            /// </summary>
+            /// <param name="range">Reference to the struct to initialize.</param>
+            /// <param name="registerSpace">The default value is 0.</param>
+            /// <param name="offsetInDescriptorsFromTableStart">The default value is
+            /// D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND.</param>
+            static void Init(
+                D3D12DescriptorRange% range,
+                D3D12DescriptorRangeType rangeType,
+                unsigned int numDescriptors,
+                unsigned int baseShaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<unsigned int> offsetInDescriptorsFromTableStart
+            );
+        };
+
+        /// <summary>
+        /// Describes the root signature 1.0 layout of a descriptor table as a collection of
+        /// descriptor ranges that are all relative to a single base descriptor handle.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12RootDescriptorTable
+        {
+            /// <summary>
+            /// The number of descriptor ranges in the table layout.
+            /// </summary>
+            unsigned int NumDescriptorRanges;
+
+            /// <summary>
+            /// A pointer to the array of D3D12DescriptorRange structures that describe the
+            /// descriptor ranges.
+            /// </summary>
+            D3D12DescriptorRange* pDescriptorRanges;
+
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="descriptorRanges">Array of descriptor ranges.</param>
+            /// <param name="pinPtrToRange">Pin pointer to the range array. If you finished using
+            /// the struct, then free it.</param>
+            D3D12RootDescriptorTable(
+                array<D3D12DescriptorRange>^ descriptorRanges,
+                [Out] GCHandle% pinPtrToRange
+            );
+
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="descriptorRanges">Array of descriptor ranges.</param>
+            /// <param name="pinPtrToRange">Pin pointer to the range array. If you finished using
+            /// the struct, then free it.</param>
+            void Init(
+                array<D3D12DescriptorRange>^ descriptorRanges,
+                [Out] GCHandle% pinPtrToRange
+            );
+
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="rootDescriptorTable">Reference to the struct to initialize.</param>
+            /// <param name="descriptorRanges">Array of descriptor ranges.</param>
+            /// <param name="pinPtrToRange">Pin pointer to the range array. If you finished using
+            /// the struct, then free it.</param>
+            static void Init(
+                D3D12RootDescriptorTable% rootDescriptorTable,
+                array<D3D12DescriptorRange>^ descriptorRanges,
+                [Out] GCHandle% pinPtrToRange
+            );
+        };
+
+        /// <summary>
+        /// Describes constants inline in the root signature that appear in shaders as one
+        /// constant buffer.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12RootConstants
+        {
+            /// <summary>
+            /// The shader register.
+            /// </summary>
+            unsigned int ShaderRegister;
+
+            /// <summary>
+            /// The register space.
+            /// </summary>
+            unsigned int RegisterSpace;
+
+            /// <summary>
+            /// The number of constants that occupy a single shader slot (these constants appear
+            /// like a single constant buffer). All constants occupy a single root signature bind
+            /// slot.
+            /// </summary>
+            unsigned int Num32BitValues;
+
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="registerSpace">The default value is 0.</param>
+            D3D12RootConstants(
+                unsigned int num32BitValues,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
+
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="registerSpace">The default value is 0.</param>
+            void Init(
+                unsigned int num32BitValues,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
+            
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="rootConstants">Reference to the struct to initialize.</param>
+            /// <param name="registerSpace">The default value is 0.</param>
+            static void Init(
+                D3D12RootConstants% rootConstants,
+                unsigned int num32BitValues,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
+        };
+
+        /// <summary>
+        /// Describes descriptors inline in the root signature version 1.0 that appear in shaders.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12RootDescriptor
+        {
+            /// <summary>
+            /// The shader register.
+            /// </summary>
+            unsigned int ShaderRegister;
+
+            /// <summary>
+            /// The register space.
+            /// </summary>
+            unsigned int RegisterSpace;
+
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="registerSpace">The default value is 0.</param>
+            D3D12RootDescriptor(
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
+
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="registerSpace">The default value is 0.</param>
+            void Init(
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
+
+            /// <summary>
+            /// Initializes the struct.
+            /// </summary>
+            /// <param name="table">Reference to the struct to initialize.</param>
+            /// <param name="registerSpace">The default value is 0.</param>
+            static void Init(
+                D3D12RootDescriptor% table,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
+        };
+
+        /// <summary>
+        /// Describes the slot of a root signature version 1.0.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 32)]
+        public value struct D3D12RootParameter
+        {
+            /// <summary>
+            /// A D3D12RootParameterType-typed value that specifies the type of root signature slot.
+            /// This member determines which type to use in the union below.
+            /// </summary>
+            [FieldOffset(0)] D3D12RootParameterType ParameterType;
+
+            /// <summary>
+            /// A D3D12RootDescriptorTable structure that describes the layout of a descriptor
+            /// table as a collection of descriptor ranges that appear one after the other in a
+            /// descriptor heap.
+            /// </summary>
+            [FieldOffset(8)] D3D12RootDescriptorTable DescriptorTable;
+
+            /// <summary>
+            /// A D3D12RootConstants structure that describes constants inline in the root signature
+            /// that appear in shaders as one constant buffer.
+            /// </summary>
+            [FieldOffset(8)] D3D12RootConstants Constants;
+
+            /// <summary>
+            /// A D3D12RootDescriptor structure that describes descriptors inline in the root
+            /// signature that appear in shaders.
+            /// </summary>
+            [FieldOffset(8)] D3D12RootDescriptor Descriptor;
+
+            /// <summary>
+            /// A D3D12ShaderVisibility-typed value that specifies the shaders that can access the
+            /// contents of the root signature slot.
+            /// </summary>
+            [FieldOffset(24)] D3D12ShaderVisibility ShaderVisibility;
+
+            /// <summary>
+            /// Initializes the root parameter as a descriptor table.
+            /// </summary>
+            /// <param name="rootParam">Reference to the struct to initialize.</param>
+            /// <param name="pinPtrToRange">Pin pointer to the descriptorRanges. Free it if
+            /// you finished to use the struct.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            static void InitAsDescriptorTable(
+                D3D12RootParameter% rootParam,
+                array<D3D12DescriptorRange>^ descriptorRanges,
+                [Out] GCHandle% pinPtrToRange,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as a root constant.
+            /// </summary>
+            /// <param name="rootParam">Reference to the struct to initialize.</param>
+            /// <param name="registerSpace">Optional register space. The default value is 0.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            static void InitAsConstants(
+                D3D12RootParameter% rootParam,
+                unsigned int num32BitValues,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as a constant buffer view.
+            /// </summary>
+            /// <param name="rootParam">Reference to the struct to initialize.</param>
+            /// <param name="registerSpace">Optional register space. The default value is 0.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            static void InitAsConstantBufferView(
+                D3D12RootParameter% rootParam,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as a shader resource view.
+            /// </summary>
+            /// <param name="rootParam">Reference to the struct to initialize.</param>
+            /// <param name="registerSpace">Optional register space. The default value is 0.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            static void InitAsShaderResourceView(
+                D3D12RootParameter% rootParam,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as an unordered access view.
+            /// </summary>
+            /// <param name="rootParam">Reference to the struct to initialize.</param>
+            /// <param name="registerSpace">Optional register space. The default value is 0.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            static void InitAsUnorderedAccessView(
+                D3D12RootParameter% rootParam,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as a descriptor table.
+            /// </summary>
+            /// <param name="pinPtrToRange">Pin pointer to the descriptorRanges. Free it if
+            /// you finished to use the struct.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            void InitAsDescriptorTable(
+                array<D3D12DescriptorRange>^ descriptorRanges,
+                [Out] GCHandle% pinPtrToRange,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as a root constant.
+            /// </summary>
+            /// <param name="registerSpace">Optional register space. The default value is 0.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            void InitAsConstants(
+                unsigned int num32BitValues,
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as a constant buffer view.
+            /// </summary>
+            /// <param name="registerSpace">Optional register space. The default value is 0.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            void InitAsConstantBufferView(
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as a shader resource view.
+            /// </summary>
+            /// <param name="registerSpace">Optional register space. The default value is 0.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            void InitAsShaderResourceView(
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+
+            /// <summary>
+            /// Initializes the root parameter as an unordered access view.
+            /// </summary>
+            /// <param name="registerSpace">Optional register space. The default value is 0.</param>
+            /// <param name="visibility">Optional shader visibility. The default value is All.</param>
+            void InitAsUnorderedAccessView(
+                unsigned int shaderRegister,
+                [Optional] Nullable<unsigned int> registerSpace,
+                [Optional] Nullable<D3D12ShaderVisibility> visibility
+            );
+        };
+
+        /// <summary>
+        /// Describes a static sampler.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12StaticSamplerDesc
+        {
+            D3D12Filter Filter;
+            D3D12TextureAddressMode AddressU;
+            D3D12TextureAddressMode AddressV;
+            D3D12TextureAddressMode AddressW;
+            float MipLODBias;
+            unsigned int MaxAnisotropy;
+            D3D12ComparisonFunc ComparisonFunc;
+            D3D12StaticBorderColor BorderColor;
+            float MinLOD;
+            float MaxLOD;
+            unsigned int ShaderRegister;
+            unsigned int RegisterSpace;
+            D3D12ShaderVisibility ShaderVisibility;
+
+            D3D12StaticSamplerDesc(
+                unsigned int shaderRegister,
+                [Optional] Nullable<D3D12Filter> filter,
+                [Optional] Nullable<D3D12TextureAddressMode> addressU,
+                [Optional] Nullable<D3D12TextureAddressMode> addressV,
+                [Optional] Nullable<D3D12TextureAddressMode> addressW,
+                [Optional] Nullable<float> mipLODBias,
+                [Optional] Nullable<unsigned int> maxAnisotropy,
+                [Optional] Nullable<D3D12ComparisonFunc> comparisonFunc,
+                [Optional] Nullable<D3D12StaticBorderColor> borderColor,
+                [Optional] Nullable<float> minLOD,
+                [Optional] Nullable<float> maxLOD,
+                [Optional] Nullable<D3D12ShaderVisibility> shaderVisibility,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
+
+            static void Init(
+                D3D12StaticSamplerDesc% samplerDesc,
+                unsigned int shaderRegister,
+                [Optional] Nullable<D3D12Filter> filter,
+                [Optional] Nullable<D3D12TextureAddressMode> addressU,
+                [Optional] Nullable<D3D12TextureAddressMode> addressV,
+                [Optional] Nullable<D3D12TextureAddressMode> addressW,
+                [Optional] Nullable<float> mipLODBias,
+                [Optional] Nullable<unsigned int> maxAnisotropy,
+                [Optional] Nullable<D3D12ComparisonFunc> comparisonFunc,
+                [Optional] Nullable<D3D12StaticBorderColor> borderColor,
+                [Optional] Nullable<float> minLOD,
+                [Optional] Nullable<float> maxLOD,
+                [Optional] Nullable<D3D12ShaderVisibility> shaderVisibility,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
+
+            void Init(
+                unsigned int shaderRegister,
+                [Optional] Nullable<D3D12Filter> filter,
+                [Optional] Nullable<D3D12TextureAddressMode> addressU,
+                [Optional] Nullable<D3D12TextureAddressMode> addressV,
+                [Optional] Nullable<D3D12TextureAddressMode> addressW,
+                [Optional] Nullable<float> mipLODBias,
+                [Optional] Nullable<unsigned int> maxAnisotropy,
+                [Optional] Nullable<D3D12ComparisonFunc> comparisonFunc,
+                [Optional] Nullable<D3D12StaticBorderColor> borderColor,
+                [Optional] Nullable<float> minLOD,
+                [Optional] Nullable<float> maxLOD,
+                [Optional] Nullable<D3D12ShaderVisibility> shaderVisibility,
+                [Optional] Nullable<unsigned int> registerSpace
+            );
         };
     }
 }

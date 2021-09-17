@@ -1087,3 +1087,294 @@ DirectXNet::DirectX12::D3D12ClearValue::D3D12ClearValue(
     DepthStencil.Depth = depth;
     DepthStencil.Stencil = stencil;
 }
+
+DirectXNet::DirectX12::D3D12DescriptorRange::D3D12DescriptorRange(
+    D3D12DescriptorRangeType rangeType, unsigned int numDescriptors,
+    unsigned int baseShaderRegister, Nullable<unsigned int> registerSpace,
+    Nullable<unsigned int> offsetInDescriptorsFromTableStart)
+{
+    Init(rangeType, numDescriptors, baseShaderRegister, registerSpace, offsetInDescriptorsFromTableStart);
+}
+
+void DirectXNet::DirectX12::D3D12DescriptorRange::Init(
+    D3D12DescriptorRangeType rangeType, unsigned int numDescriptors,
+    unsigned int baseShaderRegister, Nullable<unsigned int> registerSpace,
+    Nullable<unsigned int> offsetInDescriptorsFromTableStart)
+{
+    Init(*this, rangeType, numDescriptors, baseShaderRegister, registerSpace, offsetInDescriptorsFromTableStart);
+}
+
+void DirectXNet::DirectX12::D3D12DescriptorRange::Init(
+    D3D12DescriptorRange% range, D3D12DescriptorRangeType rangeType, unsigned int numDescriptors,
+    unsigned int baseShaderRegister, Nullable<unsigned int> registerSpace,
+    Nullable<unsigned int> offsetInDescriptorsFromTableStart)
+{
+    if(!registerSpace.HasValue)
+        registerSpace = 0;
+    if(!offsetInDescriptorsFromTableStart.HasValue)
+        offsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+    range.RangeType = rangeType;
+    range.NumDescriptors = numDescriptors;
+    range.BaseShaderRegister = baseShaderRegister;
+    range.RegisterSpace = registerSpace.Value;
+    range.OffsetInDescriptorsFromTableStart = offsetInDescriptorsFromTableStart.Value;
+}
+
+DirectXNet::DirectX12::D3D12RootDescriptorTable::D3D12RootDescriptorTable(
+    array<D3D12DescriptorRange>^ descriptorRanges, GCHandle% pinPtrToRange)
+{
+    Init(descriptorRanges, pinPtrToRange);
+}
+
+void DirectXNet::DirectX12::D3D12RootDescriptorTable::Init(
+    array<D3D12DescriptorRange>^ descriptorRanges, GCHandle% pinPtrToRange)
+{
+    Init(*this, descriptorRanges, pinPtrToRange);
+}
+
+void DirectXNet::DirectX12::D3D12RootDescriptorTable::Init(
+    D3D12RootDescriptorTable% rootDescriptorTable,
+    array<D3D12DescriptorRange>^ descriptorRanges, GCHandle% pinPtrToRange)
+{
+    rootDescriptorTable.NumDescriptorRanges = descriptorRanges->Length;
+    pinPtrToRange = GCHandle::Alloc(descriptorRanges[0], GCHandleType::Pinned);
+    rootDescriptorTable.pDescriptorRanges = (D3D12DescriptorRange*)pinPtrToRange.AddrOfPinnedObject().ToPointer();
+}
+
+DirectXNet::DirectX12::D3D12RootConstants::D3D12RootConstants(
+    unsigned int num32BitValues, unsigned int shaderRegister, Nullable<unsigned int> registerSpace)
+{
+    Init(num32BitValues, shaderRegister, registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12RootConstants::Init(
+    unsigned int num32BitValues, unsigned int shaderRegister, Nullable<unsigned int> registerSpace)
+{
+    Init(*this, num32BitValues, shaderRegister, registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12RootConstants::Init(
+    D3D12RootConstants% rootConstants, unsigned int num32BitValues,
+    unsigned int shaderRegister, Nullable<unsigned int> registerSpace)
+{
+    if(!registerSpace.HasValue)
+        registerSpace = 0;
+
+    rootConstants.Num32BitValues = num32BitValues;
+    rootConstants.ShaderRegister = shaderRegister;
+    rootConstants.RegisterSpace = registerSpace.Value;
+}
+
+DirectXNet::DirectX12::D3D12RootDescriptor::D3D12RootDescriptor(
+    unsigned int shaderRegister, Nullable<unsigned int> registerSpace)
+{
+    Init(shaderRegister, registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12RootDescriptor::Init(
+    unsigned int shaderRegister, Nullable<unsigned int> registerSpace)
+{
+    Init(*this, shaderRegister, registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12RootDescriptor::Init(
+    D3D12RootDescriptor% table, unsigned int shaderRegister, Nullable<unsigned int> registerSpace)
+{
+    if(!registerSpace.HasValue)
+        registerSpace = 0;
+
+    table.ShaderRegister = shaderRegister;
+    table.RegisterSpace = registerSpace.Value;
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsDescriptorTable(
+    D3D12RootParameter% rootParam, array<D3D12DescriptorRange>^ descriptorRanges,
+    GCHandle% pinPtrToRange, Nullable<D3D12ShaderVisibility> visibility)
+{
+    if(!visibility.HasValue)
+        visibility = D3D12ShaderVisibility::All;
+
+    rootParam.ParameterType = D3D12RootParameterType::DescriptorTable;
+    rootParam.ShaderVisibility = visibility.Value;
+    D3D12RootDescriptorTable::Init(rootParam.DescriptorTable, descriptorRanges, pinPtrToRange);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsConstants(
+    D3D12RootParameter% rootParam, unsigned int num32BitValues, unsigned int shaderRegister,
+    Nullable<unsigned int> registerSpace, Nullable<D3D12ShaderVisibility> visibility)
+{
+    if(!visibility.HasValue)
+        visibility = D3D12ShaderVisibility::All;
+
+    rootParam.ParameterType = D3D12RootParameterType::Constants;
+    rootParam.ShaderVisibility = visibility.Value;
+    D3D12RootConstants::Init(rootParam.Constants, num32BitValues, shaderRegister, registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsConstantBufferView(
+    D3D12RootParameter% rootParam, unsigned int shaderRegister,
+    Nullable<unsigned int> registerSpace, Nullable<D3D12ShaderVisibility> visibility)
+{
+    if(!visibility.HasValue)
+        visibility = D3D12ShaderVisibility::All;
+
+    rootParam.ParameterType = D3D12RootParameterType::Cbv;
+    rootParam.ShaderVisibility = visibility.Value;
+    D3D12RootDescriptor::Init(rootParam.Descriptor, shaderRegister, registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsShaderResourceView(
+    D3D12RootParameter% rootParam, unsigned int shaderRegister,
+    Nullable<unsigned int> registerSpace, Nullable<D3D12ShaderVisibility> visibility)
+{
+    if(!visibility.HasValue)
+        visibility = D3D12ShaderVisibility::All;
+
+    rootParam.ParameterType = D3D12RootParameterType::Srv;
+    rootParam.ShaderVisibility = visibility.Value;
+    D3D12RootDescriptor::Init(rootParam.Descriptor, shaderRegister, registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsUnorderedAccessView(D3D12RootParameter% rootParam, unsigned int shaderRegister, Nullable<unsigned int> registerSpace, Nullable<D3D12ShaderVisibility> visibility)
+{
+    if(!visibility.HasValue)
+        visibility = D3D12ShaderVisibility::All;
+
+    rootParam.ParameterType = D3D12RootParameterType::Uav;
+    rootParam.ShaderVisibility = visibility.Value;
+    D3D12RootDescriptor::Init(rootParam.Descriptor, shaderRegister, registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsDescriptorTable(
+    array<D3D12DescriptorRange>^ descriptorRanges, GCHandle% pinPtrToRange,
+    Nullable<D3D12ShaderVisibility> visibility)
+{
+    InitAsDescriptorTable(*this, descriptorRanges, pinPtrToRange, visibility);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsConstants(
+    unsigned int num32BitValues, unsigned int shaderRegister,
+    Nullable<unsigned int> registerSpace, Nullable<D3D12ShaderVisibility> visibility)
+{
+    InitAsConstants(*this, num32BitValues, shaderRegister, registerSpace, visibility);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsConstantBufferView(
+    unsigned int shaderRegister, Nullable<unsigned int> registerSpace,
+    Nullable<D3D12ShaderVisibility> visibility)
+{
+    InitAsConstantBufferView(*this, shaderRegister, registerSpace, visibility);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsShaderResourceView(
+    unsigned int shaderRegister, Nullable<unsigned int> registerSpace,
+    Nullable<D3D12ShaderVisibility> visibility)
+{
+    InitAsShaderResourceView(*this, shaderRegister, registerSpace, visibility);
+}
+
+void DirectXNet::DirectX12::D3D12RootParameter::InitAsUnorderedAccessView(
+    unsigned int shaderRegister, Nullable<unsigned int> registerSpace,
+    Nullable<D3D12ShaderVisibility> visibility)
+{
+    InitAsUnorderedAccessView(*this, shaderRegister, registerSpace, visibility);
+}
+
+DirectXNet::DirectX12::D3D12StaticSamplerDesc::D3D12StaticSamplerDesc(
+    unsigned int shaderRegister, Nullable<D3D12Filter> filter,
+    Nullable<D3D12TextureAddressMode> addressU, Nullable<D3D12TextureAddressMode> addressV,
+    Nullable<D3D12TextureAddressMode> addressW, Nullable<float> mipLODBias,
+    Nullable<unsigned int> maxAnisotropy, Nullable<D3D12ComparisonFunc> comparisonFunc,
+    Nullable<D3D12StaticBorderColor> borderColor, Nullable<float> minLOD, Nullable<float> maxLOD,
+    Nullable<D3D12ShaderVisibility> shaderVisibility, Nullable<unsigned int> registerSpace)
+{
+    Init(
+        shaderRegister,
+        filter,
+        addressU,
+        addressV,
+        addressW,
+        mipLODBias,
+        maxAnisotropy,
+        comparisonFunc,
+        borderColor,
+        minLOD,
+        maxLOD,
+        shaderVisibility,
+        registerSpace);
+}
+
+void DirectXNet::DirectX12::D3D12StaticSamplerDesc::Init(
+    D3D12StaticSamplerDesc% samplerDesc, unsigned int shaderRegister,
+    Nullable<D3D12Filter> filter, Nullable<D3D12TextureAddressMode> addressU,
+    Nullable<D3D12TextureAddressMode> addressV, Nullable<D3D12TextureAddressMode> addressW,
+    Nullable<float> mipLODBias, Nullable<unsigned int> maxAnisotropy,
+    Nullable<D3D12ComparisonFunc> comparisonFunc, Nullable<D3D12StaticBorderColor> borderColor,
+    Nullable<float> minLOD, Nullable<float> maxLOD,
+    Nullable<D3D12ShaderVisibility> shaderVisibility, Nullable<unsigned int> registerSpace)
+{
+    if(!filter.HasValue)
+        filter = D3D12Filter::Anisotropic;
+    if(!addressU.HasValue)
+        addressU = D3D12TextureAddressMode::Wrap;
+    if(!addressV.HasValue)
+        addressV = D3D12TextureAddressMode::Wrap;
+    if(!addressW.HasValue)
+        addressW = D3D12TextureAddressMode::Wrap;
+    if(!mipLODBias.HasValue)
+        mipLODBias = 0;
+    if(!maxAnisotropy.HasValue)
+        maxAnisotropy = 16;
+    if(!comparisonFunc.HasValue)
+        comparisonFunc = D3D12ComparisonFunc::LessEqual;
+    if(!borderColor.HasValue)
+        borderColor = D3D12StaticBorderColor::OpaqueWhite;
+    if(!minLOD.HasValue)
+        minLOD = 0.0f;
+    if(!maxLOD.HasValue)
+        maxLOD = D3D12_FLOAT32_MAX;
+    if(!shaderVisibility.HasValue)
+        shaderVisibility = D3D12ShaderVisibility::All;
+    if(!registerSpace.HasValue)
+        registerSpace = 0;
+
+    samplerDesc.ShaderRegister = shaderRegister;
+    samplerDesc.Filter = filter.Value;
+    samplerDesc.AddressU = addressU.Value;
+    samplerDesc.AddressV = addressV.Value;
+    samplerDesc.AddressW = addressW.Value;
+    samplerDesc.MipLODBias = mipLODBias.Value;
+    samplerDesc.MaxAnisotropy = maxAnisotropy.Value;
+    samplerDesc.ComparisonFunc = comparisonFunc.Value;
+    samplerDesc.BorderColor = borderColor.Value;
+    samplerDesc.MinLOD = minLOD.Value;
+    samplerDesc.MaxLOD = maxLOD.Value;
+    samplerDesc.ShaderVisibility = shaderVisibility.Value;
+    samplerDesc.RegisterSpace = registerSpace.Value;
+}
+
+void DirectXNet::DirectX12::D3D12StaticSamplerDesc::Init(
+    unsigned int shaderRegister, Nullable<D3D12Filter> filter,
+    Nullable<D3D12TextureAddressMode> addressU, Nullable<D3D12TextureAddressMode> addressV,
+    Nullable<D3D12TextureAddressMode> addressW, Nullable<float> mipLODBias,
+    Nullable<unsigned int> maxAnisotropy, Nullable<D3D12ComparisonFunc> comparisonFunc,
+    Nullable<D3D12StaticBorderColor> borderColor, Nullable<float> minLOD, Nullable<float> maxLOD,
+    Nullable<D3D12ShaderVisibility> shaderVisibility, Nullable<unsigned int> registerSpace)
+{
+    Init(
+        *this,
+        shaderRegister,
+        filter,
+        addressU,
+        addressV,
+        addressW,
+        mipLODBias,
+        maxAnisotropy,
+        comparisonFunc,
+        borderColor,
+        minLOD,
+        maxLOD,
+        shaderVisibility,
+        registerSpace);
+}
