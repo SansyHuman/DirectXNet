@@ -10,7 +10,7 @@ namespace DirectXNet
 	{
 		public value struct Result
 		{
-		private:
+		internal:
 			initonly HRESULT result;
 
 		public:

@@ -70,8 +70,9 @@ namespace DirectXNet
             __INLINE static bool XMComparisonAnyOutOfBounds(unsigned __int32 CR);
 
 #ifdef _NETCORE
-            __INLINE static Vector128<float> XMPermutePS(
-                Vector128<float> v, unsigned int c);
+#define XMPermutePS(v, c) Sse::Shuffle((v), (v), (unsigned char)(c))
+#define XMFMAddPS(a, b, c) Sse::Add(Sse::Multiply((a), (b)), (c))
+#define XMFNMAddPS(a, b, c) Sse::Subtract((c), Sse::Multiply((a), (b)))
 #endif
 
             // Data conversion operations
@@ -151,7 +152,123 @@ namespace DirectXNet
             __INLINE static void XMStoreFloat4x4(XMFloat4X4* pDestination, FXMMatrix M);
 
             // General vector operations
+            __INLINE static XMVector XMVectorZero();
+            __INLINE static XMVector XMVectorSet(float x, float y, float z, float w);
+            __INLINE static XMVector XMVectorSetInt(
+                unsigned __int32 x, unsigned __int32 y, unsigned __int32 z, unsigned __int32 w);
             __INLINE static XMVector XMVectorReplicate(float Value);
+            __INLINE static XMVector XMVectorReplicateInt(unsigned __int32 Value);
+            __INLINE static XMVector XMVectorTrueInt();
+            __INLINE static XMVector XMVectorFalseInt();
+            __INLINE static XMVector XMVectorSplatX(FXMVector V);
+            __INLINE static XMVector XMVectorSplatY(FXMVector V);
+            __INLINE static XMVector XMVectorSplatZ(FXMVector V);
+            __INLINE static XMVector XMVectorSplatW(FXMVector V);
+            __INLINE static XMVector XMVectorSplatOne();
+            __INLINE static XMVector XMVectorSplatInfinity();
+            __INLINE static XMVector XMVectorSplatQNaN();
+            __INLINE static XMVector XMVectorSplatEpsilon();
+            __INLINE static XMVector XMVectorSplatSignMask();
+
+            __INLINE static float XMVectorGetByIndex(FXMVector V, int i);
+            __INLINE static float XMVectorGetX(FXMVector V);
+            __INLINE static float XMVectorGetY(FXMVector V);
+            __INLINE static float XMVectorGetZ(FXMVector V);
+            __INLINE static float XMVectorGetW(FXMVector V);
+
+            __INLINE static void XMVectorGetByIndexPtr(float* f, FXMVector V, int i);
+            __INLINE static void XMVectorGetXPtr(float* x, FXMVector V);
+            __INLINE static void XMVectorGetYPtr(float* y, FXMVector V);
+            __INLINE static void XMVectorGetZPtr(float* z, FXMVector V);
+            __INLINE static void XMVectorGetWPtr(float* w, FXMVector V);
+
+            __INLINE static unsigned __int32 XMVectorGetIntByIndex(FXMVector V, int i);
+            __INLINE static unsigned __int32 XMVectorGetIntX(FXMVector V);
+            __INLINE static unsigned __int32 XMVectorGetIntY(FXMVector V);
+            __INLINE static unsigned __int32 XMVectorGetIntZ(FXMVector V);
+            __INLINE static unsigned __int32 XMVectorGetIntW(FXMVector V);
+
+            __INLINE static void XMVectorGetIntByIndexPtr(unsigned __int32* x, FXMVector V, int i);
+            __INLINE static void XMVectorGetIntXPtr(unsigned __int32* x, FXMVector V);
+            __INLINE static void XMVectorGetIntYPtr(unsigned __int32* y, FXMVector V);
+            __INLINE static void XMVectorGetIntZPtr(unsigned __int32* z, FXMVector V);
+            __INLINE static void XMVectorGetIntWPtr(unsigned __int32* w, FXMVector V);
+
+            __INLINE static XMVector XMVectorSetByIndex(FXMVector V, float f, int i);
+            __INLINE static XMVector XMVectorSetX(FXMVector V, float x);
+            __INLINE static XMVector XMVectorSetY(FXMVector V, float y);
+            __INLINE static XMVector XMVectorSetZ(FXMVector V, float z);
+            __INLINE static XMVector XMVectorSetW(FXMVector V, float w);
+
+            __INLINE static XMVector XMVectorSetByIndexPtr(FXMVector V, float* f, int i);
+            __INLINE static XMVector XMVectorSetXPtr(FXMVector V, float* x);
+            __INLINE static XMVector XMVectorSetYPtr(FXMVector V, float* y);
+            __INLINE static XMVector XMVectorSetZPtr(FXMVector V, float* z);
+            __INLINE static XMVector XMVectorSetWPtr(FXMVector V, float* w);
+
+            __INLINE static XMVector XMVectorSetIntByIndex(FXMVector V, unsigned __int32 x, int i);
+            __INLINE static XMVector XMVectorSetIntX(FXMVector V, unsigned __int32 x);
+            __INLINE static XMVector XMVectorSetIntY(FXMVector V, unsigned __int32 y);
+            __INLINE static XMVector XMVectorSetIntZ(FXMVector V, unsigned __int32 z);
+            __INLINE static XMVector XMVectorSetIntW(FXMVector V, unsigned __int32 w);
+
+            __INLINE static XMVector XMVectorSetIntByIndexPtr(FXMVector V, unsigned __int32* x, int i);
+            __INLINE static XMVector XMVectorSetIntXPtr(FXMVector V, unsigned __int32* x);
+            __INLINE static XMVector XMVectorSetIntYPtr(FXMVector V, unsigned __int32* y);
+            __INLINE static XMVector XMVectorSetIntZPtr(FXMVector V, unsigned __int32* z);
+            __INLINE static XMVector XMVectorSetIntWPtr(FXMVector V, unsigned __int32* w);
+
+            __INLINE static XMVector XMVectorSwizzle(
+                FXMVector V, unsigned __int32 E0, unsigned __int32 E1,
+                unsigned __int32 E2, unsigned __int32 E3);
+            __INLINE static XMVector XMVectorPermute(
+                FXMVector V1, FXMVector V2, unsigned __int32 PermuteX, unsigned __int32 PermuteY,
+                unsigned __int32 PermuteZ, unsigned int PermuteW);
+            __INLINE static XMVector XMVectorSelectControl(
+                unsigned __int32 VectorIndex0, unsigned __int32 VectorIndex1,
+                unsigned __int32 VectorIndex2, unsigned __int32 VectorIndex3);
+            __INLINE static XMVector XMVectorSelect(
+                FXMVector V1, FXMVector V2, FXMVector Control);
+            __INLINE static XMVector XMVectorMergeXY(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorMergeZW(FXMVector V1, FXMVector V2);
+
+            __INLINE static XMVector XMVectorShiftLeft(
+                FXMVector V1, FXMVector V2, unsigned __int32 Elements);
+            __INLINE static XMVector XMVectorRotateLeft(FXMVector V, unsigned __int32 Elements);
+            __INLINE static XMVector XMVectorRotateRight(FXMVector V, unsigned __int32 Elements);
+            __INLINE static XMVector XMVectorInsert(
+                FXMVector VD, FXMVector VS, unsigned __int32 VSLeftRotateElements,
+                unsigned __int32 Select0, unsigned __int32 Select1,
+                unsigned __int32 Select2, unsigned __int32 Select3);
+
+            __INLINE static XMVector XMVectorEqual(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorEqualR(
+                [Out] unsigned __int32% CR, FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorEqualInt(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorEqualIntR(
+                [Out] unsigned __int32% CR, FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorNearEqual(
+                FXMVector V1, FXMVector V2, FXMVector Epsilon);
+            __INLINE static XMVector XMVectorNotEqual(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorNotEqualInt(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorGreater(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorGreaterR(
+                [Out] unsigned __int32% CR, FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorGreaterOrEqual(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorGreaterOrEqualR(
+                [Out] unsigned __int32% CR, FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorLess(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorLessOrEqual(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorInBounds(FXMVector V, FXMVector Bounds);
+            __INLINE static XMVector XMVectorInBoundsR(
+                [Out] unsigned __int32% CR, FXMVector V, FXMVector Bounds);
+
+            __INLINE static XMVector XMVectorIsNaN(FXMVector V);
+            __INLINE static XMVector XMVectorIsInfinite(FXMVector V);
+
+            __INLINE static XMVector XMVectorMin(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorMax(FXMVector V1, FXMVector V2);
+            __INLINE static XMVector XMVectorRound(FXMVector V);
 
             __INLINE static XMVector XMVectorNegate(FXMVector V);
             __INLINE static XMVector XMVectorAdd(FXMVector V1, FXMVector V2);
@@ -160,12 +277,20 @@ namespace DirectXNet
             __INLINE static XMVector XMVectorDivide(FXMVector V1, FXMVector V2);
             __INLINE static XMVector XMVectorScale(FXMVector V, float ScaleFactor);
 
+            // 4D vector operations
+            __INLINE static bool XMVector4EqualInt(FXMVector V1, FXMVector V2);
+
             // Matrix operations
             __INLINE static XMMatrix XMMatrixMultiply(FXMMatrix M1, CXMMatrix M2);
 
             // Globals
 #ifdef _NETCORE
             static initonly Vector128<unsigned __int32> g_XMMask3;
+            static initonly Vector128<float> g_XMEpsilon;
+            static initonly Vector128<int> g_XMInfinity;
+            static initonly Vector128<int> g_XMQNaN;
+            static initonly Vector128<unsigned __int32> g_XMNegOneMask;
+            static initonly Vector128<float> g_XMNoFraction;
             static initonly Vector128<float> g_XMFixUnsigned;
             static initonly Vector128<float> g_XMMaxInt;
             static initonly Vector128<float> g_XMMaxUInt;
@@ -175,6 +300,7 @@ namespace DirectXNet
             static initonly Vector128<unsigned __int32> g_XMNegativeZero;
             static initonly Vector128<float> g_XMOne;
             static initonly Vector128<float> g_XMZero;
+            static initonly Vector128<float> g_XMNegativeOne;
 #endif
         };
     }

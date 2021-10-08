@@ -3,8 +3,11 @@
 #include "D3D12Device.h"
 #include "D3D12Resource.h"
 #include "../Common/D3D10Blob.h"
+#include "D3D12GraphicsCommandList.h"
+#include "D3D12CommandQueue.h"
 #include <msclr/marshal.h>
 
+using namespace System::Linq;
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace System::Runtime::CompilerServices;
@@ -43,7 +46,8 @@ DirectXNet::DirectX12::D3D12FeatureDataFeatureLevels::D3D12FeatureDataFeatureLev
     array<D3D::D3DFeatureLevel>^ featureLevelsRequested, GCHandle% featureLevelArrayPinPtr)
 {
     NumFeatureLevels = featureLevelsRequested->Length;
-    featureLevelArrayPinPtr = GCHandle::Alloc(featureLevelsRequested[0], GCHandleType::Pinned);
+    auto tmp = Enumerable::ToArray(Enumerable::Cast<UINT>(featureLevelsRequested));
+    featureLevelArrayPinPtr = GCHandle::Alloc(tmp, GCHandleType::Pinned);
     pFeatureLevelsRequested = (D3D::D3DFeatureLevel*)featureLevelArrayPinPtr.AddrOfPinnedObject().ToPointer();
 }
 
@@ -82,7 +86,7 @@ DirectXNet::DirectX12::D3D12FeatureDataProtectedResourceSessionTypes::D3D12Featu
     : NodeIndex(nodeIndex)
 {
     Count = buffer->Length;
-    bufferPtr = GCHandle::Alloc(buffer[0], GCHandleType::Pinned);
+    bufferPtr = GCHandle::Alloc(buffer, GCHandleType::Pinned);
     pTypes = (Guid*)bufferPtr.AddrOfPinnedObject().ToPointer();
 }
 
@@ -675,7 +679,7 @@ DirectXNet::DirectX12::D3D12StreamOutputDesc::D3D12StreamOutputDesc(
     else
     {
         NumEntries = soDeclaration->Length;
-        soDeclarationPinPtr = GCHandle::Alloc(soDeclaration[0], GCHandleType::Pinned);
+        soDeclarationPinPtr = GCHandle::Alloc(soDeclaration, GCHandleType::Pinned);
         pSODeclaration = (D3D12SODeclarationEntry*)soDeclarationPinPtr.AddrOfPinnedObject().ToPointer();
     }
 
@@ -687,7 +691,7 @@ DirectXNet::DirectX12::D3D12StreamOutputDesc::D3D12StreamOutputDesc(
     else
     {
         NumStrides = bufferStrides->Length;
-        bufferStridesPinPtr = GCHandle::Alloc(bufferStrides[0], GCHandleType::Pinned);
+        bufferStridesPinPtr = GCHandle::Alloc(bufferStrides, GCHandleType::Pinned);
         pBufferStrides = (unsigned int*)bufferStridesPinPtr.AddrOfPinnedObject().ToPointer();
     }
 }
@@ -816,7 +820,7 @@ DirectXNet::DirectX12::D3D12InputLayoutDesc::D3D12InputLayoutDesc(
     array<D3D12InputElementDesc>^ inputElementDescs, GCHandle% inputElementDescsPinPtr)
 {
     NumElements = inputElementDescs->Length;
-    inputElementDescsPinPtr = GCHandle::Alloc(inputElementDescs[0], GCHandleType::Pinned);
+    inputElementDescsPinPtr = GCHandle::Alloc(inputElementDescs, GCHandleType::Pinned);
     pInputElementDescs = (D3D12InputElementDesc*)inputElementDescsPinPtr.AddrOfPinnedObject().ToPointer();
 }
 
@@ -920,6 +924,30 @@ DirectXNet::DirectX12::D3D12Viewport::D3D12Viewport(
 
     MinDepth = minDepth.Value;
     MaxDepth = maxDepth.Value;
+}
+
+bool DirectXNet::DirectX12::D3D12Viewport::operator==(D3D12Viewport% lhs, D3D12Viewport% rhs)
+{
+    return lhs.TopLeftX == rhs.TopLeftX && lhs.TopLeftY == rhs.TopLeftY && lhs.Width == rhs.Width &&
+        lhs.Height == rhs.Height && lhs.MinDepth == rhs.MinDepth && lhs.MaxDepth == rhs.MaxDepth;
+}
+
+bool DirectXNet::DirectX12::D3D12Viewport::operator!=(D3D12Viewport% lhs, D3D12Viewport% rhs)
+{
+    return !(lhs == rhs);
+}
+
+bool DirectXNet::DirectX12::D3D12Viewport::Equals(Object^ other)
+{
+    if(other->GetType() != D3D12Viewport::typeid)
+        return false;
+
+    return *this == safe_cast<D3D12Viewport>(other);
+}
+
+bool DirectXNet::DirectX12::D3D12Viewport::Equals(D3D12Viewport other)
+{
+    return *this == other;
 }
 
 DirectXNet::DirectX12::D3D12ResourceTransitionBarrier::D3D12ResourceTransitionBarrier(
@@ -1063,7 +1091,7 @@ DirectXNet::DirectX12::D3D12DiscardRegion::D3D12DiscardRegion(
     array<Rect>^ rects, unsigned int firstSubresource, unsigned int numSubresource, GCHandle% rectsPinPtr)
     : NumRects(rects->Length), FirstSubresource(firstSubresource), NumSubresources(numSubresource)
 {
-    rectsPinPtr = GCHandle::Alloc(rects[0], GCHandleType::Pinned);
+    rectsPinPtr = GCHandle::Alloc(rects, GCHandleType::Pinned);
     pRects = (Rect*)rectsPinPtr.AddrOfPinnedObject().ToPointer();
 }
 
@@ -1086,6 +1114,44 @@ DirectXNet::DirectX12::D3D12ClearValue::D3D12ClearValue(
     Format = format;
     DepthStencil.Depth = depth;
     DepthStencil.Stencil = stencil;
+}
+
+bool DirectXNet::DirectX12::D3D12ClearValue::operator==(D3D12ClearValue% lhs, D3D12ClearValue% rhs)
+{
+    if(lhs.Format != rhs.Format) return false;
+    if(lhs.Format == DXGIFormat::FORMAT_D24_UNORM_S8_UINT
+       || lhs.Format == DXGIFormat::FORMAT_D16_UNORM
+       || lhs.Format == DXGIFormat::FORMAT_D32_FLOAT
+       || lhs.Format == DXGIFormat::FORMAT_D32_FLOAT_S8X24_UINT)
+    {
+        return (lhs.DepthStencil.Depth == rhs.DepthStencil.Depth) &&
+            (lhs.DepthStencil.Stencil == rhs.DepthStencil.Stencil);
+    }
+    else
+    {
+        return (lhs.Color.r == rhs.Color.r) &&
+            (lhs.Color.g == rhs.Color.g) &&
+            (lhs.Color.b == rhs.Color.b) &&
+            (lhs.Color.a == rhs.Color.a);
+    }
+}
+
+bool DirectXNet::DirectX12::D3D12ClearValue::operator!=(D3D12ClearValue% lhs, D3D12ClearValue% rhs)
+{
+    return !(lhs == rhs);
+}
+
+bool DirectXNet::DirectX12::D3D12ClearValue::Equals(Object^ obj)
+{
+    if(obj->GetType() != D3D12ClearValue::typeid)
+        return false;
+
+    return *this == safe_cast<D3D12ClearValue>(obj);
+}
+
+bool DirectXNet::DirectX12::D3D12ClearValue::Equals(D3D12ClearValue other)
+{
+    return *this == other;
 }
 
 DirectXNet::DirectX12::D3D12DescriptorRange::D3D12DescriptorRange(
@@ -1138,7 +1204,7 @@ void DirectXNet::DirectX12::D3D12RootDescriptorTable::Init(
     array<D3D12DescriptorRange>^ descriptorRanges, GCHandle% pinPtrToRange)
 {
     rootDescriptorTable.NumDescriptorRanges = descriptorRanges->Length;
-    pinPtrToRange = GCHandle::Alloc(descriptorRanges[0], GCHandleType::Pinned);
+    pinPtrToRange = GCHandle::Alloc(descriptorRanges, GCHandleType::Pinned);
     rootDescriptorTable.pDescriptorRanges = (D3D12DescriptorRange*)pinPtrToRange.AddrOfPinnedObject().ToPointer();
 }
 
@@ -1377,4 +1443,123 @@ void DirectXNet::DirectX12::D3D12StaticSamplerDesc::Init(
         maxLOD,
         shaderVisibility,
         registerSpace);
+}
+
+DirectXNet::DirectX12::D3D12RootSignatureDesc::D3D12RootSignatureDesc(
+    array<D3D12RootParameter>^ parameters, array<D3D12StaticSamplerDesc>^ staticSamplers,
+    GCHandle% pinPtrToParameters, GCHandle% pinPtrToStaticSamplers,
+    Nullable<D3D12RootSignatureFlags> flags)
+{
+    Init(parameters, staticSamplers, pinPtrToParameters, pinPtrToStaticSamplers, flags);
+}
+
+DirectXNet::DirectX12::D3D12RootSignatureDesc::D3D12RootSignatureDesc(D3DDefault)
+    : NumParameters(0), pParameters(nullptr), NumStaticSamplers(0), pStaticSamplers(nullptr),
+    Flags(D3D12RootSignatureFlags::None)
+{
+    
+}
+
+void DirectXNet::DirectX12::D3D12RootSignatureDesc::Init(
+    array<D3D12RootParameter>^ parameters, array<D3D12StaticSamplerDesc>^ staticSamplers,
+    GCHandle% pinPtrToParameters, GCHandle% pinPtrToStaticSamplers,
+    Nullable<D3D12RootSignatureFlags> flags)
+{
+    Init(*this, parameters, staticSamplers, pinPtrToParameters, pinPtrToStaticSamplers, flags);
+}
+
+void DirectXNet::DirectX12::D3D12RootSignatureDesc::Init(
+    D3D12RootSignatureDesc% desc, array<D3D12RootParameter>^ parameters,
+    array<D3D12StaticSamplerDesc>^ staticSamplers, GCHandle% pinPtrToParameters,
+    GCHandle% pinPtrToStaticSamplers, Nullable<D3D12RootSignatureFlags> flags)
+{
+    if(!flags.HasValue)
+        flags = D3D12RootSignatureFlags::None;
+
+    if(parameters == nullptr)
+    {
+        desc.NumParameters = 0;
+        desc.pParameters = nullptr;
+    }
+    else
+    {
+        desc.NumParameters = parameters->Length;
+        pinPtrToParameters = GCHandle::Alloc(parameters, GCHandleType::Pinned);
+        desc.pParameters = (D3D12RootParameter*)pinPtrToParameters.AddrOfPinnedObject().ToPointer();
+    }
+
+    if(staticSamplers == nullptr)
+    {
+        desc.NumStaticSamplers = 0;
+        desc.pStaticSamplers = nullptr;
+    }
+    else
+    {
+        desc.NumStaticSamplers = staticSamplers->Length;
+        pinPtrToStaticSamplers = GCHandle::Alloc(staticSamplers, GCHandleType::Pinned);
+        desc.pStaticSamplers = (D3D12StaticSamplerDesc*)pinPtrToStaticSamplers.AddrOfPinnedObject().ToPointer();
+    }
+
+    desc.Flags = flags.Value;
+}
+
+DirectXNet::DirectX12::D3D12CommandSignatureDesc::D3D12CommandSignatureDesc(
+    unsigned int byteStride, unsigned int nodeMask,
+    GCHandle% pinPtrToArgumentDescs, ...array<D3D12IndirectArgumentDesc>^ argumentDescs)
+{
+    pinPtrToArgumentDescs = GCHandle::Alloc(argumentDescs, GCHandleType::Pinned);
+    ByteStride = byteStride;
+    NumArgumentDescs = argumentDescs->Length;
+    pArgumentDescs = (D3D12IndirectArgumentDesc*)pinPtrToArgumentDescs.AddrOfPinnedObject().ToPointer();
+    NodeMask = nodeMask;
+}
+
+DirectXNet::DirectX12::D3D12PackedMipInfo::D3D12PackedMipInfo(
+    unsigned char numStandardMips, unsigned char numPackedMips,
+    unsigned int numTilesForPackedMips, unsigned int startTileIndexInOverallResource)
+{
+    NumStandardMips = numStandardMips;
+    NumPackedMips = numPackedMips;
+    NumTilesForPackedMips = numTilesForPackedMips;
+    StartTileIndexInOverallResource = startTileIndexInOverallResource;
+}
+
+DirectXNet::DirectX12::D3D12TileShape::D3D12TileShape(
+    unsigned int widthInTexels, unsigned int heightInTexels, unsigned int depthInTexels)
+{
+    WidthInTexels = widthInTexels;
+    HeightInTexels = heightInTexels;
+    DepthInTexels = depthInTexels;
+}
+
+DirectXNet::DirectX12::D3D12SubresourceTiling::D3D12SubresourceTiling(
+    unsigned int widthInTiles, unsigned short heightInTiles, unsigned short depthInTiles,
+    unsigned int startTileIndexInOverallResource)
+{
+    WidthInTiles = widthInTiles;
+    HeightInTiles = heightInTiles;
+    DepthInTiles = depthInTiles;
+    StartTileIndexInOverallResource = startTileIndexInOverallResource;
+}
+
+D3D12AutoBreadcrumbNode DirectXNet::DirectX12::D3D12AutoBreadcrumbNode::Convert(
+    ::D3D12_AUTO_BREADCRUMB_NODE% obj)
+{
+    DirectXNet::DirectX12::D3D12AutoBreadcrumbNode node;
+    node.CommandListDebugNameA = marshal_as<String^>(obj.pCommandListDebugNameA);
+    node.CommandListDebugNameW = marshal_as<String^>(obj.pCommandListDebugNameW);
+    node.CommandQueueDebugNameA = marshal_as<String^>(obj.pCommandQueueDebugNameA);
+    node.CommandQueueDebugNameW = marshal_as<String^>(obj.pCommandQueueDebugNameW);
+    if(obj.pCommandList != __nullptr)
+        node.CommandList = gcnew D3D12GraphicsCommandList(obj.pCommandList);
+    if(obj.pCommandQueue != __nullptr)
+        node.CommandQueue = gcnew D3D12CommandQueue(obj.pCommandQueue);
+    node.LastBreadcrumbValue = *(obj.pLastBreadcrumbValue);
+    node.CommandHistory = gcnew array<D3D12AutoBreadcrumbOp>(obj.BreadcrumbCount);
+    for(unsigned int i = 0; i < obj.BreadcrumbCount; i++)
+    {
+        node.CommandHistory[i] = (D3D12AutoBreadcrumbOp)obj.pCommandHistory[i];
+    }
+
+    return node;
 }

@@ -21,4 +21,6 @@ using namespace System::Security::Permissions;
 
 [assembly:AssemblyVersionAttribute("1.0.*")];
 
+[assembly:InternalsVisibleTo("DirectXNetEx_net5.0")];
+
 [assembly:ComVisible(false)];

@@ -17,6 +17,12 @@ DirectXNet::Math::DXMath::DXMath()
 {
 #ifdef _NETCORE
     g_XMMask3 = Vector128::Create(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000U);
+    g_XMOne = Vector128::Create(1.0f);
+    g_XMEpsilon = Vector128::Create(1.192092896e-7f);
+    g_XMInfinity = Vector128::Create(0x7F800000);
+    g_XMQNaN = Vector128::Create(0x7FC00000);
+    g_XMNegOneMask = Vector128::Create(0xFFFFFFFF);
+    g_XMNoFraction = Vector128::Create(8388608.0f);
     g_XMFixUnsigned = Vector128::Create(32768.0f * 65536.0f);
     g_XMMaxInt = Vector128::Create(65536.0f * 32768.0f - 128.0f);
     g_XMMaxUInt = Vector128::Create(65536.0f * 65536.0f - 256.0f);
@@ -26,6 +32,7 @@ DirectXNet::Math::DXMath::DXMath()
     g_XMNegativeZero = Vector128::Create(0x80000000);
     g_XMOne = Vector128::Create(1.0f);
     g_XMZero = Vector128::Create(0.0f);
+    g_XMNegativeOne = Vector128::Create(-1.0f);
 #endif
 }
 
@@ -73,14 +80,6 @@ bool DirectXNet::Math::DXMath::XMComparisonAnyOutOfBounds(unsigned __int32 CR)
 {
     return (((CR)&CRMaskCR6Bounds) != CRMaskCR6Bounds);
 }
-
-#ifdef _NETCORE
-Vector128<float> DirectXNet::Math::DXMath::XMPermutePS(
-    Vector128<float> v, unsigned int c)
-{
-    return Sse::Shuffle(v, v, (unsigned char)c);
-}
-#endif
 
 XMVector DirectXNet::Math::DXMath::XMConvertVectorIntToFloat(
     FXMVector VInt, unsigned __int32 DivExponent)
@@ -1069,12 +1068,1358 @@ void DirectXNet::Math::DXMath::XMStoreFloat4x4(XMFloat4X4* pDestination, FXMMatr
 #endif
 }
 
+XMVector DirectXNet::Math::DXMath::XMVectorZero()
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::Create(0.0f), XMVector);
+#else
+    return CAST_TO(Vector4(0), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSet(float x, float y, float z, float w)
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::Create(x, y, z, w), XMVector);
+#else
+    return CAST_TO(Vector4(x, y, z, w), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetInt(
+    unsigned __int32 x, unsigned __int32 y, unsigned __int32 z, unsigned __int32 w)
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::Create(x, y, z, w), XMVector);
+#else
+    return CAST_TO(Vector4UInt(x, y, z, w), XMVector);
+#endif
+}
+
 XMVector DirectXNet::Math::DXMath::XMVectorReplicate(float Value)
 {
 #ifdef _NETCORE
     return CAST_TO(Vector128::Create(Value), XMVector);
 #else
     return CAST_TO(Vector4(Value), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorReplicateInt(unsigned __int32 Value)
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::Create(Value), XMVector);
+#else
+    return CAST_TO(Vector4UInt(Value, Value, Value, Value), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorTrueInt()
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::Create(-1), XMVector);
+#else
+    return CAST_TO(Vector4UInt(0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorFalseInt()
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::Create(0.0f), XMVector);
+#else
+    return CAST_TO(Vector4(0.0f), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatX(FXMVector V)
+{
+#ifdef _NETCORE
+    return CAST_TO(XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(0, 0, 0, 0)), XMVector);
+#else
+    return CAST_TO(Vector4(V.vector.vector4_f32.X), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatY(FXMVector V)
+{
+#ifdef _NETCORE
+    return CAST_TO(XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(1, 1, 1, 1)), XMVector);
+#else
+    return CAST_TO(Vector4(V.vector.vector4_f32.Y), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatZ(FXMVector V)
+{
+#ifdef _NETCORE
+    return CAST_TO(XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(2, 2, 2, 2)), XMVector);
+#else
+    return CAST_TO(Vector4(V.vector.vector4_f32.Z), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatW(FXMVector V)
+{
+#ifdef _NETCORE
+    return CAST_TO(XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 3, 3, 3)), XMVector);
+#else
+    return CAST_TO(Vector4(V.vector.vector4_f32.W), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatOne()
+{
+#ifdef _NETCORE
+    Vector128<float> one = g_XMOne;
+    return CAST_TO(one, XMVector);
+#else
+    return CAST_TO(Vector4(1.0f), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatInfinity()
+{
+#ifdef _NETCORE
+    Vector128<int> inf = g_XMInfinity;
+    return CAST_TO(inf, XMVector);
+#else
+    return CAST_TO(Vector4UInt(0x7F800000, 0x7F800000, 0x7F800000, 0x7F800000), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatQNaN()
+{
+#ifdef _NETCORE
+    Vector128<int> nan = g_XMQNaN;
+    return CAST_TO(nan, XMVector);
+#else
+    return CAST_TO(Vector4UInt(0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatEpsilon()
+{
+#ifdef _NETCORE
+    Vector128<float> eps = g_XMEpsilon;
+    return CAST_TO(eps, XMVector);
+#else
+    return CAST_TO(Vector4UInt(0x34000000, 0x34000000, 0x34000000, 0x34000000), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSplatSignMask()
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::Create(0x80000000), XMVector);
+#else
+    return CAST_TO(Vector4UInt(0x80000000U, 0x80000000U, 0x80000000U, 0x80000000U), XMVector);
+#endif
+}
+
+float DirectXNet::Math::DXMath::XMVectorGetByIndex(FXMVector V, int i)
+{
+#ifdef _NETCORE
+    return Vector128::GetElement(V.m128.m128_f32, i);
+#else
+    switch(i)
+    {
+    case 0:
+        return V.vector.vector4_f32.X;
+    case 1:
+        return V.vector.vector4_f32.Y;
+    case 2:
+        return V.vector.vector4_f32.Z;
+    case 3:
+        return V.vector.vector4_f32.W;
+    default:
+        throw gcnew IndexOutOfRangeException();
+    }
+#endif
+}
+
+float DirectXNet::Math::DXMath::XMVectorGetX(FXMVector V)
+{
+#ifdef _NETCORE
+    return Vector128::ToScalar(V.m128.m128_f32);
+#else
+    return V.vector.vector4_f32.X;
+#endif
+}
+
+float DirectXNet::Math::DXMath::XMVectorGetY(FXMVector V)
+{
+#ifdef _NETCORE
+    return Vector128::GetElement(V.m128.m128_f32, 1);
+#else
+    return V.vector.vector4_f32.Y;
+#endif
+}
+
+float DirectXNet::Math::DXMath::XMVectorGetZ(FXMVector V)
+{
+#ifdef _NETCORE
+    return Vector128::GetElement(V.m128.m128_f32, 2);
+#else
+    return V.vector.vector4_f32.Z;
+#endif
+}
+
+float DirectXNet::Math::DXMath::XMVectorGetW(FXMVector V)
+{
+#ifdef _NETCORE
+    return Vector128::GetElement(V.m128.m128_f32, 3);
+#else
+    return V.vector.vector4_f32.W;
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetByIndexPtr(float* f, FXMVector V, int i)
+{
+#ifdef _NETCORE
+    *f = Vector128::GetElement(V.m128.m128_f32, i);
+#else
+    switch(i)
+    {
+    case 0:
+        *f = V.vector.vector4_f32.X;
+        break;
+    case 1:
+        *f = V.vector.vector4_f32.Y;
+        break;
+    case 2:
+        *f = V.vector.vector4_f32.Z;
+        break;
+    case 3:
+        *f = V.vector.vector4_f32.W;
+        break;
+    default:
+        throw gcnew IndexOutOfRangeException();
+    }
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetXPtr(float* x, FXMVector V)
+{
+#ifdef _NETCORE
+    Sse::StoreScalar(x, V.m128.m128_f32);
+#else
+    *x = V.vector.vector4_f32.X;
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetYPtr(float* y, FXMVector V)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(1, 1, 1, 1));
+    Sse::StoreScalar(y, vResult);
+#else
+    *y = V.vector.vector4_f32.Y;
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetZPtr(float* z, FXMVector V)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(2, 2, 2, 2));
+    Sse::StoreScalar(z, vResult);
+#else
+    *z = V.vector.vector4_f32.Z;
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetWPtr(float* w, FXMVector V)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 3, 3, 3));
+    Sse::StoreScalar(w, vResult);
+#else
+    *w = V.vector.vector4_f32.W;
+#endif
+}
+
+unsigned __int32 DirectXNet::Math::DXMath::XMVectorGetIntByIndex(FXMVector V, int i)
+{
+#ifdef _NETCORE
+    return Vector128::GetElement(V.m128.m128_u32, i);
+#else
+    return V.vector.vector4_u32[i];
+#endif
+}
+
+unsigned __int32 DirectXNet::Math::DXMath::XMVectorGetIntX(FXMVector V)
+{
+#ifdef _NETCORE
+    return Vector128::ToScalar(V.m128.m128_u32);
+#else
+    return V.vector.vector4_u32[0];
+#endif
+}
+
+unsigned __int32 DirectXNet::Math::DXMath::XMVectorGetIntY(FXMVector V)
+{
+#ifdef _NETCORE
+    return Vector128::GetElement(V.m128.m128_u32, 1);
+#else
+    return V.vector.vector4_u32[1];
+#endif
+}
+
+unsigned __int32 DirectXNet::Math::DXMath::XMVectorGetIntZ(FXMVector V)
+{
+#ifdef _NETCORE
+    return Vector128::GetElement(V.m128.m128_u32, 2);
+#else
+    return V.vector.vector4_u32[2];
+#endif
+}
+
+unsigned __int32 DirectXNet::Math::DXMath::XMVectorGetIntW(FXMVector V)
+{
+#ifdef _NETCORE
+    return Vector128::GetElement(V.m128.m128_u32, 3);
+#else
+    return V.vector.vector4_u32[3];
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetIntByIndexPtr(unsigned __int32* x, FXMVector V, int i)
+{
+#ifdef _NETCORE
+    *x = Vector128::GetElement(V.m128.m128_u32, i);
+#else
+    *x = V.vector.vector4_u32[i];
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetIntXPtr(unsigned __int32* x, FXMVector V)
+{
+#ifdef _NETCORE
+    Sse::StoreScalar((float*)x, V.m128.m128_f32);
+#else
+    *x = V.vector.vector4_u32[0];
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetIntYPtr(unsigned __int32* y, FXMVector V)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(1, 1, 1, 1));
+    Sse::StoreScalar((float*)y, vResult);
+#else
+    *y = V.vector.vector4_u32[1];
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetIntZPtr(unsigned __int32* z, FXMVector V)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(2, 2, 2, 2));
+    Sse::StoreScalar((float*)z, vResult);
+#else
+    *z = V.vector.vector4_u32[2];
+#endif
+}
+
+void DirectXNet::Math::DXMath::XMVectorGetIntWPtr(unsigned __int32* w, FXMVector V)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 3, 3, 3));
+    Sse::StoreScalar((float*)w, vResult);
+#else
+    *w = V.vector.vector4_u32[3];
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetByIndex(FXMVector V, float f, int i)
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::WithElement(V.m128.m128_f32, i, f), XMVector);
+#else
+    XMVector U = V;
+    switch(i)
+    {
+    case 0:
+        U.vector.vector4_f32.X = f;
+        break;
+    case 1:
+        U.vector.vector4_f32.Y = f;
+        break;
+    case 2:
+        U.vector.vector4_f32.Z = f;
+        break;
+    case 3:
+        U.vector.vector4_f32.W = f;
+        break;
+    default:
+        throw gcnew IndexOutOfRangeException();
+    }
+
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetX(FXMVector V, float x)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = Vector128::CreateScalar(x);
+    vResult = Sse::MoveScalar(V.m128.m128_f32, vResult);
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_f32.X = x;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetY(FXMVector V, float y)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 2, 0, 1));
+    Vector128<float> vTemp = Vector128::CreateScalar(y);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(3, 2, 0, 1));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_f32.Y = y;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetZ(FXMVector V, float z)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 0, 1, 2));
+    Vector128<float> vTemp = Vector128::CreateScalar(z);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(3, 0, 1, 2));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_f32.Z = z;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetW(FXMVector V, float w)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(0, 2, 1, 3));
+    Vector128<float> vTemp = Vector128::CreateScalar(w);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(0, 2, 1, 3));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_f32.W = w;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetByIndexPtr(FXMVector V, float* f, int i)
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::WithElement(V.m128.m128_f32, i, *f), XMVector);
+#else
+    XMVector U = V;
+    switch(i)
+    {
+    case 0:
+        U.vector.vector4_f32.X = *f;
+        break;
+    case 1:
+        U.vector.vector4_f32.Y = *f;
+        break;
+    case 2:
+        U.vector.vector4_f32.Z = *f;
+        break;
+    case 3:
+        U.vector.vector4_f32.W = *f;
+        break;
+    default:
+        throw gcnew IndexOutOfRangeException();
+    }
+
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetXPtr(FXMVector V, float* x)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = Sse::LoadScalarVector128(x);
+    vResult = Sse::MoveScalar(V.m128.m128_f32, vResult);
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_f32.X = *x;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetYPtr(FXMVector V, float* y)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 2, 0, 1));
+    Vector128<float> vTemp = Sse::LoadScalarVector128(y);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(3, 2, 0, 1));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_f32.Y = *y;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetZPtr(FXMVector V, float* z)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 0, 1, 2));
+    Vector128<float> vTemp = Sse::LoadScalarVector128(z);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(3, 0, 1, 2));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_f32.Z = *z;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetWPtr(FXMVector V, float* w)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(0, 2, 1, 3));
+    Vector128<float> vTemp = Sse::LoadScalarVector128(w);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(0, 2, 1, 3));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_f32.W = *w;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntByIndex(FXMVector V, unsigned __int32 x, int i)
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::WithElement(V.m128.m128_u32, i, x), XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[i] = x;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntX(FXMVector V, unsigned __int32 x)
+{
+#ifdef _NETCORE
+    Vector128<int> vTemp = Sse2::ConvertScalarToVector128Int32((int)x);
+    Vector128<float> vResult = Sse::MoveScalar(V.m128.m128_f32, Vector128::AsSingle(vTemp));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[0] = x;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntY(FXMVector V, unsigned __int32 y)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 2, 0, 1));
+    Vector128<int> vTemp = Sse2::ConvertScalarToVector128Int32((int)y);
+    vResult = Sse::MoveScalar(vResult, Vector128::AsSingle(vTemp));
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(3, 2, 0, 1));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[1] = y;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntZ(FXMVector V, unsigned __int32 z)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 0, 1, 2));
+    Vector128<int> vTemp = Sse2::ConvertScalarToVector128Int32((int)z);
+    vResult = Sse::MoveScalar(vResult, Vector128::AsSingle(vTemp));
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(3, 0, 1, 2));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[2] = z;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntW(FXMVector V, unsigned __int32 w)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(0, 2, 1, 3));
+    Vector128<int> vTemp = Sse2::ConvertScalarToVector128Int32((int)w);
+    vResult = Sse::MoveScalar(vResult, Vector128::AsSingle(vTemp));
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(0, 2, 1, 3));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[3] = w;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntByIndexPtr(FXMVector V, unsigned __int32* x, int i)
+{
+#ifdef _NETCORE
+    return CAST_TO(Vector128::WithElement(V.m128.m128_u32, i, *x), XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[i] = *x;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntXPtr(FXMVector V, unsigned __int32* x)
+{
+#ifdef _NETCORE
+    Vector128<float> vTemp = Sse::LoadScalarVector128((float*)x);
+    Vector128<float> vResult = Sse::MoveScalar(V.m128.m128_f32, vTemp);
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[0] = *x;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntYPtr(FXMVector V, unsigned __int32* y)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 2, 0, 1));
+    Vector128<float> vTemp = Sse::LoadScalarVector128((float*)y);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(3, 2, 0, 1));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[1] = *y;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntZPtr(FXMVector V, unsigned __int32* z)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(3, 0, 1, 2));
+    Vector128<float> vTemp = Sse::LoadScalarVector128((float*)z);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(3, 0, 1, 2));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[2] = *z;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSetIntWPtr(FXMVector V, unsigned __int32* w)
+{
+#ifdef _NETCORE
+    Vector128<float> vResult = XMPermutePS(V.m128.m128_f32, _MM_SHUFFLE(0, 2, 1, 3));
+    Vector128<float> vTemp = Sse::LoadScalarVector128((float*)w);
+    vResult = Sse::MoveScalar(vResult, vTemp);
+    vResult = XMPermutePS(vResult, _MM_SHUFFLE(0, 2, 1, 3));
+    return CAST_TO(vResult, XMVector);
+#else
+    XMVector U = V;
+    U.vector.vector4_u32[3] = *w;
+    return U;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSwizzle(
+    FXMVector V, unsigned __int32 E0, unsigned __int32 E1,
+    unsigned __int32 E2, unsigned __int32 E3)
+{
+#ifdef _NETCORE
+    if(Avx::IsSupported)
+    {
+        unsigned __int32 elem[4] = { E0, E1, E2, E3 };
+        Vector128<__int32> vControl = Sse2::LoadVector128((int*)&elem[0]);
+        return CAST_TO(Avx::PermuteVar(V.m128.m128_f32, vControl), XMVector);
+    }
+    else
+    {
+        interior_ptr<unsigned __int32> aPtr = (interior_ptr<unsigned __int32>)&V;
+
+        XMVector Result;
+        unsigned __int32* pWork = (unsigned __int32*)&Result;
+
+        pWork[0] = aPtr[E0];
+        pWork[1] = aPtr[E1];
+        pWork[2] = aPtr[E2];
+        pWork[3] = aPtr[E3];
+
+        return Result;
+    }
+#else
+    Vector4UInt Result(V.vector.vector4_u32[E0], V.vector.vector4_u32[E1], V.vector.vector4_u32[E2], V.vector.vector4_u32[E3]);
+    return CAST_TO(Result, XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorPermute(
+    FXMVector V1, FXMVector V2, unsigned __int32 PermuteX, unsigned __int32 PermuteY,
+    unsigned __int32 PermuteZ, unsigned int PermuteW)
+{
+#ifdef _NETCORE
+    if(Avx::IsSupported)
+    {
+        Vector128<int> three = Vector128::Create(3);
+
+        unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+        Vector128<int> vControl = Sse2::LoadVector128((int*)&elem[0]);
+
+        Vector128<int> vSelect = Sse2::CompareGreaterThan(vControl, three);
+        vControl = Vector128::AsInt32(Sse::And(Vector128::AsSingle(vControl), Vector128::AsSingle(vControl)));
+
+        Vector128<float> shuffled1 = Avx::PermuteVar(V1.m128.m128_f32, vControl);
+        Vector128<float> shuffled2 = Avx::PermuteVar(V2.m128.m128_f32, vControl);
+
+        Vector128<float> masked1 = Sse::AndNot(Vector128::AsSingle(vSelect), shuffled1);
+        Vector128<float> masked2 = Sse::And(Vector128::AsSingle(vSelect), shuffled2);
+
+        return CAST_TO(Sse::Or(masked1, masked2), XMVector);
+    }
+    else
+    {
+        unsigned __int32* aPtr[2];
+        pin_ptr<XMVector> pV1 = &V1;
+        pin_ptr<XMVector> pV2 = &V2;
+        aPtr[0] = (unsigned __int32*)pV1;
+        aPtr[1] = (unsigned __int32*)pV2;
+
+        XMVector Result;
+        unsigned __int32* pWork = (unsigned __int32*)&Result;
+
+        unsigned __int32 i0 = PermuteX & 3;
+        unsigned __int32 vi0 = PermuteX >> 2;
+        pWork[0] = aPtr[vi0][i0];
+
+        unsigned __int32 i1 = PermuteY & 3;
+        unsigned __int32 vi1 = PermuteY >> 2;
+        pWork[1] = aPtr[vi1][i1];
+
+        unsigned __int32 i2 = PermuteZ & 3;
+        unsigned __int32 vi2 = PermuteZ >> 2;
+        pWork[2] = aPtr[vi2][i2];
+
+        unsigned __int32 i3 = PermuteW & 3;
+        unsigned __int32 vi3 = PermuteW >> 2;
+        pWork[3] = aPtr[vi3][i3];
+
+        return Result;
+    }
+#else
+    unsigned __int32* aPtr[2];
+    pin_ptr<XMVector> pV1 = &V1;
+    pin_ptr<XMVector> pV2 = &V2;
+    aPtr[0] = (unsigned __int32*)pV1;
+    aPtr[1] = (unsigned __int32*)pV2;
+
+    XMVector Result;
+    unsigned __int32* pWork = (unsigned __int32*)&Result;
+
+    unsigned __int32 i0 = PermuteX & 3;
+    unsigned __int32 vi0 = PermuteX >> 2;
+    pWork[0] = aPtr[vi0][i0];
+
+    unsigned __int32 i1 = PermuteY & 3;
+    unsigned __int32 vi1 = PermuteY >> 2;
+    pWork[1] = aPtr[vi1][i1];
+
+    unsigned __int32 i2 = PermuteZ & 3;
+    unsigned __int32 vi2 = PermuteZ >> 2;
+    pWork[2] = aPtr[vi2][i2];
+
+    unsigned __int32 i3 = PermuteW & 3;
+    unsigned __int32 vi3 = PermuteW >> 2;
+    pWork[3] = aPtr[vi3][i3];
+
+    return Result;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSelectControl(unsigned __int32 VectorIndex0, unsigned __int32 VectorIndex1, unsigned __int32 VectorIndex2, unsigned __int32 VectorIndex3)
+{
+#ifdef _NETCORE
+    Vector128<int> vTemp = Vector128::Create(
+        (int)VectorIndex0, (int)VectorIndex1, (int)VectorIndex2, (int)VectorIndex3);
+    vTemp = Sse2::CompareGreaterThan(vTemp, Vector128::AsInt32(g_XMZero));
+    return CAST_TO(vTemp, XMVector);
+#else
+    XMVector ControlVector;
+
+    ControlVector.vector.vector4_u32[0] = VectorIndex0 == 0 ? Select0 : Select1;
+    ControlVector.vector.vector4_u32[1] = VectorIndex1 == 0 ? Select0 : Select1;
+    ControlVector.vector.vector4_u32[2] = VectorIndex2 == 0 ? Select0 : Select1;
+    ControlVector.vector.vector4_u32[3] = VectorIndex3 == 0 ? Select0 : Select1;
+
+    return ControlVector;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorSelect(FXMVector V1, FXMVector V2, FXMVector Control)
+{
+#ifdef _NETCORE
+    Vector128<float> vTemp1 = Sse::AndNot(Control.m128.m128_f32, V1.m128.m128_f32);
+    Vector128<float> vTemp2 = Sse::And(V2.m128.m128_f32, Control.m128.m128_f32);
+    return CAST_TO(Sse::Or(vTemp1, vTemp2), XMVector);
+#else
+    XMVector Result;
+
+    Result.vector.vector4_u32[0] = (V1.vector.vector4_u32[0] & ~Control.vector.vector4_u32[0]) |
+        (V2.vector.vector4_u32[0] & Control.vector.vector4_u32[0]);
+    Result.vector.vector4_u32[1] = (V1.vector.vector4_u32[1] & ~Control.vector.vector4_u32[1]) |
+        (V2.vector.vector4_u32[1] & Control.vector.vector4_u32[1]);
+    Result.vector.vector4_u32[2] = (V1.vector.vector4_u32[2] & ~Control.vector.vector4_u32[2]) |
+        (V2.vector.vector4_u32[2] & Control.vector.vector4_u32[2]);
+    Result.vector.vector4_u32[3] = (V1.vector.vector4_u32[3] & ~Control.vector.vector4_u32[3]) |
+        (V2.vector.vector4_u32[3] & Control.vector.vector4_u32[3]);
+
+    return Result;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorMergeXY(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::UnpackLow(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    XMVector Result;
+
+    Result.vector.vector4_u32[0] = V1.vector.vector4_u32[0];
+    Result.vector.vector4_u32[1] = V2.vector.vector4_u32[0];
+    Result.vector.vector4_u32[2] = V1.vector.vector4_u32[1];
+    Result.vector.vector4_u32[3] = V2.vector.vector4_u32[1];
+
+    return Result;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorMergeZW(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::UnpackHigh(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    XMVector Result;
+
+    Result.vector.vector4_u32[0] = V1.vector.vector4_u32[2];
+    Result.vector.vector4_u32[1] = V2.vector.vector4_u32[2];
+    Result.vector.vector4_u32[2] = V1.vector.vector4_u32[3];
+    Result.vector.vector4_u32[3] = V2.vector.vector4_u32[3];
+
+    return Result;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorShiftLeft(
+    FXMVector V1, FXMVector V2, unsigned __int32 Elements)
+{
+    return XMVectorPermute(V1, V2, Elements, Elements + 1, Elements + 2, Elements + 3);
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorRotateLeft(FXMVector V, unsigned __int32 Elements)
+{
+    return XMVectorSwizzle(V, Elements & 3, (Elements + 1) & 3, (Elements + 2) & 3, (Elements + 3) & 3);
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorRotateRight(FXMVector V, unsigned __int32 Elements)
+{
+    return XMVectorSwizzle(V, (4 - Elements) & 3, (5 - Elements) & 3, (6 - Elements) & 3, (7 - Elements) & 3);
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorInsert(
+    FXMVector VD, FXMVector VS, unsigned __int32 VSLeftRotateElements,
+    unsigned __int32 Select0, unsigned __int32 Select1,
+    unsigned __int32 Select2, unsigned __int32 Select3)
+{
+    XMVector Control = XMVectorSelectControl(Select0 & 1, Select1 & 1, Select2 & 1, Select3 & 1);
+    return XMVectorSelect(VD, XMVectorRotateLeft(VS, VSLeftRotateElements), Control);
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorEqual(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::CompareEqual(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V1.vector.vector4_f32.X == V2.vector.vector4_f32.X) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V1.vector.vector4_f32.Y == V2.vector.vector4_f32.Y) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V1.vector.vector4_f32.Z == V2.vector.vector4_f32.Z) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V1.vector.vector4_f32.W == V2.vector.vector4_f32.W) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorEqualR(
+    unsigned __int32% CR, FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    Vector128<float> vTemp = Sse::CompareEqual(V1.m128.m128_f32, V2.m128.m128_f32);
+    CR = 0;
+    int iTest = Sse::MoveMask(vTemp);
+    if(iTest == 0xf)
+    {
+        CR = CRMaskCR6True;
+    }
+    else if(!iTest)
+    {
+        CR = CRMaskCR6False;
+    }
+
+    return CAST_TO(vTemp, XMVector);
+#else
+    unsigned __int32 ux = (V1.vector.vector4_f32.X == V2.vector.vector4_f32.X) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uy = (V1.vector.vector4_f32.Y == V2.vector.vector4_f32.Y) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uz = (V1.vector.vector4_f32.Z == V2.vector.vector4_f32.Z) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uw = (V1.vector.vector4_f32.W == V2.vector.vector4_f32.W) ? 0xFFFFFFFFU : 0;
+    CR = 0;
+    if(ux & uy & uz & uw)
+    {
+        CR = CRMaskCR6True;
+    }
+    else if(!(ux | uy | uz | uw))
+    {
+        CR = CRMaskCR6False;
+    }
+
+    return CAST_TO(Vector4UInt(ux, uy, uz, uw), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorEqualInt(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse2::CompareEqual(V1.m128.m128_u32, V2.m128.m128_u32), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V1.vector.vector4_u32[0] == V2.vector.vector4_u32[0]) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V1.vector.vector4_u32[1] == V2.vector.vector4_u32[1]) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V1.vector.vector4_u32[2] == V2.vector.vector4_u32[2]) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V1.vector.vector4_u32[3] == V2.vector.vector4_u32[3]) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorEqualIntR(
+    unsigned __int32% CR, FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    Vector128<unsigned __int32> V = Sse2::CompareEqual(V1.m128.m128_u32, V2.m128.m128_u32);
+    int iTemp = Sse::MoveMask(Vector128::AsSingle(V));
+    CR = 0;
+    if(iTemp == 0x0F)
+    {
+        CR = CRMaskCR6True;
+    }
+    else if(!iTemp)
+    {
+        CR = CRMaskCR6False;
+    }
+
+    return CAST_TO(V, XMVector);
+#else
+    XMVector Control = XMVectorEqualInt(V1, V2);
+
+    CR = 0;
+    if(XMVector4EqualInt(Control, XMVectorTrueInt()))
+    {
+        CR |= CRMaskCR6True;
+    }
+    else if(XMVector4EqualInt(Control, XMVectorFalseInt()))
+    {
+        CR |= CRMaskCR6False;
+    }
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorNearEqual(FXMVector V1, FXMVector V2, FXMVector Epsilon)
+{
+#ifdef _NETCORE
+    Vector128<float> vDelta = Sse::Subtract(V1.m128.m128_f32, V2.m128.m128_f32);
+    Vector128<float> vTemp = Vector128::Create(0.0f);
+    vTemp = Sse::Subtract(vTemp, vDelta);
+    vTemp = Sse::Max(vTemp, vDelta);
+    vTemp = Sse::CompareLessThanOrEqual(vTemp, Epsilon.m128.m128_f32);
+    return CAST_TO(vTemp, XMVector);
+#else
+    float fDeltax = V1.vector.vector4_f32.X - V2.vector.vector4_f32.X;
+    float fDeltay = V1.vector.vector4_f32.Y - V2.vector.vector4_f32.Y;
+    float fDeltaz = V1.vector.vector4_f32.Z - V2.vector.vector4_f32.Z;
+    float fDeltaw = V1.vector.vector4_f32.W - V2.vector.vector4_f32.W;
+
+    fDeltax = System::Math::Abs(fDeltax);
+    fDeltay = System::Math::Abs(fDeltay);
+    fDeltaz = System::Math::Abs(fDeltaz);
+    fDeltaw = System::Math::Abs(fDeltaw);
+
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (fDeltax <= Epsilon.vector.vector4_f32.X) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[1] = (fDeltay <= Epsilon.vector.vector4_f32.Y) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[2] = (fDeltaz <= Epsilon.vector.vector4_f32.Z) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[3] = (fDeltaw <= Epsilon.vector.vector4_f32.W) ? 0xFFFFFFFFU : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorNotEqual(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::CompareNotEqual(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V1.vector.vector4_f32.X != V2.vector.vector4_f32.X) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V1.vector.vector4_f32.Y != V2.vector.vector4_f32.Y) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V1.vector.vector4_f32.Z != V2.vector.vector4_f32.Z) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V1.vector.vector4_f32.W != V2.vector.vector4_f32.W) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorNotEqualInt(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    Vector128<unsigned __int32> V = Sse2::CompareEqual(V1.m128.m128_u32, V2.m128.m128_u32);
+    return CAST_TO(Sse::Xor(Vector128::AsSingle(V), Vector128::AsSingle(g_XMNegOneMask)), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V1.vector.vector4_u32[0] != V2.vector.vector4_u32[0]) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V1.vector.vector4_u32[1] != V2.vector.vector4_u32[1]) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V1.vector.vector4_u32[2] != V2.vector.vector4_u32[2]) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V1.vector.vector4_u32[3] != V2.vector.vector4_u32[3]) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorGreater(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::CompareGreaterThan(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V1.vector.vector4_f32.X > V2.vector.vector4_f32.X) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V1.vector.vector4_f32.Y > V2.vector.vector4_f32.Y) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V1.vector.vector4_f32.Z > V2.vector.vector4_f32.Z) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V1.vector.vector4_f32.W > V2.vector.vector4_f32.W) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorGreaterR(
+    unsigned __int32% CR, FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    Vector128<float> vTemp = Sse::CompareGreaterThan(V1.m128.m128_f32, V2.m128.m128_f32);
+    CR = 0;
+    int iTest = Sse::MoveMask(vTemp);
+    if(iTest == 0xf)
+    {
+        CR = CRMaskCR6True;
+    }
+    else if(!iTest)
+    {
+        CR = CRMaskCR6False;
+    }
+
+    return CAST_TO(vTemp, XMVector);
+#else
+    unsigned __int32 ux = (V1.vector.vector4_f32.X > V2.vector.vector4_f32.X) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uy = (V1.vector.vector4_f32.Y > V2.vector.vector4_f32.Y) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uz = (V1.vector.vector4_f32.Z > V2.vector.vector4_f32.Z) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uw = (V1.vector.vector4_f32.W > V2.vector.vector4_f32.W) ? 0xFFFFFFFFU : 0;
+    CR = 0;
+    if(ux & uy & uz & uw)
+    {
+        CR = CRMaskCR6True;
+    }
+    else if(!(ux | uy | uz | uw))
+    {
+        CR = CRMaskCR6False;
+    }
+
+    return CAST_TO(Vector4UInt(ux, uy, uz, uw), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorGreaterOrEqual(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::CompareGreaterThanOrEqual(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V1.vector.vector4_f32.X >= V2.vector.vector4_f32.X) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V1.vector.vector4_f32.Y >= V2.vector.vector4_f32.Y) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V1.vector.vector4_f32.Z >= V2.vector.vector4_f32.Z) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V1.vector.vector4_f32.W >= V2.vector.vector4_f32.W) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorGreaterOrEqualR(unsigned __int32% CR, FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    Vector128<float> vTemp = Sse::CompareGreaterThanOrEqual(V1.m128.m128_f32, V2.m128.m128_f32);
+    CR = 0;
+    int iTest = Sse::MoveMask(vTemp);
+    if(iTest == 0xf)
+    {
+        CR = CRMaskCR6True;
+    }
+    else if(!iTest)
+    {
+        CR = CRMaskCR6False;
+    }
+
+    return CAST_TO(vTemp, XMVector);
+#else
+    unsigned __int32 ux = (V1.vector.vector4_f32.X >= V2.vector.vector4_f32.X) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uy = (V1.vector.vector4_f32.Y >= V2.vector.vector4_f32.Y) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uz = (V1.vector.vector4_f32.Z >= V2.vector.vector4_f32.Z) ? 0xFFFFFFFFU : 0;
+    unsigned __int32 uw = (V1.vector.vector4_f32.W >= V2.vector.vector4_f32.W) ? 0xFFFFFFFFU : 0;
+    CR = 0;
+    if(ux & uy & uz & uw)
+    {
+        CR = CRMaskCR6True;
+    }
+    else if(!(ux | uy | uz | uw))
+    {
+        CR = CRMaskCR6False;
+    }
+
+    return CAST_TO(Vector4UInt(ux, uy, uz, uw), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorLess(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::CompareLessThan(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V1.vector.vector4_f32.X < V2.vector.vector4_f32.X) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V1.vector.vector4_f32.Y < V2.vector.vector4_f32.Y) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V1.vector.vector4_f32.Z < V2.vector.vector4_f32.Z) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V1.vector.vector4_f32.W < V2.vector.vector4_f32.W) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorLessOrEqual(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::CompareLessThanOrEqual(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V1.vector.vector4_f32.X <= V2.vector.vector4_f32.X) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V1.vector.vector4_f32.Y <= V2.vector.vector4_f32.Y) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V1.vector.vector4_f32.Z <= V2.vector.vector4_f32.Z) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V1.vector.vector4_f32.W <= V2.vector.vector4_f32.W) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorInBounds(FXMVector V, FXMVector Bounds)
+{
+#ifdef _NETCORE
+    Vector128<float> vTemp1 = Sse::CompareLessThanOrEqual(V.m128.m128_f32, Bounds.m128.m128_f32);
+    Vector128<float> vTemp2 = Sse::Multiply(Bounds.m128.m128_f32, g_XMNegativeOne);
+    vTemp2 = Sse::CompareLessThanOrEqual(vTemp2, V.m128.m128_f32);
+    vTemp1 = Sse::And(vTemp1, vTemp2);
+    return CAST_TO(vTemp1, XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = (V.vector.vector4_f32.X <= Bounds.vector.vector4_f32.X
+                                     && V.vector.vector4_f32.X >= -Bounds.vector.vector4_f32.X) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[1] = (V.vector.vector4_f32.Y <= Bounds.vector.vector4_f32.Y
+                                     && V.vector.vector4_f32.Y >= -Bounds.vector.vector4_f32.Y) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[2] = (V.vector.vector4_f32.Z <= Bounds.vector.vector4_f32.Z
+                                     && V.vector.vector4_f32.Z >= -Bounds.vector.vector4_f32.Z) ?
+        0xFFFFFFFF : 0;
+    Control.vector.vector4_u32[3] = (V.vector.vector4_f32.W <= Bounds.vector.vector4_f32.W
+                                     && V.vector.vector4_f32.W >= -Bounds.vector.vector4_f32.W) ?
+        0xFFFFFFFF : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorInBoundsR(unsigned __int32% CR, FXMVector V, FXMVector Bounds)
+{
+#ifdef _NETCORE
+    Vector128<float> vTemp1 = Sse::CompareLessThanOrEqual(V.m128.m128_f32, Bounds.m128.m128_f32);
+    Vector128<float> vTemp2 = Sse::Multiply(Bounds.m128.m128_f32, g_XMNegativeOne);
+    vTemp2 = Sse::CompareLessThanOrEqual(vTemp2, V.m128.m128_f32);
+    vTemp1 = Sse::And(vTemp1, vTemp2);
+
+    CR = 0;
+    if(Sse::MoveMask(vTemp1) == 0xf)
+    {
+        CR = CRMaskCR6Bounds;
+    }
+    return CAST_TO(vTemp1, XMVector);
+#else
+    unsigned __int32 ux = (V.vector.vector4_f32.X <= Bounds.vector.vector4_f32.X
+                                     && V.vector.vector4_f32.X >= -Bounds.vector.vector4_f32.X) ?
+        0xFFFFFFFF : 0;
+    unsigned __int32 uy = (V.vector.vector4_f32.Y <= Bounds.vector.vector4_f32.Y
+                                     && V.vector.vector4_f32.Y >= -Bounds.vector.vector4_f32.Y) ?
+        0xFFFFFFFF : 0;
+    unsigned __int32 uz = (V.vector.vector4_f32.Z <= Bounds.vector.vector4_f32.Z
+                                     && V.vector.vector4_f32.Z >= -Bounds.vector.vector4_f32.Z) ?
+        0xFFFFFFFF : 0;
+    unsigned __int32 uw = (V.vector.vector4_f32.W <= Bounds.vector.vector4_f32.W
+                                     && V.vector.vector4_f32.W >= -Bounds.vector.vector4_f32.W) ?
+        0xFFFFFFFF : 0;
+
+    CR = 0;
+    if(ux & uy & uz & uw)
+    {
+        CR = CRMaskCR6Bounds;
+    }
+    return CAST_TO(Vector4UInt(ux, uy, uz, uw), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorIsNaN(FXMVector V)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::CompareNotEqual(V.m128.m128_f32, V.m128.m128_f32), XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = Single::IsNaN(V.vector.vector4_f32.X) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[1] = Single::IsNaN(V.vector.vector4_f32.Y) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[2] = Single::IsNaN(V.vector.vector4_f32.Z) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[3] = Single::IsNaN(V.vector.vector4_f32.W) ? 0xFFFFFFFFU : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorIsInfinite(FXMVector V)
+{
+#ifdef _NETCORE
+    Vector128<float> vTemp = Sse::And(V.m128.m128_f32, Vector128::AsSingle(g_XMAbsMask));
+    vTemp = Sse::CompareEqual(vTemp, Vector128::AsSingle(g_XMInfinity));
+    return CAST_TO(vTemp, XMVector);
+#else
+    XMVector Control;
+
+    Control.vector.vector4_u32[0] = Single::IsInfinity(V.vector.vector4_f32.X) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[1] = Single::IsInfinity(V.vector.vector4_f32.Y) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[2] = Single::IsInfinity(V.vector.vector4_f32.Z) ? 0xFFFFFFFFU : 0;
+    Control.vector.vector4_u32[3] = Single::IsInfinity(V.vector.vector4_f32.W) ? 0xFFFFFFFFU : 0;
+
+    return Control;
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorMin(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::Min(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    return CAST_TO(Vector4::Min(V1.vector.vector4_f32, V2.vector.vector4_f32), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorMax(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    return CAST_TO(Sse::Max(V1.m128.m128_f32, V2.m128.m128_f32), XMVector);
+#else
+    return CAST_TO(Vector4::Max(V1.vector.vector4_f32, V2.vector.vector4_f32), XMVector);
+#endif
+}
+
+XMVector DirectXNet::Math::DXMath::XMVectorRound(FXMVector V)
+{
+#ifdef _NETCORE
+    Vector128<float> sign = Sse::And(V.m128.m128_f32, Vector128::AsSingle(g_XMNegativeZero));
+    Vector128<float> sMagic = Sse::Or(g_XMNoFraction, sign);
+    Vector128<float> R1 = Sse::Add(V.m128.m128_f32, sMagic);
+    R1 = Sse::Subtract(R1, sMagic);
+    Vector128<float> R2 = Sse::And(V.m128.m128_f32, Vector128::AsSingle(g_XMAbsMask));
+    Vector128<float> mask = Sse::CompareLessThanOrEqual(R2, g_XMNoFraction);
+    R2 = Sse::AndNot(mask, V.m128.m128_f32);
+    return CAST_TO(Sse::Xor(R1, R2), XMVector);
+#else
+    return CAST_TO(Vector4(
+        (float)System::Math::Round(V.vector.vector4_f32.X),
+        (float)System::Math::Round(V.vector.vector4_f32.Y),
+        (float)System::Math::Round(V.vector.vector4_f32.Z),
+        (float)System::Math::Round(V.vector.vector4_f32.W)
+    ), XMVector);
 #endif
 }
 
@@ -1133,6 +2478,19 @@ XMVector DirectXNet::Math::DXMath::XMVectorScale(FXMVector V, float ScaleFactor)
     return CAST_TO(Sse::Multiply(vResult, V.m128.m128_f32), XMVector);
 #else
     return CAST_TO(V.vector.vector4_f32 * ScaleFactor, XMVector);
+#endif
+}
+
+bool DirectXNet::Math::DXMath::XMVector4EqualInt(FXMVector V1, FXMVector V2)
+{
+#ifdef _NETCORE
+    Vector128<unsigned __int32> vTemp = Sse2::CompareEqual(V1.m128.m128_u32, V2.m128.m128_u32);
+    return ((Sse::MoveMask(Vector128::AsSingle(vTemp)) == 0xf) != 0);
+#else
+    return (((V1.vector.vector4_u32[0] == V2.vector.vector4_u32[0]) &&
+             (V1.vector.vector4_u32[1] == V2.vector.vector4_u32[1]) &&
+             (V1.vector.vector4_u32[2] == V2.vector.vector4_u32[2]) &&
+             (V1.vector.vector4_u32[3] == V2.vector.vector4_u32[3])) != 0);
 #endif
 }
 

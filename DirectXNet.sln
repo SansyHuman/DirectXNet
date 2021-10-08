@@ -5,30 +5,30 @@ VisualStudioVersion = 16.0.31605.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXNet", "DirectXNet\DirectXNet.vcxproj", "{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectXNetEx", "DirectXNetEx\DirectXNetEx.csproj", "{1BAD2E78-B63B-45D8-8986-9DA19B54A669}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug .NET Framework|x64 = Debug .NET Framework|x64
-		Debug .NET Framework|x86 = Debug .NET Framework|x86
 		Debug .NET|x64 = Debug .NET|x64
-		Debug .NET|x86 = Debug .NET|x86
 		Release .NET Framework|x64 = Release .NET Framework|x64
-		Release .NET Framework|x86 = Release .NET Framework|x86
 		Release .NET|x64 = Release .NET|x64
-		Release .NET|x86 = Release .NET|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Debug .NET Framework|x64.ActiveCfg = Debug .NET Framework|x64
 		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Debug .NET Framework|x64.Build.0 = Debug .NET Framework|x64
-		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Debug .NET Framework|x86.ActiveCfg = Debug .NET Framework|x64
 		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Debug .NET|x64.ActiveCfg = Debug .NET|x64
 		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Debug .NET|x64.Build.0 = Debug .NET|x64
-		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Debug .NET|x86.ActiveCfg = Debug .NET|x64
 		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Release .NET Framework|x64.ActiveCfg = Release .NET Framework|x64
 		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Release .NET Framework|x64.Build.0 = Release .NET Framework|x64
-		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Release .NET Framework|x86.ActiveCfg = Release .NET Framework|x64
 		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Release .NET|x64.ActiveCfg = Release .NET|x64
 		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Release .NET|x64.Build.0 = Release .NET|x64
-		{9ACC3F14-ED1D-4FC1-8CB0-D08D29C4F5E0}.Release .NET|x86.ActiveCfg = Release .NET|x64
+		{1BAD2E78-B63B-45D8-8986-9DA19B54A669}.Debug .NET Framework|x64.ActiveCfg = Debug .NET|x64
+		{1BAD2E78-B63B-45D8-8986-9DA19B54A669}.Debug .NET|x64.ActiveCfg = Debug .NET|x64
+		{1BAD2E78-B63B-45D8-8986-9DA19B54A669}.Debug .NET|x64.Build.0 = Debug .NET|x64
+		{1BAD2E78-B63B-45D8-8986-9DA19B54A669}.Release .NET Framework|x64.ActiveCfg = Release .NET|x64
+		{1BAD2E78-B63B-45D8-8986-9DA19B54A669}.Release .NET|x64.ActiveCfg = Release .NET|x64
+		{1BAD2E78-B63B-45D8-8986-9DA19B54A669}.Release .NET|x64.Build.0 = Release .NET|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

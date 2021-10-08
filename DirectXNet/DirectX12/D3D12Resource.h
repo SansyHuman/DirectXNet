@@ -57,7 +57,7 @@ namespace DirectXNet
             /// so that CPU reads to this address reflect any modifications made by the GPU.
             /// </summary>
             /// <param name="subresource">Specifies the index number of the subresource.</param>
-            /// <param name="readRange">A pointer to a D3D12_RANGE structure that describes the range
+            /// <param name="readRange">An optional D3D12_RANGE structure that describes the range
             /// of memory to access.
             /// This indicates the region the CPU might read, and the coordinates are subresource -
             /// relative. A null pointer indicates the entire subresource might be read by the CPU. It
@@ -66,7 +66,7 @@ namespace DirectXNet
             /// <returns>A pointer to the resource data if succeeded.</returns>
             IntPtr Map(
                 unsigned int subresource,
-                [Optional] Nullable<D3D12Range> readRange
+                Nullable<D3D12Range> readRange
             );
 
             /// <summary>

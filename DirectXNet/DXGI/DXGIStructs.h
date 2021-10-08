@@ -5,6 +5,7 @@
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
+using namespace System::Runtime::CompilerServices;
 
 namespace DirectXNet
 {
@@ -647,7 +648,7 @@ namespace DirectXNet
         /// Represents a color value with alpha, which is used for transparency.
         /// </summary>
         [StructLayout(LayoutKind::Sequential)]
-        public value struct D3DColorValue
+        public value struct D3DColorValue : IEquatable<D3DColorValue>
         {
             /// <summary>
             /// Floating-point value that specifies the red component of a color. This
@@ -681,6 +682,22 @@ namespace DirectXNet
             float a;
 
             D3DColorValue(float r, float g, float b, float a);
+
+            property float default[int]
+            {
+                float get(int index);
+                void set(int index, float value);
+            }
+
+            static bool operator==(
+                [In][IsReadOnly] D3DColorValue% lhs, [In][IsReadOnly] D3DColorValue% rhs);
+
+            static bool operator!=(
+                [In][IsReadOnly] D3DColorValue% lhs, [In][IsReadOnly] D3DColorValue% rhs);
+
+            virtual bool Equals(Object^ obj) override;
+
+            virtual bool Equals(D3DColorValue other);
         };
 
         /// <summary>

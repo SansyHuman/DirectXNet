@@ -7,7 +7,10 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace System::Runtime::CompilerServices;
+using namespace System::Collections::Generic;
+using namespace System::Collections::ObjectModel;
 using namespace msclr;
+using namespace msclr::interop;
 using namespace DirectXNet::Common;
 using namespace DirectXNet::DXGI;
 
@@ -22,6 +25,8 @@ namespace DirectXNet
     {
         ref class D3D12Device;
         ref class D3D12Resource;
+        ref class D3D12GraphicsCommandList;
+        ref class D3D12CommandQueue;
 
         /// <summary>
         /// Used to determine which kinds of command lists are capable of supporting various operations.
@@ -2480,42 +2485,42 @@ namespace DirectXNet
         /// </summary>
         public enum class D3D12Filter : UINT
         {
-            MinMagMipPoint             = D3D12_FILTER_MIN_MAG_MIP_POINT,
-            MinMagPointMipLinear       = D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR,
-            MinPointMagLinearMipPoint  = D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT,
-            MinPointMagMipLinear       = D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR,
-            MinLinearMagMipPoint       = D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT,
+            MinMagMipPoint = D3D12_FILTER_MIN_MAG_MIP_POINT,
+            MinMagPointMipLinear = D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR,
+            MinPointMagLinearMipPoint = D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            MinPointMagMipLinear = D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR,
+            MinLinearMagMipPoint = D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT,
             MinLinearMagPointMipLinear = D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
-            MinMagLinearMipPoint       = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,
-            MinMagMipLinear            = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-            Anisotropic                = D3D12_FILTER_ANISOTROPIC,
-            ComparisonMinMagMipPoint              = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT,
-            ComparisionMinMagPointMipLinear       = D3D12_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR,
-            ComparisionMinPointMagLinearMipPoint  = D3D12_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT,
-            ComparisionMinPointMagMipLinear       = D3D12_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR,
-            ComparisionMinLinearMagMipPoint       = D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT,
+            MinMagLinearMipPoint = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,
+            MinMagMipLinear = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+            Anisotropic = D3D12_FILTER_ANISOTROPIC,
+            ComparisonMinMagMipPoint = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT,
+            ComparisionMinMagPointMipLinear = D3D12_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR,
+            ComparisionMinPointMagLinearMipPoint = D3D12_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            ComparisionMinPointMagMipLinear = D3D12_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR,
+            ComparisionMinLinearMagMipPoint = D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT,
             ComparisionMinLinearMagPointMipLinear = D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
-            ComparisionMinMagLinearMipPoint       = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
-            ComparisionMinMagMipLinear            = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR,
-            ComparisionAnisotropic                = D3D12_FILTER_COMPARISON_ANISOTROPIC,
-            MinimumMinMagMipPoint             = D3D12_FILTER_MINIMUM_MIN_MAG_MIP_POINT,
-            MinimumMinMagPointMipLinear       = D3D12_FILTER_MINIMUM_MIN_MAG_POINT_MIP_LINEAR,
-            MinimumMinPointMagLinearMipPoint  = D3D12_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT,
-            MinimumMinPointMagMipLinear       = D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR,
-            MinimumMinLinearMagMipPoint       = D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT,
+            ComparisionMinMagLinearMipPoint = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
+            ComparisionMinMagMipLinear = D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR,
+            ComparisionAnisotropic = D3D12_FILTER_COMPARISON_ANISOTROPIC,
+            MinimumMinMagMipPoint = D3D12_FILTER_MINIMUM_MIN_MAG_MIP_POINT,
+            MinimumMinMagPointMipLinear = D3D12_FILTER_MINIMUM_MIN_MAG_POINT_MIP_LINEAR,
+            MinimumMinPointMagLinearMipPoint = D3D12_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            MinimumMinPointMagMipLinear = D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR,
+            MinimumMinLinearMagMipPoint = D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT,
             MinimumMinLinearMagPointMipLinear = D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
-            MinimumMinMagLinearMipPoint       = D3D12_FILTER_MINIMUM_MIN_MAG_LINEAR_MIP_POINT,
-            MinimumMinMagMipLinear            = D3D12_FILTER_MINIMUM_MIN_MAG_MIP_LINEAR,
-            MinimumAnisotropic                = D3D12_FILTER_MINIMUM_ANISOTROPIC,
-            MaximumMinMagMipPoint             = D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_POINT,
-            MaximumMinMagPointMipLinear       = D3D12_FILTER_MAXIMUM_MIN_MAG_POINT_MIP_LINEAR,
-            MaximumMinPointMagLinearMipPoint  = D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT,
-            MaximumMinPointMagMipLinear       = D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_MIP_LINEAR,
-            MaximumMinLinearMagMipPoint       = D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_MIP_POINT,
+            MinimumMinMagLinearMipPoint = D3D12_FILTER_MINIMUM_MIN_MAG_LINEAR_MIP_POINT,
+            MinimumMinMagMipLinear = D3D12_FILTER_MINIMUM_MIN_MAG_MIP_LINEAR,
+            MinimumAnisotropic = D3D12_FILTER_MINIMUM_ANISOTROPIC,
+            MaximumMinMagMipPoint = D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_POINT,
+            MaximumMinMagPointMipLinear = D3D12_FILTER_MAXIMUM_MIN_MAG_POINT_MIP_LINEAR,
+            MaximumMinPointMagLinearMipPoint = D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT,
+            MaximumMinPointMagMipLinear = D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_MIP_LINEAR,
+            MaximumMinLinearMagMipPoint = D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_MIP_POINT,
             MaximumMinLinearMagPointMipLinear = D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
-            MaximumMinMagLinearMipPoint       = D3D12_FILTER_MAXIMUM_MIN_MAG_LINEAR_MIP_POINT,
-            MaximumMinMagMipLinear            = D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR,
-            MaximumAnisotropic                = D3D12_FILTER_MAXIMUM_ANISOTROPIC
+            MaximumMinMagLinearMipPoint = D3D12_FILTER_MAXIMUM_MIN_MAG_LINEAR_MIP_POINT,
+            MaximumMinMagMipLinear = D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR,
+            MaximumAnisotropic = D3D12_FILTER_MAXIMUM_ANISOTROPIC
         };
 
         /// <summary>
@@ -2731,6 +2736,219 @@ namespace DirectXNet
             /// Indicates white, with the alpha component as fully opaque.
             /// </summary>
             OpaqueWhite = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE
+        };
+
+        /// <summary>
+        /// Specifies options for root signature layout.
+        /// </summary>
+        [Flags]
+        public enum class D3D12RootSignatureFlags : UINT
+        {
+            /// <summary>
+            /// Indicates default behavior.
+            /// </summary>
+            None = D3D12_ROOT_SIGNATURE_FLAG_NONE,
+
+            /// <summary>
+            /// The app is opting in to using the Input Assembler (requiring an input layout that
+            /// defines a set of vertex buffer bindings). Omitting this flag can result in one root
+            /// argument space being saved on some hardware. Omit this flag if the Input Assembler
+            /// is not required, though the optimization is minor.
+            /// </summary>
+            AllowInputAssemblerInputLayout = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT,
+
+            /// <summary>
+            /// Denies the vertex shader access to the root signature.
+            /// </summary>
+            DenyVertexShaderRootAccess = D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS,
+
+            /// <summary>
+            /// Denies the hull shader access to the root signature.
+            /// </summary>
+            DenyHullShaderRootAccess = D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS,
+
+            /// <summary>
+            /// Denies the domain shader access to the root signature.
+            /// </summary>
+            DenyDomainShaderRootAccess = D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS,
+
+            /// <summary>
+            /// Denies the geometry shader access to the root signature.
+            /// </summary>
+            DenyGeometryShaderRootAccess = D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS,
+
+            /// <summary>
+            /// Denies the pixel shader access to the root signature.
+            /// </summary>
+            DenyPixelShaderRootAccess = D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS,
+
+            /// <summary>
+            /// The app is opting in to using Stream Output. Omitting this flag can result in one
+            /// root argument space being saved on some hardware. Omit this flag if Stream Output
+            /// is not required, though the optimization is minor.
+            /// </summary>
+            AllowStreamOutput = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT,
+
+            /// <summary>
+            /// The root signature is to be used with raytracing shaders to define resource
+            /// bindings sourced from shader records in shader tables. This flag cannot be combined
+            /// with any other root signature flags, which are all related to the graphics pipeline.
+            /// The absence of the flag means the root signature can be used with graphics or compute,
+            /// where the compute version is also shared with raytracing’s global root signature.
+            /// </summary>
+            LocalRootSignature = D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE,
+
+            /// <summary>
+            /// Denies the amplification shader access to the root signature.
+            /// </summary>
+            DenyAmplificationShaderRootAccess = D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS,
+
+            /// <summary>
+            /// Denies the mesh shader access to the root signature.
+            /// </summary>
+            DenyMeshShaderRootAccess = D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS,
+
+            /// <summary>
+            /// The shaders are allowed to index the CBV/SRV/UAV descriptor heap directly, using
+            /// the ResourceDescriptorHeap built-in variable.
+            /// </summary>
+            CbvSrvUavHeapDirectlyIndexed = D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED,
+
+            /// <summary>
+            /// The shaders are allowed to index the sampler descriptor heap directly, using the
+            /// SamplerDescriptorHeap built-in variable.
+            /// </summary>
+            SamplerHeapDirectlyIndexed = D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED
+        };
+
+        /// <summary>
+        /// Specifies the type of the indirect parameter.
+        /// </summary>
+        public enum class D3D12IndirectArgumentType : UINT
+        {
+            Draw = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW,
+            DrawIndexed = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED,
+            Dispatch = D3D12_INDIRECT_ARGUMENT_TYPE_DISPATCH,
+            VertexBufferView = D3D12_INDIRECT_ARGUMENT_TYPE_VERTEX_BUFFER_VIEW,
+            IndexBufferView = D3D12_INDIRECT_ARGUMENT_TYPE_INDEX_BUFFER_VIEW,
+            Constant = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT,
+            ConstantBufferView = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT_BUFFER_VIEW,
+            ShaderResourceView = D3D12_INDIRECT_ARGUMENT_TYPE_SHADER_RESOURCE_VIEW,
+            UnorderedAccessView = D3D12_INDIRECT_ARGUMENT_TYPE_UNORDERED_ACCESS_VIEW,
+            DispatchRays = D3D12_INDIRECT_ARGUMENT_TYPE_DISPATCH_RAYS,
+            DispatchMesh = D3D12_INDIRECT_ARGUMENT_TYPE_DISPATCH_MESH
+        };
+
+        /// <summary>
+        /// Defines constants that specify render/compute GPU operations.
+        /// </summary>
+        public enum class D3D12AutoBreadcrumbOp : UINT
+        {
+            SetMarker = D3D12_AUTO_BREADCRUMB_OP_SETMARKER,
+            BeginEvent = D3D12_AUTO_BREADCRUMB_OP_BEGINEVENT,
+            EndEvent = D3D12_AUTO_BREADCRUMB_OP_ENDEVENT,
+            DrawInstanced = D3D12_AUTO_BREADCRUMB_OP_DRAWINSTANCED,
+            DrawIndexedInstanced = D3D12_AUTO_BREADCRUMB_OP_DRAWINDEXEDINSTANCED,
+            ExecuteIndirect = D3D12_AUTO_BREADCRUMB_OP_EXECUTEINDIRECT,
+            Dispatch = D3D12_AUTO_BREADCRUMB_OP_DISPATCH,
+            CopyBufferRegion = D3D12_AUTO_BREADCRUMB_OP_COPYBUFFERREGION,
+            CopyTextureRegion = D3D12_AUTO_BREADCRUMB_OP_COPYTEXTUREREGION,
+            CopyResource = D3D12_AUTO_BREADCRUMB_OP_COPYRESOURCE,
+            CopyTiles = D3D12_AUTO_BREADCRUMB_OP_COPYTILES,
+            ResolveSubresource = D3D12_AUTO_BREADCRUMB_OP_RESOLVESUBRESOURCE,
+            ClearRenderTargetView = D3D12_AUTO_BREADCRUMB_OP_CLEARRENDERTARGETVIEW,
+            ClearUnorderedAccessView = D3D12_AUTO_BREADCRUMB_OP_CLEARUNORDEREDACCESSVIEW,
+            ClearDepthStencilView = D3D12_AUTO_BREADCRUMB_OP_CLEARDEPTHSTENCILVIEW,
+            ResourceBarrier = D3D12_AUTO_BREADCRUMB_OP_RESOURCEBARRIER,
+            ExecuteBundle = D3D12_AUTO_BREADCRUMB_OP_EXECUTEBUNDLE,
+            Present = D3D12_AUTO_BREADCRUMB_OP_PRESENT,
+            ResolveQueryData = D3D12_AUTO_BREADCRUMB_OP_RESOLVEQUERYDATA,
+            BeginSubmission = D3D12_AUTO_BREADCRUMB_OP_BEGINSUBMISSION,
+            EndSubmission = D3D12_AUTO_BREADCRUMB_OP_ENDSUBMISSION,
+            DecodeFrame = D3D12_AUTO_BREADCRUMB_OP_DECODEFRAME,
+            ProcessFrames = D3D12_AUTO_BREADCRUMB_OP_PROCESSFRAMES,
+            AtomicCopyBufferUInt = D3D12_AUTO_BREADCRUMB_OP_ATOMICCOPYBUFFERUINT,
+            AtomicCopyBufferUInt64 = D3D12_AUTO_BREADCRUMB_OP_ATOMICCOPYBUFFERUINT64,
+            ResolveSubresourceRegion = D3D12_AUTO_BREADCRUMB_OP_RESOLVESUBRESOURCEREGION,
+            WriteBufferImmediate = D3D12_AUTO_BREADCRUMB_OP_WRITEBUFFERIMMEDIATE,
+            DecodeFrame1 = D3D12_AUTO_BREADCRUMB_OP_DECODEFRAME1,
+            SetProtectedResourceSession = D3D12_AUTO_BREADCRUMB_OP_SETPROTECTEDRESOURCESESSION,
+            DecodeFrame2 = D3D12_AUTO_BREADCRUMB_OP_DECODEFRAME2,
+            ProcessFrames1 = D3D12_AUTO_BREADCRUMB_OP_PROCESSFRAMES1,
+            BuildRaytracingAccelerationStructure = D3D12_AUTO_BREADCRUMB_OP_BUILDRAYTRACINGACCELERATIONSTRUCTURE,
+            EmitRaytracingAccelerationStructurePostBuildInfo = D3D12_AUTO_BREADCRUMB_OP_EMITRAYTRACINGACCELERATIONSTRUCTUREPOSTBUILDINFO,
+            CopyRaytracingAccelerationStructure = D3D12_AUTO_BREADCRUMB_OP_COPYRAYTRACINGACCELERATIONSTRUCTURE,
+            DispatchRays = D3D12_AUTO_BREADCRUMB_OP_DISPATCHRAYS,
+            InitializeMetaCommand = D3D12_AUTO_BREADCRUMB_OP_INITIALIZEMETACOMMAND,
+            ExecuteMetaCommand = D3D12_AUTO_BREADCRUMB_OP_EXECUTEMETACOMMAND,
+            EstimateMotion = D3D12_AUTO_BREADCRUMB_OP_ESTIMATEMOTION,
+            ResolveMotionVectorHeap = D3D12_AUTO_BREADCRUMB_OP_RESOLVEMOTIONVECTORHEAP,
+            SetPipelineState1 = D3D12_AUTO_BREADCRUMB_OP_SETPIPELINESTATE1,
+            InitializeExtensionCommand = D3D12_AUTO_BREADCRUMB_OP_INITIALIZEEXTENSIONCOMMAND,
+            ExecuteExtensionCommand = D3D12_AUTO_BREADCRUMB_OP_EXECUTEEXTENSIONCOMMAND,
+            DispatchMesh = D3D12_AUTO_BREADCRUMB_OP_DISPATCHMESH,
+            EncodeFrame = D3D12_AUTO_BREADCRUMB_OP_ENCODEFRAME,
+            ResolveEncodeOutputMetadata = D3D12_AUTO_BREADCRUMB_OP_RESOLVEENCODEROUTPUTMETADATA
+        };
+
+        /// <summary>
+        /// Congruent with, and numerically equivalent to, D3D12DDI_HANDLETYPE enumeration values.
+        /// </summary>
+        public enum class D3D12DREDAllocationType : UINT
+        {
+            CommandQueue = D3D12_DRED_ALLOCATION_TYPE_COMMAND_QUEUE,
+            CommandAllocator = D3D12_DRED_ALLOCATION_TYPE_COMMAND_ALLOCATOR,
+            PipelineState = D3D12_DRED_ALLOCATION_TYPE_PIPELINE_STATE,
+            CommandList = D3D12_DRED_ALLOCATION_TYPE_COMMAND_LIST,
+            Fence = D3D12_DRED_ALLOCATION_TYPE_FENCE,
+            DescriptorHeap = D3D12_DRED_ALLOCATION_TYPE_DESCRIPTOR_HEAP,
+            Heap = D3D12_DRED_ALLOCATION_TYPE_HEAP,
+            QueryHeap = D3D12_DRED_ALLOCATION_TYPE_QUERY_HEAP,
+            CommandSignature = D3D12_DRED_ALLOCATION_TYPE_COMMAND_SIGNATURE,
+            PipelineLibrary = D3D12_DRED_ALLOCATION_TYPE_PIPELINE_LIBRARY,
+            VideoDecoder = D3D12_DRED_ALLOCATION_TYPE_VIDEO_DECODER,
+            VideoProcessor = D3D12_DRED_ALLOCATION_TYPE_VIDEO_PROCESSOR,
+            Resource = D3D12_DRED_ALLOCATION_TYPE_RESOURCE,
+            Pass = D3D12_DRED_ALLOCATION_TYPE_PASS,
+            CryptoSession = D3D12_DRED_ALLOCATION_TYPE_CRYPTOSESSION,
+            CryptoSessionPolicy = D3D12_DRED_ALLOCATION_TYPE_CRYPTOSESSIONPOLICY,
+            ProtectedResourceSession = D3D12_DRED_ALLOCATION_TYPE_PROTECTEDRESOURCESESSION,
+            VideoDecoderHeap = D3D12_DRED_ALLOCATION_TYPE_VIDEO_DECODER_HEAP,
+            CommandPool = D3D12_DRED_ALLOCATION_TYPE_COMMAND_POOL,
+            CommandRecorder = D3D12_DRED_ALLOCATION_TYPE_COMMAND_RECORDER,
+            StateObject = D3D12_DRED_ALLOCATION_TYPE_STATE_OBJECT,
+            MetaCommand = D3D12_DRED_ALLOCATION_TYPE_METACOMMAND,
+            SchedulingGroup = D3D12_DRED_ALLOCATION_TYPE_SCHEDULINGGROUP,
+            VideoMotionEstimator = D3D12_DRED_ALLOCATION_TYPE_VIDEO_MOTION_ESTIMATOR,
+            VideoMotionVectorHeap = D3D12_DRED_ALLOCATION_TYPE_VIDEO_MOTION_VECTOR_HEAP,
+            VideoExtensionCommand = D3D12_DRED_ALLOCATION_TYPE_VIDEO_EXTENSION_COMMAND,
+            VideoEncoder = D3D12_DRED_ALLOCATION_TYPE_VIDEO_ENCODER,
+            VideoEncoderHeap = D3D12_DRED_ALLOCATION_TYPE_VIDEO_ENCODER_HEAP,
+            Invalid = D3D12_DRED_ALLOCATION_TYPE_INVALID
+        };
+        
+        /// <summary>
+        /// Defines constants (used by the D3D12DeviceRemovedExtendedDataSettings) that specify how
+        /// individual Device Removed Extended Data (DRED) features are enabled. As of DRED version
+        /// 1.1, the default value for all settings is SystemControlled.
+        /// </summary>
+        public enum class D3D12DREDEnablement : UINT
+        {
+            /// <summary>
+            /// Specifies that a DRED feature is enabled only when DRED is turned on by the system
+            /// automatically (for example, when a user is reproducing a problem via FeedbackHub).
+            /// </summary>
+            SystemControlled = D3D12_DRED_ENABLEMENT_SYSTEM_CONTROLLED,
+
+            /// <summary>
+            /// Specifies that a DRED feature should be force-disabled, regardless of the system state.
+            /// </summary>
+            ForcedOff = D3D12_DRED_ENABLEMENT_FORCED_OFF,
+
+            /// <summary>
+            /// Specifies that a DRED feature should be force-enabled, regardless of the system state.
+            /// </summary>
+            ForcedOn = D3D12_DRED_ENABLEMENT_FORCED_ON
         };
 
 
@@ -5315,7 +5533,7 @@ namespace DirectXNet
         /// Describes the dimensions of a viewport.
         /// </summary>
         [StructLayout(LayoutKind::Sequential)]
-        public value struct D3D12Viewport
+        public value struct D3D12Viewport : IEquatable<D3D12Viewport>
         {
             /// <summary>
             /// X position of the left hand side of the viewport.
@@ -5378,6 +5596,18 @@ namespace DirectXNet
                 [Optional] Nullable<float> minDepth,
                 [Optional] Nullable<float> maxDepth
             );
+
+            static bool operator==(
+                [In][IsReadOnly] D3D12Viewport% lhs, [In][IsReadOnly] D3D12Viewport% rhs
+                );
+
+            static bool operator!=(
+                [In][IsReadOnly] D3D12Viewport% lhs, [In][IsReadOnly] D3D12Viewport% rhs
+                );
+
+            virtual bool Equals(Object^ other) override;
+
+            virtual bool Equals(D3D12Viewport other);
         };
 
         /// <summary>
@@ -6695,7 +6925,7 @@ namespace DirectXNet
         /// Describes a value used to optimize clear operations for a particular resource.
         /// </summary>
         [StructLayout(LayoutKind::Explicit, Size = 20)]
-        public value struct D3D12ClearValue
+        public value struct D3D12ClearValue : IEquatable<D3D12ClearValue>
         {
             /// <summary>
             /// Specifies one member of the DXGI_FORMAT enum.
@@ -6728,6 +6958,16 @@ namespace DirectXNet
             /// Initializes the structure with depth and stencil.
             /// </summary>
             D3D12ClearValue(DXGIFormat format, float depth, unsigned char stencil);
+
+            static bool operator==(
+                [In][IsReadOnly] D3D12ClearValue% lhs, [In][IsReadOnly] D3D12ClearValue% rhs);
+
+            static bool operator!=(
+                [In][IsReadOnly] D3D12ClearValue% lhs, [In][IsReadOnly] D3D12ClearValue% rhs);
+
+            virtual bool Equals(Object^ obj) override;
+
+            virtual bool Equals(D3D12ClearValue other);
         };
 
         /// <summary>
@@ -7009,7 +7249,7 @@ namespace DirectXNet
                 unsigned int shaderRegister,
                 [Optional] Nullable<unsigned int> registerSpace
             );
-            
+
             /// <summary>
             /// Initializes the struct.
             /// </summary>
@@ -7237,20 +7477,105 @@ namespace DirectXNet
         [StructLayout(LayoutKind::Sequential)]
         public value struct D3D12StaticSamplerDesc
         {
+            /// <summary>
+            /// The filtering method to use when sampling a texture, as a D3D12Filter
+            /// enumeration constant.
+            /// </summary>
             D3D12Filter Filter;
+
+            /// <summary>
+            /// Specifies the D3D12TextureAddressMode mode to use for resolving a u texture
+            /// coordinate that is outside the 0 to 1 range.
+            /// </summary>
             D3D12TextureAddressMode AddressU;
+
+            /// <summary>
+            /// Specifies the D3D12TextureAddressMode mode to use for resolving a v texture
+            /// coordinate that is outside the 0 to 1 range.
+            /// </summary>
             D3D12TextureAddressMode AddressV;
+
+            /// <summary>
+            /// Specifies the D3D12TextureAddressMode mode to use for resolving a w texture
+            /// coordinate that is outside the 0 to 1 range.
+            /// </summary>
             D3D12TextureAddressMode AddressW;
+
+            /// <summary>
+            /// Offset from the calculated mipmap level. For example, if Direct3D calculates that
+            /// a texture should be sampled at mipmap level 3 and MipLODBias is 2, then the texture
+            /// will be sampled at mipmap level 5.
+            /// </summary>
             float MipLODBias;
+
+            /// <summary>
+            /// Clamping value used if D3D12Filter::Anisotropic or D3D12Filter::ComparisonAnisotropic
+            /// is specified as the filter. Valid values are between 1 and 16.
+            /// </summary>
             unsigned int MaxAnisotropy;
+
+            /// <summary>
+            /// A function that compares sampled data against existing sampled data. The function
+            /// options are listed in D3D12ComparisonFunc.
+            /// </summary>
             D3D12ComparisonFunc ComparisonFunc;
+
+            /// <summary>
+            /// One member of D3D12StaticBorderColor, the border color to use if
+            /// D3D12TextureAddressMode::Border is specified for AddressU, AddressV, or AddressW.
+            /// Range must be between 0.0 and 1.0 inclusive.
+            /// </summary>
             D3D12StaticBorderColor BorderColor;
+
+            /// <summary>
+            /// Lower end of the mipmap range to clamp access to, where 0 is the largest and most
+            /// detailed mipmap level and any level higher than that is less detailed.
+            /// </summary>
             float MinLOD;
+
+            /// <summary>
+            /// Upper end of the mipmap range to clamp access to, where 0 is the largest and most
+            /// detailed mipmap level and any level higher than that is less detailed. This value
+            /// must be greater than or equal to MinLOD. To have no upper limit on LOD set this to
+            /// a large value such as Single::MaxValue.
+            /// </summary>
             float MaxLOD;
+
+            /// <summary>
+            /// The ShaderRegister and RegisterSpace parameters correspond to the binding syntax of
+            /// HLSL.
+            /// </summary>
             unsigned int ShaderRegister;
+
+            /// <summary>
+            /// See the description for ShaderRegister. Register space is optional; the default
+            /// register space is 0.
+            /// </summary>
             unsigned int RegisterSpace;
+
+            /// <summary>
+            /// Specifies the visibility of the sampler to the pipeline shaders, one member of
+            /// D3D12_SHADER_VISIBILITY.
+            /// </summary>
             D3D12ShaderVisibility ShaderVisibility;
 
+            /// <summary>
+            /// Creates a static sampler desc.
+            /// </summary>
+            /// <param name="filter">The default value is D3D12Filter::Anisotropic.</param>
+            /// <param name="addressU">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="addressV">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="addressW">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="mipLODBias">The default value is 0.</param>
+            /// <param name="maxAnisotropy">The default value is 16</param>
+            /// <param name="comparisonFunc">The default value is D3D12ComparisonFunc::LessEqual
+            /// </param>
+            /// <param name="borderColor">The default value is D3D12StaticBorderColor::OpaqueWhite
+            /// </param>
+            /// <param name="minLOD">The default value is 0.</param>
+            /// <param name="maxLOD">The default value is Single::MaxValue.</param>
+            /// <param name="shaderVisibility">The default value is D3D12ShaderVisibility::All</param>
+            /// <param name="registerSpace">The default value is 0</param>
             D3D12StaticSamplerDesc(
                 unsigned int shaderRegister,
                 [Optional] Nullable<D3D12Filter> filter,
@@ -7267,6 +7592,24 @@ namespace DirectXNet
                 [Optional] Nullable<unsigned int> registerSpace
             );
 
+            /// <summary>
+            /// Initializes a static sampler desc.
+            /// </summary>
+            /// <param name="samplerDesc">Reference to the struct to initialize.</param>
+            /// <param name="filter">The default value is D3D12Filter::Anisotropic.</param>
+            /// <param name="addressU">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="addressV">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="addressW">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="mipLODBias">The default value is 0.</param>
+            /// <param name="maxAnisotropy">The default value is 16</param>
+            /// <param name="comparisonFunc">The default value is D3D12ComparisonFunc::LessEqual
+            /// </param>
+            /// <param name="borderColor">The default value is D3D12StaticBorderColor::OpaqueWhite
+            /// </param>
+            /// <param name="minLOD">The default value is 0.</param>
+            /// <param name="maxLOD">The default value is Single::MaxValue.</param>
+            /// <param name="shaderVisibility">The default value is D3D12ShaderVisibility::All</param>
+            /// <param name="registerSpace">The default value is 0</param>
             static void Init(
                 D3D12StaticSamplerDesc% samplerDesc,
                 unsigned int shaderRegister,
@@ -7284,6 +7627,23 @@ namespace DirectXNet
                 [Optional] Nullable<unsigned int> registerSpace
             );
 
+            /// <summary>
+            /// Initializes a static sampler desc.
+            /// </summary>
+            /// <param name="filter">The default value is D3D12Filter::Anisotropic.</param>
+            /// <param name="addressU">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="addressV">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="addressW">The default value is D3D12TextureAddressMode::Wrap.</param>
+            /// <param name="mipLODBias">The default value is 0.</param>
+            /// <param name="maxAnisotropy">The default value is 16</param>
+            /// <param name="comparisonFunc">The default value is D3D12ComparisonFunc::LessEqual
+            /// </param>
+            /// <param name="borderColor">The default value is D3D12StaticBorderColor::OpaqueWhite
+            /// </param>
+            /// <param name="minLOD">The default value is 0.</param>
+            /// <param name="maxLOD">The default value is Single::MaxValue.</param>
+            /// <param name="shaderVisibility">The default value is D3D12ShaderVisibility::All</param>
+            /// <param name="registerSpace">The default value is 0</param>
             void Init(
                 unsigned int shaderRegister,
                 [Optional] Nullable<D3D12Filter> filter,
@@ -7299,6 +7659,608 @@ namespace DirectXNet
                 [Optional] Nullable<D3D12ShaderVisibility> shaderVisibility,
                 [Optional] Nullable<unsigned int> registerSpace
             );
+        };
+
+        /// <summary>
+        /// Describes the layout of a root signature version 1.0.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12RootSignatureDesc
+        {
+            /// <summary>
+            /// The number of slots in the root signature. This number is also the number of
+            /// elements in the pParameters array.
+            /// </summary>
+            unsigned int NumParameters;
+
+            /// <summary>
+            /// A pointer to an array of D3D12RootParameter structures for the slots in the root
+            /// signature.
+            /// </summary>
+            D3D12RootParameter* pParameters;
+
+            /// <summary>
+            /// Specifies the number of static samplers.
+            /// </summary>
+            unsigned int NumStaticSamplers;
+
+            /// <summary>
+            /// Pointer to one or more D3D12StaticSamplerDesc structures.
+            /// </summary>
+            D3D12StaticSamplerDesc* pStaticSamplers;
+
+            /// <summary>
+            /// A combination of D3D12RootSignatureFlags-typed values that are combined by using a
+            /// bitwise OR operation. The resulting value specifies options for the root signature
+            /// layout.
+            /// </summary>
+            D3D12RootSignatureFlags Flags;
+
+            /// <summary>
+            /// Creates the root signature desc.
+            /// </summary>
+            /// <param name="parameters">Array of root parameters. If there is no root parameter,
+            /// this can be null.</param>
+            /// <param name="staticSamplers">Array of static samplers. If there is no static sampler,
+            /// this can be null.</param>
+            /// <param name="pinPtrToParameters">Pin pointer to the array of root parameters, if
+            /// parameters is not null.</param>
+            /// <param name="pinPtrToStaticSamplers">Pin pointer to the array of static samplers, if
+            /// staticSamplers is not null.</param>
+            /// <param name="flags">The default value is D3D12RootSignatureFlags::None.</param>
+            D3D12RootSignatureDesc(
+                array<D3D12RootParameter>^ parameters,
+                array<D3D12StaticSamplerDesc>^ staticSamplers,
+                [Out] GCHandle% pinPtrToParameters,
+                [Out] GCHandle% pinPtrToStaticSamplers,
+                [Optional] Nullable<D3D12RootSignatureFlags> flags
+            );
+
+            /// <summary>
+            /// Creates the default root signature desc, with no root parameters and static samplers.
+            /// </summary>
+            D3D12RootSignatureDesc(D3DDefault);
+
+            /// <summary>
+            /// Initializes the root signature desc.
+            /// </summary>
+            /// <param name="parameters">Array of root parameters. If there is no root parameter,
+            /// this can be null.</param>
+            /// <param name="staticSamplers">Array of static samplers. If there is no static sampler,
+            /// this can be null.</param>
+            /// <param name="pinPtrToParameters">Pin pointer to the array of root parameters, if
+            /// parameters is not null.</param>
+            /// <param name="pinPtrToStaticSamplers">Pin pointer to the array of static samplers, if
+            /// staticSamplers is not null.</param>
+            /// <param name="flags">The default value is D3D12RootSignatureFlags::None.</param>
+            void Init(
+                array<D3D12RootParameter>^ parameters,
+                array<D3D12StaticSamplerDesc>^ staticSamplers,
+                [Out] GCHandle% pinPtrToParameters,
+                [Out] GCHandle% pinPtrToStaticSamplers,
+                [Optional] Nullable<D3D12RootSignatureFlags> flags
+            );
+
+            /// <summary>
+            /// Initializes the root signature desc.
+            /// </summary>
+            /// <param name="desc">Reference to the struct to initialize.</param>
+            /// <param name="parameters">Array of root parameters. If there is no root parameter,
+            /// this can be null.</param>
+            /// <param name="staticSamplers">Array of static samplers. If there is no static sampler,
+            /// this can be null.</param>
+            /// <param name="pinPtrToParameters">Pin pointer to the array of root parameters, if
+            /// parameters is not null.</param>
+            /// <param name="pinPtrToStaticSamplers">Pin pointer to the array of static samplers, if
+            /// staticSamplers is not null.</param>
+            /// <param name="flags">The default value is D3D12RootSignatureFlags::None.</param>
+            static void Init(
+                D3D12RootSignatureDesc% desc,
+                array<D3D12RootParameter>^ parameters,
+                array<D3D12StaticSamplerDesc>^ staticSamplers,
+                [Out] GCHandle% pinPtrToParameters,
+                [Out] GCHandle% pinPtrToStaticSamplers,
+                [Optional] Nullable<D3D12RootSignatureFlags> flags
+            );
+        };
+
+        /// <summary>
+        /// Describes subresource data.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12SubresourceData
+        {
+            /// <summary>
+            /// A pointer to a memory block that contains the subresource data.
+            /// </summary>
+            IntPtr pData;
+
+            /// <summary>
+            /// The row pitch, or width, or physical size, in bytes, of the subresource data.
+            /// </summary>
+            long long RowPitch;
+
+            /// <summary>
+            /// The depth pitch, or width, or physical size, in bytes, of the subresource data.
+            /// </summary>
+            long long SlicePitch;
+        };
+
+        /// <summary>
+        /// Describes the destination of a memory copy operation.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12MemcpyDest
+        {
+            /// <summary>
+            /// A pointer to a memory block that receives the copied data.
+            /// </summary>
+            IntPtr pData;
+
+            /// <summary>
+            /// The row pitch, or width, or physical size, in bytes, of the subresource data.
+            /// </summary>
+            unsigned long long RowPitch;
+
+            /// <summary>
+            /// The depth pitch, or width, or physical size, in bytes, of the subresource data.
+            /// </summary>
+            unsigned long long SlicePitch;
+        };
+
+        /// <summary>
+        /// Describes subresource data.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12SubresourceInfo
+        {
+            /// <summary>
+            /// Offset, in bytes, between the start of the parent resource and this subresource.
+            /// </summary>
+            unsigned long long Offset;
+
+            /// <summary>
+            /// The row pitch, or width, or physical size, in bytes, of the subresource data.
+            /// </summary>
+            long long RowPitch;
+
+            /// <summary>
+            /// The depth pitch, or width, or physical size, in bytes, of the subresource data.
+            /// </summary>
+            long long DepthPitch;
+        };
+
+        /// <summary>
+        /// Describes an indirect argument (an indirect parameter), for use with a command signature.
+        /// </summary>
+        [StructLayout(LayoutKind::Explicit, Size = 16)]
+        public value struct D3D12IndirectArgumentDesc
+        {
+            [StructLayout(LayoutKind::Explicit, Size = 4)]
+            value struct _VertexBuffer
+            {
+                /// <summary>
+                /// Specifies the slot containing the vertex buffer address.
+                /// </summary>
+                [FieldOffset(0)] unsigned int Slot;
+            };
+
+            [StructLayout(LayoutKind::Explicit, Size = 12)]
+            value struct _Constant
+            {
+                /// <summary>
+                /// Specifies the root index of the constant.
+                /// </summary>
+                [FieldOffset(0)] unsigned int RootParameterIndex;
+
+                /// <summary>
+                /// The offset, in 32-bit values, to set the first constant of the group.
+                /// Supports multi-value constants at a given root index. Root constant entries
+                /// must be sorted from smallest to largest DestOffsetIn32BitValues.
+                /// </summary>
+                [FieldOffset(4)] unsigned int DestOffsetIn32BitValues;
+
+                /// <summary>
+                /// The number of 32-bit constants that are set at the given root index.
+                /// Supports multi-value constants at a given root index.
+                /// </summary>
+                [FieldOffset(8)] unsigned int Num32BitValuesToSet;
+            };
+
+            [StructLayout(LayoutKind::Explicit, Size = 4)]
+            value struct _BufferView
+            {
+                /// <summary>
+                /// Specifies the root index of the CBV, SRV, or UAV.
+                /// </summary>
+                [FieldOffset(0)] unsigned int RootParameterIndex;
+            };
+
+            /// <summary>
+            /// A single D3D12IndirectArgumentType enumeration constant.
+            /// </summary>
+            [FieldOffset(0)] D3D12IndirectArgumentType Type;
+
+            /// <summary>
+            /// Vertex buffer.
+            /// </summary>
+            [FieldOffset(4)] _VertexBuffer VertexBuffer;
+
+            /// <summary>
+            /// Root constant.
+            /// </summary>
+            [FieldOffset(4)] _Constant Constant;
+
+            /// <summary>
+            /// Constant buffer view.
+            /// </summary>
+            [FieldOffset(4)] _BufferView ConstantBufferView;
+
+            /// <summary>
+            /// Shader resource view.
+            /// </summary>
+            [FieldOffset(4)] _BufferView ShaderResourceView;
+
+            /// <summary>
+            /// Unordered access view.
+            /// </summary>
+            [FieldOffset(4)] _BufferView UnorderedAccessView;
+        };
+
+        /// <summary>
+        /// Describes the arguments (parameters) of a command signature.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12CommandSignatureDesc
+        {
+            /// <summary>
+            /// Specifies the size of each argument of a command signature, in bytes.
+            /// </summary>
+            unsigned int ByteStride;
+
+            /// <summary>
+            /// Specifies the number of arguments in the command signature.
+            /// </summary>
+            unsigned int NumArgumentDescs;
+
+            /// <summary>
+            /// A pointer to the array of D3D12IndirectArgumentDesc structures, containing details
+            /// of the arguments, including whether the argument is a vertex buffer, constant,
+            /// constant buffer view, shader resource view, or unordered access view.
+            /// </summary>
+            D3D12IndirectArgumentDesc* pArgumentDescs;
+
+            /// <summary>
+            /// For single GPU operation, set this to zero. If there are multiple GPU nodes, set
+            /// bits to identify the nodes (the device's physical adapters) for which the command
+            /// signature is to apply. Each bit in the mask corresponds to a single node.
+            /// </summary>
+            unsigned int NodeMask;
+
+            /// <summary>
+            /// Creates a command signature desc.
+            /// </summary>
+            /// <param name="pinPtrToArgumentDescs">Pin pointer to the argument descs. Free it
+            /// after using the struct.</param>
+            D3D12CommandSignatureDesc(
+                unsigned int byteStride,
+                unsigned int nodeMask,
+                [Out] GCHandle% pinPtrToArgumentDescs,
+                ...array<D3D12IndirectArgumentDesc>^ argumentDescs
+            );
+        };
+
+        /// <summary>
+        /// Describes the tile structure of a tiled resource with mipmaps.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12PackedMipInfo
+        {
+            /// <summary>
+            /// The number of standard mipmaps in the tiled resource.
+            /// </summary>
+            unsigned char NumStandardMips;
+
+            /// <summary>
+            /// The number of packed mipmaps in the tiled resource.
+            /// </summary>
+            unsigned char NumPackedMips;
+
+            /// <summary>
+            /// The number of tiles for the packed mipmaps in the tiled resource.
+            /// </summary>
+            unsigned int NumTilesForPackedMips;
+
+            /// <summary>
+            /// The offset of the first packed tile for the resource in the overall range of tiles.
+            /// If NumPackedMips is 0, this value is meaningless and is 0. Otherwise, it is the
+            /// offset of the first packed tile for the resource in the overall range of tiles for
+            /// the resource. A value of 0 for StartTileIndexInOverallResource means the entire
+            /// resource is packed. For array surfaces, this is the offset for the tiles that contain
+            /// the packed mipmaps for the first array slice. Packed mipmaps for each array slice in
+            /// arrayed surfaces are at this offset past the beginning of the tiles for each array
+            /// slice.
+            /// </summary>
+            unsigned int StartTileIndexInOverallResource;
+
+            D3D12PackedMipInfo(
+                unsigned char numStandardMips,
+                unsigned char numPackedMips,
+                unsigned int numTilesForPackedMips,
+                unsigned int startTileIndexInOverallResource
+            );
+        };
+
+        /// <summary>
+        /// Describes the shape of a tile by specifying its dimensions.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12TileShape
+        {
+            /// <summary>
+            /// The width in texels of the tile.
+            /// </summary>
+            unsigned int WidthInTexels;
+
+            /// <summary>
+            /// The height in texels of the tile.
+            /// </summary>
+            unsigned int HeightInTexels;
+
+            /// <summary>
+            /// The depth in texels of the tile.
+            /// </summary>
+            unsigned int DepthInTexels;
+
+            D3D12TileShape(
+                unsigned int widthInTexels,
+                unsigned int heightInTexels,
+                unsigned int depthInTexels
+            );
+        };
+
+        /// <summary>
+        /// Describes a tiled subresource volume.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D3D12SubresourceTiling
+        {
+            /// <summary>
+            /// The width in tiles of the subresource.
+            /// </summary>
+            unsigned int WidthInTiles;
+
+            /// <summary>
+            /// The height in tiles of the subresource.
+            /// </summary>
+            unsigned short HeightInTiles;
+
+            /// <summary>
+            /// The depth in tiles of the subresource.
+            /// </summary>
+            unsigned short DepthInTiles;
+
+            /// <summary>
+            /// The index of the tile in the overall tiled subresource to start with.
+            /// </summary>
+            unsigned int StartTileIndexInOverallResource;
+
+            D3D12SubresourceTiling(
+                unsigned int widthInTiles,
+                unsigned short heightInTiles,
+                unsigned short depthInTiles,
+                unsigned int startTileIndexInOverallResource
+            );
+        };
+
+        /// <summary>
+        /// Represents Device Removed Extended Data (DRED) auto-breadcrumb data.
+        /// </summary>
+        public value struct D3D12AutoBreadcrumbNode
+        {
+            /// <summary>
+            /// An ANSI debug name of the outstanding command list (if any).
+            /// </summary>
+            String^ CommandListDebugNameA;
+
+            /// <summary>
+            /// A wide debug name of the outstanding command list (if any).
+            /// </summary>
+            String^ CommandListDebugNameW;
+
+            /// <summary>
+            /// An ANSI debug name of the outstanding command queue (if any).
+            /// </summary>
+            String^ CommandQueueDebugNameA;
+
+            /// <summary>
+            /// A wide debug name of the outstanding command queue (if any).
+            /// </summary>
+            String^ CommandQueueDebugNameW;
+
+            /// <summary>
+            /// A D3D12GraphicsCommandList representing the outstanding command list at the time of
+            /// execution.
+            /// </summary>
+            D3D12GraphicsCommandList^ CommandList;
+
+            /// <summary>
+            /// A D3D12CommandQueue interface representing the outstanding command queue.
+            /// </summary>
+            D3D12CommandQueue^ CommandQueue;
+
+            /// <summary>
+            /// A UInt32 containing the index (within the array CommandHistory) of the last
+            /// render/compute operation that was completed by the GPU while executing the
+            /// associated command list.
+            /// </summary>
+            unsigned int LastBreadcrumbValue;
+
+            /// <summary>
+            /// An array of D3D12AutoBreadcrumbOp values representing all of the render/compute
+            /// operations recorded into the associated command list.
+            /// </summary>
+            array<D3D12AutoBreadcrumbOp>^ CommandHistory;
+
+        internal:
+            static operator D3D12AutoBreadcrumbNode(::D3D12_AUTO_BREADCRUMB_NODE% obj)
+            {
+                return Convert(obj);
+            }
+            
+            static D3D12AutoBreadcrumbNode Convert(::D3D12_AUTO_BREADCRUMB_NODE% obj);
+        };
+
+        /// <summary>
+        /// Contains a list of D3D12AutoBreadcrumbNode objects. The list represents the
+        /// auto-breadcrumb state prior to device removal.
+        /// </summary>
+        public value struct D3D12DREDAutoBreadcrumbsOutput
+        {
+            /// <summary>
+            /// A D3D12AutoBreadcrumbNode list representing the list of auto-breadcrumb nodes,
+            /// or null if the list is empty.
+            /// </summary>
+            ReadOnlyCollection<D3D12AutoBreadcrumbNode>^ AutoBreadcrumbNodes;
+
+        internal:
+            static operator D3D12DREDAutoBreadcrumbsOutput(::D3D12_DRED_AUTO_BREADCRUMBS_OUTPUT% obj)
+            {
+                D3D12DREDAutoBreadcrumbsOutput output;
+                if(obj.pHeadAutoBreadcrumbNode == __nullptr)
+                {
+                    output.AutoBreadcrumbNodes = nullptr;
+                    return output;
+                }
+
+                ::D3D12_AUTO_BREADCRUMB_NODE* pCurrent = const_cast<::D3D12_AUTO_BREADCRUMB_NODE*>(obj.pHeadAutoBreadcrumbNode);
+                System::Collections::Generic::List<D3D12AutoBreadcrumbNode>^ list = gcnew System::Collections::Generic::List<D3D12AutoBreadcrumbNode>();
+
+                while(true)
+                {
+                    if(pCurrent == __nullptr)
+                        break;
+
+                    list->Add((D3D12AutoBreadcrumbNode)(*pCurrent));
+                    pCurrent = const_cast<::D3D12_AUTO_BREADCRUMB_NODE*>(pCurrent->pNext);
+                }
+
+                output.AutoBreadcrumbNodes = list->AsReadOnly();
+
+                return output;
+            }
+        };
+
+        /// <summary>
+        /// Describes, as a node in a linked list, data about an allocation tracked by Device Removed
+        /// Extended Data (DRED). This data includes the GPU VA allocation ranges, and an associated
+        /// runtime object debug name and type.
+        /// </summary>
+        public value struct D3D12DREDAllocationNode
+        {
+            /// <summary>
+            /// An ANSI debug name of the allocated runtime object.
+            /// </summary>
+            String^ ObjectNameA;
+
+            /// <summary>
+            /// A wide debug name of the allocated runtime object.
+            /// </summary>
+            String^ ObjectNameW;
+
+            /// <summary>
+            /// A D3D12DREDAllocationType value representing the runtime object's allocation type.
+            /// </summary>
+            D3D12DREDAllocationType AllocationType;
+
+        internal:
+            static operator D3D12DREDAllocationNode(::D3D12_DRED_ALLOCATION_NODE% obj)
+            {
+                DirectXNet::DirectX12::D3D12DREDAllocationNode node;
+                node.ObjectNameA = marshal_as<String^>(obj.ObjectNameA);
+                node.ObjectNameW = marshal_as<String^>(obj.ObjectNameW);
+                node.AllocationType = (DirectXNet::DirectX12::D3D12DREDAllocationType)obj.AllocationType;
+
+                return node;
+            }
+        };
+
+        /// <summary>
+        /// Describes allocation data related to a GPU page fault on a given virtual address (VA).
+        /// Contains the VA of a GPU page fault, together with a list of matching allocation nodes
+        /// for active objects, and a list of allocation nodes for recently deleted objects.
+        /// </summary>
+        public value struct D3D12DREDPageFaultOutput
+        {
+            /// <summary>
+            /// A D3D12_GPU_VIRTUAL_ADDRESS containing the GPU virtual address (VA) of the faulting
+            /// operation if device removal was due to a GPU page fault.
+            /// </summary>
+            D3D12_GPU_VIRTUAL_ADDRESS PageFaultVA;
+
+            /// <summary>
+            /// A D3D12DREDAllocationNode list representing the list of allocation nodes for active
+            /// allocated runtime objects with virtual address (VA) ranges that match the faulting VA
+            /// (PageFaultVA). Has a value of null if the list is empty.
+            /// </summary>
+            ReadOnlyCollection<D3D12DREDAllocationNode>^ HeadExistingAllocationNode;
+
+            /// <summary>
+            /// A D3D12DREDAllocationNode list representing the list of allocation nodes for recently
+            /// freed runtime objects with virtual address (VA) ranges that match the faulting VA
+            /// (PageFaultVA). Has a value of null if the list is empty.
+            /// </summary>
+            ReadOnlyCollection<D3D12DREDAllocationNode>^ HeadRecentFreedAllocationNode;
+
+        internal:
+            static operator D3D12DREDPageFaultOutput(::D3D12_DRED_PAGE_FAULT_OUTPUT% obj)
+            {
+                D3D12DREDPageFaultOutput output;
+                output.PageFaultVA = obj.PageFaultVA;
+                if(obj.pHeadExistingAllocationNode == __nullptr)
+                {
+                    output.HeadExistingAllocationNode = nullptr;
+                }
+                else
+                {
+                    ::D3D12_DRED_ALLOCATION_NODE* pCurrent = const_cast<::D3D12_DRED_ALLOCATION_NODE*>(obj.pHeadExistingAllocationNode);
+                    System::Collections::Generic::List<D3D12DREDAllocationNode>^ list = gcnew System::Collections::Generic::List<D3D12DREDAllocationNode>();
+
+                    while(true)
+                    {
+                        if(pCurrent == __nullptr)
+                            break;
+
+                        list->Add((D3D12DREDAllocationNode)(*pCurrent));
+                        pCurrent = const_cast<::D3D12_DRED_ALLOCATION_NODE*>(pCurrent->pNext);
+                    }
+
+                    output.HeadExistingAllocationNode = list->AsReadOnly();
+                }
+
+                if(obj.pHeadRecentFreedAllocationNode == __nullptr)
+                {
+                    output.HeadRecentFreedAllocationNode = nullptr;
+                }
+                else
+                {
+                    ::D3D12_DRED_ALLOCATION_NODE* pCurrent = const_cast<::D3D12_DRED_ALLOCATION_NODE*>(obj.pHeadRecentFreedAllocationNode);
+                    System::Collections::Generic::List<D3D12DREDAllocationNode>^ list = gcnew System::Collections::Generic::List<D3D12DREDAllocationNode>();
+
+                    while(true)
+                    {
+                        if(pCurrent == __nullptr)
+                            break;
+
+                        list->Add((D3D12DREDAllocationNode)(*pCurrent));
+                        pCurrent = const_cast<::D3D12_DRED_ALLOCATION_NODE*>(pCurrent->pNext);
+                    }
+
+                    output.HeadRecentFreedAllocationNode = list->AsReadOnly();
+                }
+
+                return output;
+            }
         };
     }
 }

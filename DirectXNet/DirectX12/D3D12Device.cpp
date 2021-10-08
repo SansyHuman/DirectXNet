@@ -11,6 +11,7 @@
 #include "D3D12DeviceChild.h"
 #include "D3D12Pageable.h"
 #include "D3D12QueryHeap.h"
+#include "D3D12CommandSignature.h"
 
 using namespace msclr::interop;
 
@@ -755,7 +756,86 @@ Result DirectXNet::DirectX12::D3D12Device::SetStablePowerState(bool enable)
     return Result(pDevice->SetStablePowerState((BOOL)enable));
 }
 
+D3D12CommandSignature^ DirectXNet::DirectX12::D3D12Device::CreateCommandSignature(
+    D3D12CommandSignatureDesc% desc, D3D12RootSignature^ rootSignature)
+{
+    ::ID3D12RootSignature* pRootSignature = __nullptr;
+    ::IUnknown* pCommandSignature = __nullptr;
+
+    try
+    {
+        pin_ptr<D3D12CommandSignatureDesc> pDesc = &desc;
+        if(rootSignature != nullptr)
+            pRootSignature = (::ID3D12RootSignature*)rootSignature->GetNativeInterface();
+
+        Result::ThrowIfFailed(pDevice->CreateCommandSignature(
+            (::D3D12_COMMAND_SIGNATURE_DESC*)pDesc,
+            pRootSignature,
+            __uuidof(::ID3D12CommandSignature),
+            (void**)&pCommandSignature
+        ));
+
+        return gcnew D3D12CommandSignature((::ID3D12CommandSignature*)pCommandSignature);
+    }
+    finally
+    {
+        SAFE_RELEASE(pRootSignature);
+        SAFE_RELEASE(pCommandSignature);
+    }
+}
+
+void DirectXNet::DirectX12::D3D12Device::GetResourceTiling(
+    D3D12Resource^ tiledResource, unsigned int% numTilesForEntireResource,
+    D3D12PackedMipInfo% packedMipDesc, D3D12TileShape% standardTileShapeForNonPackedMips,
+    unsigned int% numSubresourceTilings, unsigned int firstSubresourceTilingToGet,
+    array<D3D12SubresourceTiling>^ subresourceTilingsForNonPackedMips)
+{
+    ::ID3D12Resource* pTiledResource = __nullptr;
+
+    try
+    {
+        pTiledResource = (::ID3D12Resource*)tiledResource->GetNativeInterface();
+        pin_ptr<unsigned int> pNumTilesForEntireResource = &numTilesForEntireResource;
+        pin_ptr<D3D12PackedMipInfo> pPackedMipDesc = &packedMipDesc;
+        pin_ptr<D3D12TileShape> pStandardTileShapeForNonPackedMips = &standardTileShapeForNonPackedMips;
+        pin_ptr<unsigned int> pNumSubresourceTilings = &numSubresourceTilings;
+        pin_ptr<D3D12SubresourceTiling> pSubresourceTilingsForNonPackedMips = &subresourceTilingsForNonPackedMips[0];
+
+        pDevice->GetResourceTiling(
+            pTiledResource,
+            (UINT*)pNumTilesForEntireResource,
+            (::D3D12_PACKED_MIP_INFO*)pPackedMipDesc,
+            (::D3D12_TILE_SHAPE*)pStandardTileShapeForNonPackedMips,
+            (UINT*)pNumSubresourceTilings,
+            firstSubresourceTilingToGet,
+            (::D3D12_SUBRESOURCE_TILING*)pSubresourceTilingsForNonPackedMips
+        );
+    }
+    finally
+    {
+        SAFE_RELEASE(pTiledResource);
+    }
+}
+
 Luid DirectXNet::DirectX12::D3D12Device::AdapterLuid::get()
 {
     return *((Luid*)&pDevice->GetAdapterLuid());
+}
+
+void DirectXNet::DirectX12::D3D12Device::GetCopyableFootprints(
+    D3D12ResourceDesc* resourceDesc, unsigned int firstSubresource,
+    unsigned int numSubresources, unsigned long long baseOffset,
+    D3D12PlacedSubresourceFootprint* layouts, unsigned int* numRows,
+    unsigned long long* rowSizeInBytes, unsigned long long* totalBytes)
+{
+    pDevice->GetCopyableFootprints(
+        (const ::D3D12_RESOURCE_DESC*)resourceDesc,
+        firstSubresource,
+        numSubresources,
+        baseOffset,
+        (::D3D12_PLACED_SUBRESOURCE_FOOTPRINT*)layouts,
+        (unsigned int*)numRows,
+        (unsigned long long*)rowSizeInBytes,
+        (unsigned long long*)totalBytes
+    );
 }

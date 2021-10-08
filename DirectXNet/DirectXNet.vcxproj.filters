@@ -195,6 +195,15 @@
     <ClInclude Include="Math\VectorOperations.h">
       <Filter>헤더 파일\Math</Filter>
     </ClInclude>
+    <ClInclude Include="DirectX12\D3D12RootSignatureDeserializer.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12DeviceRemovedExtendedData.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\D3D12DeviceRemovedExtendedDataSettings.h">
+      <Filter>헤더 파일\DirectX12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -337,6 +346,15 @@
     </ClCompile>
     <ClCompile Include="Math\VectorOperations.cpp">
       <Filter>소스 파일\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12RootSignatureDeserializer.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12DeviceRemovedExtendedData.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX12\D3D12DeviceRemovedExtendedDataSettings.cpp">
+      <Filter>소스 파일\DirectX12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

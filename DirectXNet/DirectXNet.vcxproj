@@ -160,6 +160,8 @@
     <ClInclude Include="DirectX12\D3D12DescriptorHeap.h" />
     <ClInclude Include="DirectX12\D3D12Device.h" />
     <ClInclude Include="DirectX12\D3D12DeviceChild.h" />
+    <ClInclude Include="DirectX12\D3D12DeviceRemovedExtendedData.h" />
+    <ClInclude Include="DirectX12\D3D12DeviceRemovedExtendedDataSettings.h" />
     <ClInclude Include="DirectX12\D3D12Fence.h" />
     <ClInclude Include="DirectX12\D3D12GraphicsCommandList.h" />
     <ClInclude Include="DirectX12\D3D12Heap.h" />
@@ -169,6 +171,7 @@
     <ClInclude Include="DirectX12\D3D12QueryHeap.h" />
     <ClInclude Include="DirectX12\D3D12Resource.h" />
     <ClInclude Include="DirectX12\D3D12RootSignature.h" />
+    <ClInclude Include="DirectX12\D3D12RootSignatureDeserializer.h" />
     <ClInclude Include="DirectX12\D3D12Structs.h" />
     <ClInclude Include="DirectX12\d3dx12.h" />
     <ClInclude Include="DXGI\Debugs\DXGIDebug.h" />
@@ -211,6 +214,8 @@
     <ClCompile Include="DirectX12\D3D12DescriptorHeap.cpp" />
     <ClCompile Include="DirectX12\D3D12Device.cpp" />
     <ClCompile Include="DirectX12\D3D12DeviceChild.cpp" />
+    <ClCompile Include="DirectX12\D3D12DeviceRemovedExtendedData.cpp" />
+    <ClCompile Include="DirectX12\D3D12DeviceRemovedExtendedDataSettings.cpp" />
     <ClCompile Include="DirectX12\D3D12Fence.cpp" />
     <ClCompile Include="DirectX12\D3D12GraphicsCommandList.cpp" />
     <ClCompile Include="DirectX12\D3D12Heap.cpp" />
@@ -220,6 +225,7 @@
     <ClCompile Include="DirectX12\D3D12QueryHeap.cpp" />
     <ClCompile Include="DirectX12\D3D12Resource.cpp" />
     <ClCompile Include="DirectX12\D3D12RootSignature.cpp" />
+    <ClCompile Include="DirectX12\D3D12RootSignatureDeserializer.cpp" />
     <ClCompile Include="DirectX12\D3D12Structs.cpp" />
     <ClCompile Include="DXGI\Debugs\DXGIDebug.cpp" />
     <ClCompile Include="DXGI\Debugs\DXGIDebugStructs.cpp" />

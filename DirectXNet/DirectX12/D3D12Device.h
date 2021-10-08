@@ -13,6 +13,8 @@ using namespace System::Runtime::CompilerServices;
 using namespace DirectXNet::Common;
 using namespace msclr;
 
+// Done.
+
 namespace DirectXNet
 {
     namespace DirectX12
@@ -141,7 +143,7 @@ namespace DirectXNet
             /// feature(s) that you want to query for support.</param>
             /// <param name="featureSupportData">A reference to a data structure that corresponds to
             /// the value of the Feature parameter.</param>
-            /// <returns></returns>
+            /// <returns>Result code.</returns>
             generic <typename T> where T : value class, ID3D12FeatureData
             Result CheckFeatureSupport(D3D12Feature feature, T% featureSupportData);
 
@@ -651,7 +653,58 @@ namespace DirectXNet
             [Obsolete("Do not call this method in normal execution for a shipped application. This method only works while the machine is in developer mode.")]
             Result SetStablePowerState(bool enable);
 
+            /// <summary>
+            /// This method creates a command signature.
+            /// </summary>
+            /// <param name="desc">Describes the command signature to be created with the
+            /// D3D12CommandSignatureDesc structure.</param>
+            /// <param name="rootSignature">Specifies the D3D12RootSignature that the command signature
+            /// applies to. The root signature is required if any of the commands in the signature will
+            /// update bindings on the pipeline. If the only command present is a draw or dispatch, the
+            /// root signature parameter can be set to null.</param>
+            /// <returns>Command signature if succeeded.</returns>
+            D3D12CommandSignature^ CreateCommandSignature(
+                [In][IsReadOnly] D3D12CommandSignatureDesc% desc,
+                [Optional] D3D12RootSignature^ rootSignature
+            );
 
+            /// <summary>
+            /// Gets info about how a tiled resource is broken into tiles.
+            /// </summary>
+            /// <param name="tiledResource">Specifies a tiled D3D12Resource to get info about.</param>
+            /// <param name="numTilesForEntireResource">A variable that receives the number of tiles needed
+            /// to store the entire tiled resource.</param>
+            /// <param name="packedMipDesc">A D3D12PackedMipInfo structure that GetResourceTiling fills
+            /// with info about how the tiled resource's mipmaps are packed.</param>
+            /// <param name="standardTileShapeForNonPackedMips">Specifies a D3D12TileShape structure that
+            /// GetResourceTiling fills with info about the tile shape. This is info about how pixels fit in
+            /// the tiles, independent of tiled resource's dimensions, not including packed mipmaps. If the
+            /// entire tiled resource is packed, this parameter is meaningless because the tiled resource has
+            /// no defined layout for packed mipmaps. In this situation, GetResourceTiling sets the members
+            /// of D3D12TileShape to zeros.</param>
+            /// <param name="numSubresourceTilings">A variable that contains the number of tiles in the
+            /// subresource. On input, this is the number of subresources to query tilings for; on output,
+            /// this is the number that was actually retrieved at subresourceTilingsForNonPackedMips
+            /// (clamped to what's available).</param>
+            /// <param name="firstSubresourceTilingToGet">The number of the first subresource tile to get.
+            /// GetResourceTiling ignores this parameter if the number that numSubresourceTilings points to
+            /// is 0.</param>
+            /// <param name="subresourceTilingsForNonPackedMips">Specifies a D3D12SubresourceTiling array
+            /// that GetResourceTiling fills with info about subresource tiles. If subresource tiles are
+            /// part of packed mipmaps, GetResourceTiling sets the members of D3D12SubresourceTiling to
+            /// zeros, except the startTileIndexInOverallResource member, which GetResourceTiling sets to
+            /// D3D12_PACKED_TILE (0xffffffff). The D3D12_PACKED_TILE constant indicates that the whole
+            /// D3D12SubresourceTiling structure is meaningless for this situation, and the info that the
+            /// packedMipDesc parameter points to applies.</param>
+            void GetResourceTiling(
+                D3D12Resource^ tiledResource,
+                [Out] unsigned int% numTilesForEntireResource,
+                [Out] D3D12PackedMipInfo% packedMipDesc,
+                [Out] D3D12TileShape% standardTileShapeForNonPackedMips,
+                unsigned int% numSubresourceTilings,
+                unsigned int firstSubresourceTilingToGet,
+                array<D3D12SubresourceTiling>^ subresourceTilingsForNonPackedMips
+            );
 
             /// <summary>
             /// Gets a locally unique identifier for the current device (adapter).
@@ -660,6 +713,19 @@ namespace DirectXNet
             {
                 Luid get();
             }
+
+
+        internal:
+            void GetCopyableFootprints(
+                D3D12ResourceDesc* resourceDesc,
+                unsigned int firstSubresource,
+                unsigned int numSubresources,
+                unsigned long long baseOffset,
+                D3D12PlacedSubresourceFootprint* layouts,
+                unsigned int* numRows,
+                unsigned long long* rowSizeInBytes,
+                unsigned long long* totalBytes
+            );
         };
     }
 }
