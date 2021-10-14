@@ -48,5 +48,5 @@ Result DirectXNet::DXGI::DXGIFactory1::EnumAdapters1(unsigned int index, DXGIAda
 
 bool DirectXNet::DXGI::DXGIFactory1::IsCurrent::get()
 {
-    return pFactory1->IsCurrent() == TRUE;
+    return !!(pFactory1->IsCurrent());
 }

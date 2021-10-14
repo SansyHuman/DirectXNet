@@ -36,6 +36,11 @@ void DirectXNet::Common::Unknown::AttatchComObj(::IUnknown* pComObj)
     return this->pComObj;
 }
 
+void DirectXNet::Common::Unknown::SafeRelease(::IUnknown*& pComObj)
+{
+    SAFE_RELEASE(pComObj);
+}
+
 Guid DirectXNet::Common::Unknown::GetGuid()
 {
     return *((Guid*)&__uuidof(::IUnknown));

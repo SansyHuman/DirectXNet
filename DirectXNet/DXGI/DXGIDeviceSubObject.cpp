@@ -14,7 +14,7 @@ DirectXNet::DXGI::DXGIDeviceSubObject::DXGIDeviceSubObject(::IDXGIDeviceSubObjec
 
 void DirectXNet::DXGI::DXGIDeviceSubObject::AttatchComObj(::IUnknown* pComObj)
 {
-    DXGI::DXGIObject::AttatchComObj(pComObj);
+    DXGIObject::AttatchComObj(pComObj);
     pSubObj = (::IDXGIDeviceSubObject*)pComObj;
 }
 

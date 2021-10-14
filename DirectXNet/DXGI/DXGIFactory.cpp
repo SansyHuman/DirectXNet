@@ -8,14 +8,14 @@ using namespace DirectXNet::Common;
 using namespace DirectXNet::DXGI;
 
 DirectXNet::DXGI::DXGIFactory::DXGIFactory(::IDXGIFactory* pFactory)
-    : DXGI::DXGIObject((::IDXGIObject*)pFactory)
+    : DXGIObject((::IDXGIObject*)pFactory)
 {
     this->pFactory = pFactory;
 }
 
 void DirectXNet::DXGI::DXGIFactory::AttatchComObj(::IUnknown* pComObj)
 {
-    DXGI::DXGIObject::AttatchComObj(pComObj);
+    DXGIObject::AttatchComObj(pComObj);
     pFactory = (::IDXGIFactory*)pComObj;
 }
 

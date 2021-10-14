@@ -162,34 +162,37 @@ namespace DirectXNet.DirectX12
             }
         }
 
-        private unsafe Result QueryProtectedResourceSessionTypes(int nodeIndex, uint count)
+        private Result QueryProtectedResourceSessionTypes(int nodeIndex, uint count)
         {
-            var protectedResourceSessionTypesTmp = new ProtectedResourceSessionTypesLocal();
-            protectedResourceSessionTypesTmp.TypeVec = new Guid[count];
-
-            GCHandle pinptr = new GCHandle();
-
-            try
+            unsafe
             {
-                protectedResourceSessionTypesTmp.Types = new D3D12FeatureDataProtectedResourceSessionTypes(
-                    (uint)nodeIndex, protectedResourceSessionTypesTmp.TypeVec, out pinptr);
+                var protectedResourceSessionTypesTmp = new ProtectedResourceSessionTypesLocal();
+                protectedResourceSessionTypesTmp.TypeVec = new Guid[count];
 
-                Result result = device.CheckFeatureSupport(
-                    D3D12Feature.ProtectedResourceSessionTypes, ref protectedResourceSessionTypesTmp.Types);
-                if (result.Failed)
+                GCHandle pinptr = new GCHandle();
+
+                try
                 {
-                    protectedResourceSessionTypesTmp.TypeVec = new Guid[0];
+                    protectedResourceSessionTypesTmp.Types = new D3D12FeatureDataProtectedResourceSessionTypes(
+                        (uint)nodeIndex, protectedResourceSessionTypesTmp.TypeVec, out pinptr);
+
+                    Result result = device.CheckFeatureSupport(
+                        D3D12Feature.ProtectedResourceSessionTypes, ref protectedResourceSessionTypesTmp.Types);
+                    if (result.Failed)
+                    {
+                        protectedResourceSessionTypesTmp.TypeVec = new Guid[0];
+                    }
+
+                    protectedResourceSessionTypesTmp.Types.pTypes = null;
+                    protectedResourceSessionTypes[nodeIndex] = protectedResourceSessionTypesTmp;
+
+                    return result;
                 }
-
-                protectedResourceSessionTypesTmp.Types.pTypes = null;
-                protectedResourceSessionTypes[nodeIndex] = protectedResourceSessionTypesTmp;
-
-                return result;
-            }
-            finally
-            {
-                if (pinptr.IsAllocated)
-                    pinptr.Free();
+                finally
+                {
+                    if (pinptr.IsAllocated)
+                        pinptr.Free();
+                }
             }
         }
 

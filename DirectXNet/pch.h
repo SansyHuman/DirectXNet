@@ -11,7 +11,7 @@
 
 #include <Windows.h>
 #include <msclr/marshal.h>
-#include <msclr/com/ptr.h>
+#include <msclr/auto_handle.h>
 #include <vector>
 #include <cstring>
 #include <dxgi1_6.h>
@@ -20,6 +20,12 @@
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
+#include <dcommon.h>
+#include <d2d1_3.h>
+#include <d2d1helper.h>
+#include <d2d1_1helper.h>
+#include <d2d1_2helper.h>
+#include <d2d1_3helper.h>
 
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p) if(p != __nullptr) { p->Release(); p = __nullptr; }

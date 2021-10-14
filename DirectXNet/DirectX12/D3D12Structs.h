@@ -2,6 +2,7 @@
 
 #include "../pch.h"
 #include "../Common/CommonStructs.h"
+#include "../Common/CommonD3DStructs.h"
 #include "../DXGI/DXGIStructs.h"
 
 using namespace System;
@@ -2924,7 +2925,7 @@ namespace DirectXNet
             VideoExtensionCommand = D3D12_DRED_ALLOCATION_TYPE_VIDEO_EXTENSION_COMMAND,
             VideoEncoder = D3D12_DRED_ALLOCATION_TYPE_VIDEO_ENCODER,
             VideoEncoderHeap = D3D12_DRED_ALLOCATION_TYPE_VIDEO_ENCODER_HEAP,
-            Invalid = D3D12_DRED_ALLOCATION_TYPE_INVALID
+            Invalid = (UINT)D3D12_DRED_ALLOCATION_TYPE_INVALID
         };
         
         /// <summary>
@@ -2967,7 +2968,13 @@ namespace DirectXNet
         /// </summary>
         public interface class ID3D12FeatureData
         {
-
+            /// <summary>
+            /// Gets the type of the feature data.
+            /// </summary>
+            property D3D12Feature FeatureType
+            {
+                D3D12Feature get();
+            }
         };
 
         /// <summary>
@@ -3012,6 +3019,14 @@ namespace DirectXNet
             CBool CacheCoherentUMA;
 
             D3D12FeatureDataArchitecture(unsigned int nodeIndex);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Architecture;
+                }
+            }
         };
 
         /// <summary>
@@ -3056,6 +3071,14 @@ namespace DirectXNet
             CBool IsolatedMMU;
 
             D3D12FeatureDataArchitecture1(unsigned int nodeIndex);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Architecture1;
+                }
+            }
         };
 
         /// <summary>
@@ -3081,6 +3104,14 @@ namespace DirectXNet
             CBool PriorityForTypeIsSupported;
 
             D3D12FeatureDataCommandQueuePriority(D3D12CommandListType type, unsigned int priority);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::CommandQueuePriority;
+                }
+            }
         };
 
         /// <summary>
@@ -3099,6 +3130,14 @@ namespace DirectXNet
             /// Indicates there is support for shader instructions which operate across adapters.
             /// </summary>
             CBool AtomicShaderInstructions;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::CrossNode;
+                }
+            }
         };
 
         /// <summary>
@@ -3205,6 +3244,14 @@ namespace DirectXNet
             /// to resource type. The runtime sets this member to a D3D12ResourceHeapTier enumeration constant.
             /// </summary>
             D3D12ResourceHeapTier ResourceHeapTier;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::D3D12Options;
+                }
+            }
         };
 
         /// <summary>
@@ -3247,6 +3294,14 @@ namespace DirectXNet
             /// Indicates that 64bit integer operations are supported.
             /// </summary>
             CBool Int64ShaderOps;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options1;
+                }
+            }
         };
 
         /// <summary>
@@ -3266,6 +3321,14 @@ namespace DirectXNet
             /// sample positions.
             /// </summary>
             D3D12ProgrammableSamplePositionsTier ProgrammableSamplePositionsTier;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options2;
+                }
+            }
         };
 
         /// <summary>
@@ -3301,6 +3364,14 @@ namespace DirectXNet
             /// Indicates whether barycentrics are supported.
             /// </summary>
             CBool BarycentricsSupported;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options3;
+                }
+            }
         };
 
         /// <summary>
@@ -3325,6 +3396,14 @@ namespace DirectXNet
             /// model 6_2.
             /// </summary>
             CBool Native16BitShaderOpsSupported;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options4;
+                }
+            }
         };
 
         /// <summary>
@@ -3350,6 +3429,14 @@ namespace DirectXNet
             /// Specifies the level of ray tracing support on the graphics device.
             /// </summary>
             D3D12RaytracingTier RaytracingTier;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options5;
+                }
+            }
         };
 
         /// <summary>
@@ -3389,6 +3476,14 @@ namespace DirectXNet
             /// processing is supported, otherwise false.
             /// </summary>
             CBool BackgroundProcessingSupported;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options6;
+                }
+            }
         };
 
         /// <summary>
@@ -3407,6 +3502,14 @@ namespace DirectXNet
             /// Indicates the level of support for sampler feedback.
             /// </summary>
             D3D12SamplerFeedbackTier SamplerFeedbackTier;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options7;
+                }
+            }
         };
 
         /// <summary>
@@ -3423,6 +3526,14 @@ namespace DirectXNet
             /// applies to any mip level of a block - compressed texture.
             /// </summary>
             CBool UnalignedBlockTexturesSupported;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options8;
+                }
+            }
         };
 
         /// <summary>
@@ -3467,6 +3578,14 @@ namespace DirectXNet
             /// Indicates the level of support for WaveMMA (wave_matrix) operations.
             /// </summary>
             D3D12WaveMMATier WaveMMATier;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Options9;
+                }
+            }
         };
 
         [StructLayout(LayoutKind::Sequential)]
@@ -3486,6 +3605,14 @@ namespace DirectXNet
                 D3D12WaveMMADimension m,
                 D3D12WaveMMADimension n
             );
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::WaveMMA;
+                }
+            }
         };
 
         /// <summary>
@@ -3503,6 +3630,14 @@ namespace DirectXNet
             /// True if the adapter can create a heap from existing system memory. Otherwise, False.
             /// </summary>
             CBool Supported;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::ExistingHeaps;
+                }
+            }
         };
 
         /// <summary>
@@ -3538,6 +3673,14 @@ namespace DirectXNet
                 array<D3D::D3DFeatureLevel>^ featureLevelsRequested,
                 [Out] GCHandle% featureLevelArrayPinPtr
             );
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::FeatureLevels;
+                }
+            }
         };
 
         /// <summary>
@@ -3557,6 +3700,14 @@ namespace DirectXNet
             unsigned char PlaneCount;
 
             D3D12FeatureDataFormatInfo(DXGIFormat format);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::FormatInfo;
+                }
+            }
         };
 
         /// <summary>
@@ -3584,6 +3735,14 @@ namespace DirectXNet
             D3D12FormatSupport2 Support2;
 
             D3D12FeatureDataFormatSupport(DXGIFormat format);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::FormatSupport;
+                }
+            }
         };
 
         /// <summary>
@@ -3602,6 +3761,14 @@ namespace DirectXNet
             /// The maximum GPU virtual address bits per process.
             /// </summary>
             unsigned int MaxGPUVirtualAddressBitsPerProcess;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::GpuVirtualAddressSupport;
+                }
+            }
         };
 
         /// <summary>
@@ -3634,6 +3801,14 @@ namespace DirectXNet
 
             D3D12FeatureDataMultisampleQualityLevels(
                 DXGIFormat format, unsigned int sampleCount, D3D12MultisampleQualityLevelFlags flags);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::MultisampleQualityLevels;
+                }
+            }
         };
 
         /// <summary>
@@ -3649,6 +3824,14 @@ namespace DirectXNet
             D3D12ProtectedResourceSessionSupportFlags Support;
 
             D3D12FeatureDataProtectedResourceSessionSupport(unsigned int nodeIndex);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::ProtectedResourceSessionSupport;
+                }
+            }
         };
 
         /// <summary>
@@ -3670,6 +3853,14 @@ namespace DirectXNet
             unsigned int Count;
 
             D3D12FeatureDataProtectedResourceSessionTypeCount(unsigned int nodeIndex);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::ProtectedResourceSessionTypeCount;
+                }
+            }
         };
 
         /// <summary>
@@ -3707,6 +3898,14 @@ namespace DirectXNet
             /// If you finish to use the struct, you must free the handle.</param>
             D3D12FeatureDataProtectedResourceSessionTypes(
                 unsigned int nodeIndex, array<Guid>^ buffer, [Out] GCHandle% bufferPtr);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::ProtectedResourceSessionTypes;
+                }
+            }
         };
 
         /// <summary>
@@ -3747,6 +3946,14 @@ namespace DirectXNet
             /// The size of the buffer pointed to by pQueryOutputData, in bytes.
             /// </summary>
             SIZE_T QueryOutputDataSizeInBytes;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::QueryMetaCommand;
+                }
+            }
         };
 
         /// <summary>
@@ -3763,6 +3970,14 @@ namespace DirectXNet
             D3DRootSignatureVersion HighestVersion;
 
             D3D12FeatureDataRootSignature(D3DRootSignatureVersion highestVersion);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::RootSignature;
+                }
+            }
         };
 
         /// <summary>
@@ -3782,6 +3997,14 @@ namespace DirectXNet
             D3D12HeapSerializationTier HeapSerializationTier;
 
             D3D12FeatureDataSerialization(unsigned int nodeIndex);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::Serialization;
+                }
+            }
         };
 
         /// <summary>
@@ -3794,6 +4017,14 @@ namespace DirectXNet
             /// Indicates the level of caching supported.
             /// </summary>
             D3D12ShaderCacheSupportFlags SupportFlags;
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::ShaderCache;
+                }
+            }
         };
 
         /// <summary>
@@ -3809,6 +4040,14 @@ namespace DirectXNet
             D3DShaderModel HighestShaderModel;
 
             D3D12FeatureDataShaderModel(D3DShaderModel highestShaderModel);
+
+            virtual property D3D12Feature FeatureType
+            {
+                virtual D3D12Feature get()
+                {
+                    return D3D12Feature::ShaderModel;
+                }
+            }
         };
 
         /// <summary>

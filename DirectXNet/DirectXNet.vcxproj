@@ -115,7 +115,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3dcompiler.lib;d3d12.lib;dxguid.lib;d2d1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release .NET Framework|x64'">
@@ -147,11 +147,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Common\CommonD2DStructs.h" />
+    <ClInclude Include="Common\CommonD3DStructs.h" />
     <ClInclude Include="Common\CommonStructs.h" />
     <ClInclude Include="Common\D3D10Blob.h" />
     <ClInclude Include="Common\DXResourceHandle.h" />
     <ClInclude Include="Common\Result.h" />
     <ClInclude Include="Common\Unknown.h" />
+    <ClInclude Include="Direct2D\D2D1.h" />
+    <ClInclude Include="Direct2D\D2D1CustomGeometrySink.h" />
+    <ClInclude Include="Direct2D\D2D1CustomGeometrySinkNative.h" />
+    <ClInclude Include="Direct2D\D2D1Factory.h" />
+    <ClInclude Include="Direct2D\D2D1Geometry.h" />
+    <ClInclude Include="Direct2D\D2D1GeometrySink.h" />
+    <ClInclude Include="Direct2D\D2D1RectangleGeometry.h" />
+    <ClInclude Include="Direct2D\D2D1Resource.h" />
+    <ClInclude Include="Direct2D\D2D1RoundedRectangleGeometry.h" />
+    <ClInclude Include="Direct2D\D2D1SimplifiedGeometrySink.h" />
+    <ClInclude Include="Direct2D\D2D1StrokeStyle.h" />
+    <ClInclude Include="Direct2D\D2D1Structs.h" />
+    <ClInclude Include="Direct2D\D2D1TessellationSink.h" />
     <ClInclude Include="DirectX12\D3D12.h" />
     <ClInclude Include="DirectX12\D3D12CommandAllocator.h" />
     <ClInclude Include="DirectX12\D3D12CommandList.h" />
@@ -174,6 +189,23 @@
     <ClInclude Include="DirectX12\D3D12RootSignatureDeserializer.h" />
     <ClInclude Include="DirectX12\D3D12Structs.h" />
     <ClInclude Include="DirectX12\d3dx12.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12Debug.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12Debug1.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12Debug2.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12Debug3.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12Debug4.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12Debug5.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12DebugCommandList.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12DebugCommandList1.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12DebugCommandList2.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12DebugCommandQueue.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12DebugDevice.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12DebugDevice1.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12DebugDevice2.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12DebugStructs.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12InfoQueue.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12InfoQueue1.h" />
+    <ClInclude Include="DirectX12\Debugs\D3D12SharingContract.h" />
     <ClInclude Include="DXGI\Debugs\DXGIDebug.h" />
     <ClInclude Include="DXGI\Debugs\DXGIDebugStructs.h" />
     <ClInclude Include="DXGI\Debugs\DXGIInfoQueue.h" />
@@ -201,11 +233,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="Common\CommonD2DStructs.cpp" />
+    <ClCompile Include="Common\CommonD3DStructs.cpp" />
     <ClCompile Include="Common\CommonStructs.cpp" />
     <ClCompile Include="Common\D3D10Blob.cpp" />
     <ClCompile Include="Common\DXResourceHandle.cpp" />
     <ClCompile Include="Common\Result.cpp" />
     <ClCompile Include="Common\Unknown.cpp" />
+    <ClCompile Include="Direct2D\D2D1.cpp" />
+    <ClCompile Include="Direct2D\D2D1CustomGeometrySink.cpp" />
+    <ClCompile Include="Direct2D\D2D1CustomGeometrySinkNative.cpp" />
+    <ClCompile Include="Direct2D\D2D1Factory.cpp" />
+    <ClCompile Include="Direct2D\D2D1Geometry.cpp" />
+    <ClCompile Include="Direct2D\D2D1GeometrySink.cpp" />
+    <ClCompile Include="Direct2D\D2D1RectangleGeometry.cpp" />
+    <ClCompile Include="Direct2D\D2D1Resource.cpp" />
+    <ClCompile Include="Direct2D\D2D1RoundedRectangleGeometry.cpp" />
+    <ClCompile Include="Direct2D\D2D1SimplifiedGeometrySink.cpp" />
+    <ClCompile Include="Direct2D\D2D1StrokeStyle.cpp" />
+    <ClCompile Include="Direct2D\D2D1Structs.cpp" />
+    <ClCompile Include="Direct2D\D2D1TessellationSink.cpp" />
     <ClCompile Include="DirectX12\D3D12.cpp" />
     <ClCompile Include="DirectX12\D3D12CommandAllocator.cpp" />
     <ClCompile Include="DirectX12\D3D12CommandList.cpp" />
@@ -227,6 +274,23 @@
     <ClCompile Include="DirectX12\D3D12RootSignature.cpp" />
     <ClCompile Include="DirectX12\D3D12RootSignatureDeserializer.cpp" />
     <ClCompile Include="DirectX12\D3D12Structs.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12Debug.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12Debug1.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12Debug2.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12Debug3.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12Debug4.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12Debug5.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12DebugCommandList.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12DebugCommandList1.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12DebugCommandList2.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12DebugCommandQueue.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12DebugDevice.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12DebugDevice1.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12DebugDevice2.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12DebugStructs.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12InfoQueue.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12InfoQueue1.cpp" />
+    <ClCompile Include="DirectX12\Debugs\D3D12SharingContract.cpp" />
     <ClCompile Include="DXGI\Debugs\DXGIDebug.cpp" />
     <ClCompile Include="DXGI\Debugs\DXGIDebugStructs.cpp" />
     <ClCompile Include="DXGI\Debugs\DXGIInfoQueue.cpp" />

@@ -13,7 +13,7 @@ DirectXNet::DXGI::DXGIOutput::DXGIOutput(::IDXGIOutput* pOutput)
 
 void DirectXNet::DXGI::DXGIOutput::AttatchComObj(::IUnknown* pComObj)
 {
-    DXGI::DXGIObject::AttatchComObj(pComObj);
+    DXGIObject::AttatchComObj(pComObj);
     pOutput = (::IDXGIOutput*)pComObj;
 }
 
@@ -55,7 +55,7 @@ DXGIOutputDesc DirectXNet::DXGI::DXGIOutput::OutputDesc::get()
     clrDesc.DeviceName = marshal_as<System::String^>(desc.DeviceName);
     clrDesc.DesktopCoordinates = *((Common::Rect*)&desc.DesktopCoordinates);
     clrDesc.AttachedToDesktop = (Common::CBool)desc.AttachedToDesktop;
-    clrDesc.Rotation = (DXGI::DXGIModeRotation)desc.Rotation;
+    clrDesc.Rotation = (DXGIModeRotation)desc.Rotation;
     clrDesc.Monitor = IntPtr((void*)desc.Monitor);
 
     return clrDesc;

@@ -11,8 +11,53 @@ using System.Buffers;
 
 namespace DirectXNet.DirectX12
 {
+    /// <summary>
+    /// Helper methods of DirextX12.
+    /// </summary>
     public static class D3DX12
     {
+        /// <summary>
+        /// Gets the debug object with type T using the function obtained from the dynamic link.
+        /// </summary>
+        /// <typeparam name="T">The type of the debug object.</typeparam>
+        /// <param name="functionPointer">Function pointer obtained by GetProcAddress In WinAPI.</param>
+        /// <returns>Debug object if succeeded.</returns>
+        public static T GetDebugInterfaceWithDynamicLink<T>(IntPtr functionPointer) where T : Common.Unknown
+        {
+            unsafe
+            {
+                IUnknown* pInterface = null;
+
+                try
+                {
+                    var getDebugInterface = (delegate* unmanaged[Stdcall]<ref Guid, void**, int>)functionPointer.ToPointer();
+                    Guid riid = Common.Unknown.GetGuidOfObject<T>();
+
+                    Common.Result.ThrowIfFailed(getDebugInterface(ref riid, (void**)&pInterface));
+
+                    T obj = (T)Activator.CreateInstance(typeof(T), true);
+                    obj.AttatchComObj(pInterface);
+
+                    return obj;
+                }
+                finally
+                {
+                    Common.Unknown.SafeRelease(&pInterface);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calculates a subresource index for a texture.
+        /// </summary>
+        /// <param name="mipSlice">The zero-based index for the mipmap level to address; 
+        /// 0 indicates the first, most detailed mipmap level.</param>
+        /// <param name="arraySlice">The zero-based index for the array level to address;
+        /// always use 0 for volume (3D) textures.</param>
+        /// <param name="planeSlice">The zero-based index for the plane level to address.</param>
+        /// <param name="mipLevels">The number of mipmap levels in the resource.</param>
+        /// <param name="arraySize">The number of elements in the array.</param>
+        /// <returns>A subresource index.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint CalcSubresource(
             uint mipSlice,
@@ -25,6 +70,19 @@ namespace DirectXNet.DirectX12
             return mipSlice + arraySlice * mipLevels + planeSlice * mipLevels * arraySize;
         }
 
+        /// <summary>
+        /// Outputs the mip slice, array slice, and plane slice that correspond to the specified
+        /// subresource index.
+        /// </summary>
+        /// <param name="subresource">The index of the subresource.</param>
+        /// <param name="mipLevels">The maximum number of mipmap levels in the subresource.</param>
+        /// <param name="arraySize">The number of elements in the array.</param>
+        /// <param name="mipSlice">Outputs the mip slice that corresponds to the given subresource index.
+        /// </param>
+        /// <param name="arraySlice">Outputs the array slice that corresponds to the given subresource index.
+        /// </param>
+        /// <param name="planeSlice">Outputs the plane slice that corresponds to the given subresource index.
+        /// </param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DecomposeSubresource(
             uint subresource,
@@ -40,6 +98,14 @@ namespace DirectXNet.DirectX12
             planeSlice = subresource / (mipLevels * arraySize);
         }
 
+        /// <summary>
+        /// Gets the number of planes for the specified DXGI format for the specified
+        /// virtual adapter (an ID3D12Device).
+        /// </summary>
+        /// <param name="device">The virtual adapter (an D3D12Device) for which to get the plane count.
+        /// </param>
+        /// <param name="format">The DXGIFormat for which to get the plane count.</param>
+        /// <returns>The plane count for the specified format on the specified virtual adapter.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte GetFormatPlaneCount(D3D12Device device, DXGIFormat format)
         {
@@ -49,29 +115,47 @@ namespace DirectXNet.DirectX12
             return formatInfo.PlaneCount;
         }
 
+        /// <summary>
+        /// Indicates whether the layout is opaque.
+        /// </summary>
+        /// <param name="layout">The layout to check, as a D3D12TextureLayout.</param>
+        /// <returns>A bool that indicates whether the layout is opaque.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsLayoutOpaque(D3D12TextureLayout layout)
         {
             return layout == D3D12TextureLayout.Unknown || layout == D3D12TextureLayout.Layout64KBUndefinedSwizzle;
         }
 
-        public static unsafe ulong GetRequiredIntermediateSize(
+        /// <summary>
+        /// Returns the required size of a buffer to be used for data upload.
+        /// </summary>
+        /// <param name="destinationResource">A D3D12Resource object that represents the destination
+        /// resource.</param>
+        /// <param name="firstSubresource">The index of the first subresource in the resource. The range of valid
+        /// values is 0 to D3D12_REQ_SUBRESOURCES(30720).</param>
+        /// <param name="numSubresources">The number of subresources in the resource. The range of valid values is
+        /// 0 to (D3D12_REQ_SUBRESOURCES - firstSubresource).</param>
+        /// <returns>The size of the buffer, in bytes.</returns>
+        public static ulong GetRequiredIntermediateSize(
             D3D12Resource destinationResource,
             uint firstSubresource,
             uint numSubresources
         )
         {
-            var desc = destinationResource.ResourceDesc;
-            ulong requiredSize = 0;
-
-            using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
+            unsafe
             {
-                device.GetCopyableFootprints(&desc, firstSubresource, numSubresources, 0, null, null, null, &requiredSize);
+                var desc = destinationResource.ResourceDesc;
+                ulong requiredSize = 0;
+
+                using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
+                {
+                    device.GetCopyableFootprints(&desc, firstSubresource, numSubresources, 0, null, null, null, &requiredSize);
+                }
+                return requiredSize;
             }
-            return requiredSize;
         }
 
-        public static unsafe void MemcpySubresource(
+        public static void MemcpySubresource(
             in D3D12MemcpyDest dest,
             in D3D12SubresourceData src,
             ulong rowSizeInBytes,
@@ -79,22 +163,25 @@ namespace DirectXNet.DirectX12
             uint numSlices
         )
         {
-            for (uint z = 0; z < numSlices; ++z)
+            unsafe
             {
-                var pDestSlice = (byte*)dest.pData.ToPointer() + dest.SlicePitch * z;
-                var pSrcSlice = (byte*)src.pData.ToPointer() + src.SlicePitch * (long)z;
-                for (uint y = 0; y < numRows; ++y)
+                for (uint z = 0; z < numSlices; ++z)
                 {
-                    Buffer.MemoryCopy(
-                        (void*)(pSrcSlice + src.RowPitch * (long)y),
-                        (void*)(pDestSlice + dest.RowPitch * y),
-                        rowSizeInBytes,
-                        rowSizeInBytes);
+                    var pDestSlice = (byte*)dest.pData.ToPointer() + dest.SlicePitch * z;
+                    var pSrcSlice = (byte*)src.pData.ToPointer() + src.SlicePitch * (long)z;
+                    for (uint y = 0; y < numRows; ++y)
+                    {
+                        Buffer.MemoryCopy(
+                            (void*)(pSrcSlice + src.RowPitch * (long)y),
+                            (void*)(pDestSlice + dest.RowPitch * y),
+                            rowSizeInBytes,
+                            rowSizeInBytes);
+                    }
                 }
             }
         }
 
-        public static unsafe void MemcpySubresource(
+        public static void MemcpySubresource(
             in D3D12MemcpyDest dest,
             IntPtr pResourceData,
             in D3D12SubresourceInfo src,
@@ -103,17 +190,20 @@ namespace DirectXNet.DirectX12
             uint numSlices
         )
         {
-            for (uint z = 0; z < numSlices; ++z)
+            unsafe
             {
-                var pDestSlice = (byte*)dest.pData.ToPointer() + dest.SlicePitch * z;
-                var pSrcSlice = ((byte*)pResourceData.ToPointer() + src.Offset) + (ulong)src.DepthPitch * (ulong)z;
-                for (uint y = 0; y < numRows; ++y)
+                for (uint z = 0; z < numSlices; ++z)
                 {
-                    Buffer.MemoryCopy(
-                        (void*)(pSrcSlice + (ulong)src.RowPitch * (ulong)y),
-                        (void*)(pDestSlice + dest.RowPitch * y),
-                        rowSizeInBytes,
-                        rowSizeInBytes);
+                    var pDestSlice = (byte*)dest.pData.ToPointer() + dest.SlicePitch * z;
+                    var pSrcSlice = ((byte*)pResourceData.ToPointer() + src.Offset) + (ulong)src.DepthPitch * (ulong)z;
+                    for (uint y = 0; y < numRows; ++y)
+                    {
+                        Buffer.MemoryCopy(
+                            (void*)(pSrcSlice + (ulong)src.RowPitch * (ulong)y),
+                            (void*)(pDestSlice + dest.RowPitch * y),
+                            rowSizeInBytes,
+                            rowSizeInBytes);
+                    }
                 }
             }
         }
@@ -384,7 +474,7 @@ namespace DirectXNet.DirectX12
             return requiredSize;
         }
 
-        public static unsafe ulong UpdateSubresources(
+        public static ulong UpdateSubresources(
             D3D12GraphicsCommandList cmdList,
             D3D12Resource destinationResource,
             D3D12Resource intermediate,
@@ -394,34 +484,37 @@ namespace DirectXNet.DirectX12
             D3D12SubresourceData[] srcData
         )
         {
-            ulong requiredSize = 0;
-            var MemToAlloc = (ulong)(Marshal.SizeOf<D3D12PlacedSubresourceFootprint>() + sizeof(uint) + sizeof(ulong)) * numSubresources;
-            if (MemToAlloc > ulong.MaxValue)
+            unsafe
             {
-                return 0;
+                ulong requiredSize = 0;
+                var MemToAlloc = (ulong)(Marshal.SizeOf<D3D12PlacedSubresourceFootprint>() + sizeof(uint) + sizeof(ulong)) * numSubresources;
+                if (MemToAlloc > ulong.MaxValue)
+                {
+                    return 0;
+                }
+
+                IntPtr pMem = Marshal.AllocHGlobal((int)MemToAlloc);
+                if (pMem == IntPtr.Zero)
+                    return 0;
+
+                var pLayouts = (D3D12PlacedSubresourceFootprint*)pMem;
+                var pRowSizesInBytes = (ulong*)(pLayouts + numSubresources);
+                var pNumRows = (uint*)(pRowSizesInBytes + numSubresources);
+
+                var Desc = destinationResource.ResourceDesc;
+                using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
+                {
+                    device.GetCopyableFootprints(&Desc, firstSubresource, numSubresources, intermediateOffset, pLayouts, pNumRows, pRowSizesInBytes, &requiredSize);
+                }
+
+                ulong Result = UpdateSubresources(cmdList, destinationResource, intermediate, firstSubresource, numSubresources, requiredSize, pLayouts, pNumRows, pRowSizesInBytes, srcData);
+                Marshal.FreeHGlobal(pMem);
+
+                return Result;
             }
-
-            IntPtr pMem = Marshal.AllocHGlobal((int)MemToAlloc);
-            if (pMem == IntPtr.Zero)
-                return 0;
-
-            var pLayouts = (D3D12PlacedSubresourceFootprint*)pMem;
-            var pRowSizesInBytes = (ulong*)(pLayouts + numSubresources);
-            var pNumRows = (uint*)(pRowSizesInBytes + numSubresources);
-
-            var Desc = destinationResource.ResourceDesc;
-            using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
-            {
-                device.GetCopyableFootprints(&Desc, firstSubresource, numSubresources, intermediateOffset, pLayouts, pNumRows, pRowSizesInBytes, &requiredSize);
-            }
-
-            ulong Result = UpdateSubresources(cmdList, destinationResource, intermediate, firstSubresource, numSubresources, requiredSize, pLayouts, pNumRows, pRowSizesInBytes, srcData);
-            Marshal.FreeHGlobal(pMem);
-
-            return Result;
         }
 
-        public static unsafe ulong UpdateSubresources(
+        public static ulong UpdateSubresources(
             D3D12GraphicsCommandList cmdList,
             D3D12Resource destinationResource,
             D3D12Resource intermediate,
@@ -432,34 +525,37 @@ namespace DirectXNet.DirectX12
             D3D12SubresourceInfo[] srcData
         )
         {
-            ulong requiredSize = 0;
-            var MemToAlloc = (ulong)(Marshal.SizeOf<D3D12PlacedSubresourceFootprint>() + sizeof(uint) + sizeof(ulong)) * numSubresources;
-            if (MemToAlloc > ulong.MaxValue)
+            unsafe
             {
-                return 0;
+                ulong requiredSize = 0;
+                var MemToAlloc = (ulong)(Marshal.SizeOf<D3D12PlacedSubresourceFootprint>() + sizeof(uint) + sizeof(ulong)) * numSubresources;
+                if (MemToAlloc > ulong.MaxValue)
+                {
+                    return 0;
+                }
+
+                IntPtr pMem = Marshal.AllocHGlobal((int)MemToAlloc);
+                if (pMem == IntPtr.Zero)
+                    return 0;
+
+                var pLayouts = (D3D12PlacedSubresourceFootprint*)pMem;
+                var pRowSizesInBytes = (ulong*)(pLayouts + numSubresources);
+                var pNumRows = (uint*)(pRowSizesInBytes + numSubresources);
+
+                var Desc = destinationResource.ResourceDesc;
+                using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
+                {
+                    device.GetCopyableFootprints(&Desc, firstSubresource, numSubresources, intermediateOffset, pLayouts, pNumRows, pRowSizesInBytes, &requiredSize);
+                }
+
+                ulong Result = UpdateSubresources(cmdList, destinationResource, intermediate, firstSubresource, numSubresources, requiredSize, pLayouts, pNumRows, pRowSizesInBytes, pResourceData, srcData);
+                Marshal.FreeHGlobal(pMem);
+
+                return Result;
             }
-
-            IntPtr pMem = Marshal.AllocHGlobal((int)MemToAlloc);
-            if (pMem == IntPtr.Zero)
-                return 0;
-
-            var pLayouts = (D3D12PlacedSubresourceFootprint*)pMem;
-            var pRowSizesInBytes = (ulong*)(pLayouts + numSubresources);
-            var pNumRows = (uint*)(pRowSizesInBytes + numSubresources);
-
-            var Desc = destinationResource.ResourceDesc;
-            using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
-            {
-                device.GetCopyableFootprints(&Desc, firstSubresource, numSubresources, intermediateOffset, pLayouts, pNumRows, pRowSizesInBytes, &requiredSize);
-            }
-
-            ulong Result = UpdateSubresources(cmdList, destinationResource, intermediate, firstSubresource, numSubresources, requiredSize, pLayouts, pNumRows, pRowSizesInBytes, pResourceData, srcData);
-            Marshal.FreeHGlobal(pMem);
-
-            return Result;
         }
 
-        public static unsafe ulong UpdateSubresources(
+        public static ulong UpdateSubresources(
             uint maxSubresources,
             D3D12GraphicsCommandList cmdList,
             D3D12Resource destinationResource,
@@ -470,21 +566,24 @@ namespace DirectXNet.DirectX12
             D3D12SubresourceData[] srcData
         )
         {
-            ulong requiredSize = 0;
-            D3D12PlacedSubresourceFootprint* Layouts = stackalloc D3D12PlacedSubresourceFootprint[(int)maxSubresources];
-            uint* NumRows = stackalloc uint[(int)maxSubresources];
-            ulong* RowSizesInBytes = stackalloc ulong[(int)maxSubresources];
-
-            var Desc = destinationResource.ResourceDesc;
-            using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
+            unsafe
             {
-                device.GetCopyableFootprints(&Desc, firstSubresource, numSubresources, intermediateOffset, Layouts, NumRows, RowSizesInBytes, &requiredSize);
-            }
+                ulong requiredSize = 0;
+                D3D12PlacedSubresourceFootprint* Layouts = stackalloc D3D12PlacedSubresourceFootprint[(int)maxSubresources];
+                uint* NumRows = stackalloc uint[(int)maxSubresources];
+                ulong* RowSizesInBytes = stackalloc ulong[(int)maxSubresources];
 
-            return UpdateSubresources(cmdList, destinationResource, intermediate, firstSubresource, numSubresources, requiredSize, Layouts, NumRows, RowSizesInBytes, srcData);
+                var Desc = destinationResource.ResourceDesc;
+                using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
+                {
+                    device.GetCopyableFootprints(&Desc, firstSubresource, numSubresources, intermediateOffset, Layouts, NumRows, RowSizesInBytes, &requiredSize);
+                }
+
+                return UpdateSubresources(cmdList, destinationResource, intermediate, firstSubresource, numSubresources, requiredSize, Layouts, NumRows, RowSizesInBytes, srcData);
+            }
         }
 
-        public static unsafe ulong UpdateSubresources(
+        public static ulong UpdateSubresources(
             uint maxSubresources,
             D3D12GraphicsCommandList cmdList,
             D3D12Resource destinationResource,
@@ -496,18 +595,21 @@ namespace DirectXNet.DirectX12
             D3D12SubresourceInfo[] srcData
         )
         {
-            ulong requiredSize = 0;
-            D3D12PlacedSubresourceFootprint* Layouts = stackalloc D3D12PlacedSubresourceFootprint[(int)maxSubresources];
-            uint* NumRows = stackalloc uint[(int)maxSubresources];
-            ulong* RowSizesInBytes = stackalloc ulong[(int)maxSubresources];
-
-            var Desc = destinationResource.ResourceDesc;
-            using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
+            unsafe
             {
-                device.GetCopyableFootprints(&Desc, firstSubresource, numSubresources, intermediateOffset, Layouts, NumRows, RowSizesInBytes, &requiredSize);
-            }
+                ulong requiredSize = 0;
+                D3D12PlacedSubresourceFootprint* Layouts = stackalloc D3D12PlacedSubresourceFootprint[(int)maxSubresources];
+                uint* NumRows = stackalloc uint[(int)maxSubresources];
+                ulong* RowSizesInBytes = stackalloc ulong[(int)maxSubresources];
 
-            return UpdateSubresources(cmdList, destinationResource, intermediate, firstSubresource, numSubresources, requiredSize, Layouts, NumRows, RowSizesInBytes, pResourceData, srcData);
+                var Desc = destinationResource.ResourceDesc;
+                using (D3D12Device device = destinationResource.GetDevice<D3D12Device>())
+                {
+                    device.GetCopyableFootprints(&Desc, firstSubresource, numSubresources, intermediateOffset, Layouts, NumRows, RowSizesInBytes, &requiredSize);
+                }
+
+                return UpdateSubresources(cmdList, destinationResource, intermediate, firstSubresource, numSubresources, requiredSize, Layouts, NumRows, RowSizesInBytes, pResourceData, srcData);
+            }
         }
     }
 }

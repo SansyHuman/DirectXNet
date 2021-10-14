@@ -18,6 +18,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyCopyrightAttribute(L"Copyright (C)  2021")];
 [assembly:AssemblyTrademarkAttribute(L"")];
 [assembly:AssemblyCultureAttribute(L"")];
+[assembly:ExtensionAttribute]
 
 [assembly:AssemblyVersionAttribute("1.0.*")];
 

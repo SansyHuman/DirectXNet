@@ -416,18 +416,18 @@ Result DirectXNet::DXGI::Debug::DXGIInfoQueue::SetBreakOnID(Guid producer, int i
 bool DirectXNet::DXGI::Debug::DXGIInfoQueue::GetBreakOnCategory(
     Guid producer, DXGIInfoQueueMessageCategory category)
 {
-    return pQueue->GetBreakOnCategory(CAST_TO(producer, _GUID), (::DXGI_INFO_QUEUE_MESSAGE_CATEGORY)category) == TRUE;
+    return !!(pQueue->GetBreakOnCategory(CAST_TO(producer, _GUID), (::DXGI_INFO_QUEUE_MESSAGE_CATEGORY)category));
 }
 
 bool DirectXNet::DXGI::Debug::DXGIInfoQueue::GetBreakOnSeverity(
     Guid producer, DXGIInfoQueueMessageSeverity severity)
 {
-    return pQueue->GetBreakOnSeverity(CAST_TO(producer, _GUID), (::DXGI_INFO_QUEUE_MESSAGE_SEVERITY)severity) == TRUE;
+    return !!(pQueue->GetBreakOnSeverity(CAST_TO(producer, _GUID), (::DXGI_INFO_QUEUE_MESSAGE_SEVERITY)severity));
 }
 
 bool DirectXNet::DXGI::Debug::DXGIInfoQueue::GetBreakOnID(Guid producer, int id)
 {
-    return pQueue->GetBreakOnID(CAST_TO(producer, _GUID), id) == TRUE;
+    return !!(pQueue->GetBreakOnID(CAST_TO(producer, _GUID), id));
 }
 
 void DirectXNet::DXGI::Debug::DXGIInfoQueue::SetMuteDebugOutput(Guid producer, bool mute)
@@ -437,5 +437,5 @@ void DirectXNet::DXGI::Debug::DXGIInfoQueue::SetMuteDebugOutput(Guid producer, b
 
 bool DirectXNet::DXGI::Debug::DXGIInfoQueue::GetMuteDebugOutput(Guid producer)
 {
-    return pQueue->GetMuteDebugOutput(CAST_TO(producer, _GUID)) == TRUE;
+    return !!(pQueue->GetMuteDebugOutput(CAST_TO(producer, _GUID)));
 }

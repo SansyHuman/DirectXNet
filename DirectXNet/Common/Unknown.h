@@ -34,6 +34,9 @@ namespace DirectXNet
 			/// <returns>Native pointer of the interface.</returns>
 			::IUnknown* GetNativeInterface();
 
+			// Internal COM release function for extension.
+			static void SafeRelease(::IUnknown*& pComObj);
+
 		public:
 			/// <summary>
 			/// Gets GUID of the interface.

@@ -20,6 +20,22 @@
 #include "D3D12Resource.h"
 #include "D3D12RootSignature.h"
 #include "D3D12RootSignatureDeserializer.h"
+#include "Debugs/D3D12Debug.h"
+#include "Debugs/D3D12Debug1.h"
+#include "Debugs/D3D12Debug2.h"
+#include "Debugs/D3D12Debug3.h"
+#include "Debugs/D3D12Debug4.h"
+#include "Debugs/D3D12Debug5.h"
+#include "Debugs/D3D12DebugCommandList.h"
+#include "Debugs/D3D12DebugCommandList1.h"
+#include "Debugs/D3D12DebugCommandList2.h"
+#include "Debugs/D3D12DebugCommandQueue.h"
+#include "Debugs/D3D12DebugDevice.h"
+#include "Debugs/D3D12DebugDevice1.h"
+#include "Debugs/D3D12DebugDevice2.h"
+#include "Debugs/D3D12InfoQueue.h"
+#include "Debugs/D3D12InfoQueue1.h"
+#include "Debugs/D3D12SharingContract.h"
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
@@ -30,6 +46,10 @@ using namespace msclr::interop;
 
 #ifndef CHECK_D3D12_GUID
 #define CHECK_D3D12_GUID(type) if(*((_GUID*)&Unknown::GetGuidOfObject<DirectXNet::DirectX12:: ## type ## ^>()) != __uuidof(::I ## type)) throw gcnew Exception("GUID check error");
+#endif
+
+#ifndef CHECK_D3D12_DEBUG_GUID
+#define CHECK_D3D12_DEBUG_GUID(type) if(*((_GUID*)&Unknown::GetGuidOfObject<DirectXNet::DirectX12::Debug:: ## type ## ^>()) != __uuidof(::I ## type)) throw gcnew Exception("GUID check error");
 #endif
 
 DirectXNet::DirectX12::D3D12::D3D12()
@@ -54,6 +74,23 @@ DirectXNet::DirectX12::D3D12::D3D12()
     CHECK_D3D12_GUID(D3D12Resource);
     CHECK_D3D12_GUID(D3D12RootSignature);
     CHECK_D3D12_GUID(D3D12RootSignatureDeserializer);
+
+    CHECK_D3D12_DEBUG_GUID(D3D12Debug);
+    CHECK_D3D12_DEBUG_GUID(D3D12Debug1);
+    CHECK_D3D12_DEBUG_GUID(D3D12Debug2);
+    CHECK_D3D12_DEBUG_GUID(D3D12Debug3);
+    CHECK_D3D12_DEBUG_GUID(D3D12Debug4);
+    CHECK_D3D12_DEBUG_GUID(D3D12Debug5);
+    CHECK_D3D12_DEBUG_GUID(D3D12DebugCommandList);
+    CHECK_D3D12_DEBUG_GUID(D3D12DebugCommandList1);
+    CHECK_D3D12_DEBUG_GUID(D3D12DebugCommandList2);
+    CHECK_D3D12_DEBUG_GUID(D3D12DebugCommandQueue);
+    CHECK_D3D12_DEBUG_GUID(D3D12DebugDevice);
+    CHECK_D3D12_DEBUG_GUID(D3D12DebugDevice1);
+    CHECK_D3D12_DEBUG_GUID(D3D12DebugDevice2);
+    CHECK_D3D12_DEBUG_GUID(D3D12InfoQueue);
+    CHECK_D3D12_DEBUG_GUID(D3D12InfoQueue1);
+    CHECK_D3D12_DEBUG_GUID(D3D12SharingContract);
 #endif
 }
 
@@ -86,6 +123,31 @@ T DirectXNet::DirectX12::D3D12::CreateDevice(
     {
         SAFE_RELEASE(pAdapter);
         SAFE_RELEASE(pDevice);
+    }
+}
+
+generic <typename T> where T : DirectXNet::Common::Unknown
+T DirectXNet::DirectX12::D3D12::GetDebugInterface()
+{
+    ::IUnknown* pInterface = __nullptr;
+
+    try
+    {
+        Guid riid = DirectXNet::Common::Unknown::GetGuidOfObject<T>();
+
+        Result::ThrowIfFailed(D3D12GetDebugInterface(
+            CAST_TO(riid, GUID),
+            (void**)&pInterface
+        ));
+
+        T obj = (T)Activator::CreateInstance(T::typeid, true);
+        obj->AttatchComObj(pInterface);
+
+        return obj;
+    }
+    finally
+    {
+        SAFE_RELEASE(pInterface);
     }
 }
 

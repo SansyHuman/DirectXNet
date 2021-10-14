@@ -56,6 +56,9 @@ namespace DirectXNet
                 [Optional] DirectXNet::Common::Unknown^ adapter
             );
 
+            generic <typename T> where T : Common::Unknown
+            static T GetDebugInterface();
+
             /// <summary>
             /// Serializes a root signature version 1.0 that can be passed to
             /// D3D12Device::CreateRootSignature.
