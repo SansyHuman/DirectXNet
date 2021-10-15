@@ -651,7 +651,7 @@ DXResourceHandle^ DirectXNet::DirectX12::D3D12Device::OpenSharedHandleByName(
 Result DirectXNet::DirectX12::D3D12Device::MakeResident(...array<D3D12Pageable^>^ objects)
 {
     UINT numObjects = objects->Length;
-    std::vector<::ID3D12Pageable*> pObjects(numObjects);
+    std::vector<::ID3D12Pageable*> pObjects(numObjects, __nullptr);
 
     try
     {
@@ -674,7 +674,7 @@ Result DirectXNet::DirectX12::D3D12Device::MakeResident(...array<D3D12Pageable^>
 Result DirectXNet::DirectX12::D3D12Device::Evict(...array<D3D12Pageable^>^ objects)
 {
     UINT numObjects = objects->Length;
-    std::vector<::ID3D12Pageable*> pObjects(numObjects);
+    std::vector<::ID3D12Pageable*> pObjects(numObjects, __nullptr);
 
     try
     {

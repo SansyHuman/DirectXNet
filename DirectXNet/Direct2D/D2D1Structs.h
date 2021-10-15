@@ -602,6 +602,34 @@ namespace DirectXNet
             );
         };
 
+        /// <summary>
+        /// Contains the center point, x-radius, and y-radius of an ellipse.
+        /// </summary>
+        [StructLayout(LayoutKind::Sequential)]
+        public value struct D2D1Ellipse
+        {
+            /// <summary>
+            /// The center point of the ellipse.
+            /// </summary>
+            D2DPoint2F point;
+
+            /// <summary>
+            /// The X-radius of the ellipse.
+            /// </summary>
+            float radiusX;
+
+            /// <summary>
+            /// The Y-radius of the ellipse.
+            /// </summary>
+            float radiusY;
+
+            D2D1Ellipse(
+                [In][IsReadOnly] D2DPoint2F% point,
+                float radiusX,
+                float radiusY
+            );
+        };
+
 
 
         [Extension]

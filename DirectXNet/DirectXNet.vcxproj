@@ -157,8 +157,10 @@
     <ClInclude Include="Direct2D\D2D1.h" />
     <ClInclude Include="Direct2D\D2D1CustomGeometrySink.h" />
     <ClInclude Include="Direct2D\D2D1CustomGeometrySinkNative.h" />
+    <ClInclude Include="Direct2D\D2D1EllipseGeometry.h" />
     <ClInclude Include="Direct2D\D2D1Factory.h" />
     <ClInclude Include="Direct2D\D2D1Geometry.h" />
+    <ClInclude Include="Direct2D\D2D1GeometryGroup.h" />
     <ClInclude Include="Direct2D\D2D1GeometrySink.h" />
     <ClInclude Include="Direct2D\D2D1RectangleGeometry.h" />
     <ClInclude Include="Direct2D\D2D1Resource.h" />
@@ -167,6 +169,7 @@
     <ClInclude Include="Direct2D\D2D1StrokeStyle.h" />
     <ClInclude Include="Direct2D\D2D1Structs.h" />
     <ClInclude Include="Direct2D\D2D1TessellationSink.h" />
+    <ClInclude Include="Direct2D\D2D1TransformedGeometry.h" />
     <ClInclude Include="DirectX12\D3D12.h" />
     <ClInclude Include="DirectX12\D3D12CommandAllocator.h" />
     <ClInclude Include="DirectX12\D3D12CommandList.h" />
@@ -243,8 +246,10 @@
     <ClCompile Include="Direct2D\D2D1.cpp" />
     <ClCompile Include="Direct2D\D2D1CustomGeometrySink.cpp" />
     <ClCompile Include="Direct2D\D2D1CustomGeometrySinkNative.cpp" />
+    <ClCompile Include="Direct2D\D2D1EllipseGeometry.cpp" />
     <ClCompile Include="Direct2D\D2D1Factory.cpp" />
     <ClCompile Include="Direct2D\D2D1Geometry.cpp" />
+    <ClCompile Include="Direct2D\D2D1GeometryGroup.cpp" />
     <ClCompile Include="Direct2D\D2D1GeometrySink.cpp" />
     <ClCompile Include="Direct2D\D2D1RectangleGeometry.cpp" />
     <ClCompile Include="Direct2D\D2D1Resource.cpp" />
@@ -253,6 +258,7 @@
     <ClCompile Include="Direct2D\D2D1StrokeStyle.cpp" />
     <ClCompile Include="Direct2D\D2D1Structs.cpp" />
     <ClCompile Include="Direct2D\D2D1TessellationSink.cpp" />
+    <ClCompile Include="Direct2D\D2D1TransformedGeometry.cpp" />
     <ClCompile Include="DirectX12\D3D12.cpp" />
     <ClCompile Include="DirectX12\D3D12CommandAllocator.cpp" />
     <ClCompile Include="DirectX12\D3D12CommandList.cpp" />

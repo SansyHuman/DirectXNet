@@ -63,3 +63,9 @@ DirectXNet::Direct2D::D2D1RoundedRect::D2D1RoundedRect(D2DRectF% rect, float rad
 {
     
 }
+
+DirectXNet::Direct2D::D2D1Ellipse::D2D1Ellipse(D2DPoint2F% point, float radiusX, float radiusY)
+    : point(point), radiusX(radiusX), radiusY(radiusY)
+{
+    
+}

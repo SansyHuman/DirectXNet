@@ -19,6 +19,10 @@ namespace DirectXNet
     {
         ref class D2D1RectangleGeometry;
         ref class D2D1RoundedRectangleGeometry;
+        ref class D2D1EllipseGeometry;
+        ref class D2D1GeometryGroup;
+        ref class D2D1Geometry;
+        ref class D2D1TransformedGeometry;
 
         /// <summary>
         /// Creates Direct2D resources.
@@ -76,6 +80,41 @@ namespace DirectXNet
             /// <returns>Rounded rectangle geometry if succeeded.</returns>
             D2D1RoundedRectangleGeometry^ CreateRoundedRectangleGeometry(
                 [In][IsReadOnly] D2D1RoundedRect% roundedRectangle
+            );
+
+            /// <summary>
+            /// Creates an D2D1EllipseGeometry.
+            /// </summary>
+            /// <param name="ellipse">A value that describes the center point, x-radius, and y-radius of the
+            /// ellipse geometry.</param>
+            /// <returns>Ellipse geometry if succeeded.</returns>
+            D2D1EllipseGeometry^ CreateEllipseGeometry(
+                [In][IsReadOnly] D2D1Ellipse% ellipse
+            );
+
+            /// <summary>
+            /// Creates an D2D1GeometryGroup, which is an object that holds other geometries.
+            /// </summary>
+            /// <param name="fillMode">A value that specifies the rule that a composite shape uses to
+            /// determine whether a given point is part of the geometry.</param>
+            /// <param name="geometries">An array containing the geometry objects to add to the geometry
+            /// group.
+            /// </param>
+            /// <returns>Geometry group if succeeded.</returns>
+            D2D1GeometryGroup^ CreateGeometryGroup(
+                D2D1FillMode fillMode,
+                ...array<D2D1Geometry^>^ geometries
+            );
+
+            /// <summary>
+            /// Transforms the specified geometry and stores the result as an D2D1TransformedGeometry object.
+            /// </summary>
+            /// <param name="sourceGeometry">The geometry to transform.</param>
+            /// <param name="transform">The transformation to apply.</param>
+            /// <returns>Transformed geometry if succeeded.</returns>
+            D2D1TransformedGeometry^ CreateTransformedGeometry(
+                D2D1Geometry^ sourceGeometry,
+                [In][IsReadOnly] D2DMatrix3X2F% transform
             );
         };
     }

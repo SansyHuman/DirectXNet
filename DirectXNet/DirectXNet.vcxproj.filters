@@ -312,6 +312,15 @@
     <ClInclude Include="Direct2D\D2D1RoundedRectangleGeometry.h">
       <Filter>헤더 파일\Direct2D</Filter>
     </ClInclude>
+    <ClInclude Include="Direct2D\D2D1EllipseGeometry.h">
+      <Filter>헤더 파일\Direct2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Direct2D\D2D1GeometryGroup.h">
+      <Filter>헤더 파일\Direct2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Direct2D\D2D1TransformedGeometry.h">
+      <Filter>헤더 파일\Direct2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -558,6 +567,15 @@
       <Filter>소스 파일\Direct2D</Filter>
     </ClCompile>
     <ClCompile Include="Direct2D\D2D1RoundedRectangleGeometry.cpp">
+      <Filter>소스 파일\Direct2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct2D\D2D1EllipseGeometry.cpp">
+      <Filter>소스 파일\Direct2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct2D\D2D1GeometryGroup.cpp">
+      <Filter>소스 파일\Direct2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct2D\D2D1TransformedGeometry.cpp">
       <Filter>소스 파일\Direct2D</Filter>
     </ClCompile>
   </ItemGroup>

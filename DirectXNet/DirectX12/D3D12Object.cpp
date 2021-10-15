@@ -29,7 +29,7 @@ String^ DirectXNet::DirectX12::D3D12Object::Name::get()
     pD3D12Obj->GetPrivateData(WKPDID_D3DDebugObjectNameW, &dataSize, __nullptr);
 
     UINT strLen = dataSize / sizeof(wchar_t);
-    std::vector<wchar_t> name(strLen + 1);
+    std::vector<wchar_t> name(strLen + 1, 0);
     Common::Result::ThrowIfFailed(pD3D12Obj->GetPrivateData(WKPDID_D3DDebugObjectNameW, &dataSize, (void*)name.data()));
 
     return msclr::interop::marshal_as<String^>(name.data());

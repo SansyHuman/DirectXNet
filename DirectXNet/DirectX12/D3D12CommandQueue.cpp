@@ -125,7 +125,7 @@ void DirectXNet::DirectX12::D3D12CommandQueue::ExecuteCommandLists(
     ...array<D3D12CommandList^>^ commandLists)
 {
     UINT numCommandLists = commandLists->Length;
-    std::vector<::ID3D12CommandList*> lists(numCommandLists);
+    std::vector<::ID3D12CommandList*> lists(numCommandLists, __nullptr);
 
     try
     {

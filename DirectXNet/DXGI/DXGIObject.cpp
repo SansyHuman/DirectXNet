@@ -48,7 +48,7 @@ String^ DirectXNet::DXGI::DXGIObject::DebugObjectName::get()
     pDxgiObj->GetPrivateData(WKPDID_D3DDebugObjectName, &dataSize, __nullptr);
 
     UINT strLen = dataSize / sizeof(char);
-    std::vector<char> name(strLen + 1);
+    std::vector<char> name(strLen + 1, 0);
     Common::Result::ThrowIfFailed(pDxgiObj->GetPrivateData(WKPDID_D3DDebugObjectName, &dataSize, (void*)name.data()));
 
     return msclr::interop::marshal_as<String^>(name.data());

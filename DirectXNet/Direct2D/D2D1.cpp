@@ -1,7 +1,9 @@
 #include "D2D1.h"
 
+#include "D2D1EllipseGeometry.h"
 #include "D2D1Factory.h"
 #include "D2D1Geometry.h"
+#include "D2D1GeometryGroup.h"
 #include "D2D1GeometrySink.h"
 #include "D2D1RectangleGeometry.h"
 #include "D2D1Resource.h"
@@ -9,6 +11,7 @@
 #include "D2D1SimplifiedGeometrySink.h"
 #include "D2D1StrokeStyle.h"
 #include "D2D1TessellationSink.h"
+#include "D2D1TransformedGeometry.h"
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
@@ -29,8 +32,10 @@ float DirectXNet::Direct2D::D2D1::FloatMax::get()
 DirectXNet::Direct2D::D2D1::D2D1()
 {
 #if defined(DEBUG) | defined(_DEBUG)
+    CHECK_D2D1_GUID(D2D1EllipseGeometry);
     CHECK_D2D1_GUID(D2D1Factory);
     CHECK_D2D1_GUID(D2D1Geometry);
+    CHECK_D2D1_GUID(D2D1GeometryGroup);
     CHECK_D2D1_GUID(D2D1GeometrySink);
     CHECK_D2D1_GUID(D2D1RectangleGeometry);
     CHECK_D2D1_GUID(D2D1Resource);
@@ -38,6 +43,7 @@ DirectXNet::Direct2D::D2D1::D2D1()
     CHECK_D2D1_GUID(D2D1SimplifiedGeometrySink);
     CHECK_D2D1_GUID(D2D1StrokeStyle);
     CHECK_D2D1_GUID(D2D1TessellationSink);
+    CHECK_D2D1_GUID(D2D1TransformedGeometry);
 #endif
 }
 

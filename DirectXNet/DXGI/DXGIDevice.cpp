@@ -67,7 +67,7 @@ DXGISurface^ DirectXNet::DXGI::DXGIDevice::CreateSurface(
 array<DXGIResidency>^ DirectXNet::DXGI::DXGIDevice::QueryResourceResidency(array<Common::Unknown^>^ resources)
 {
     UINT numResources = resources->Length;
-    std::vector<::IUnknown*> pResources(numResources);
+    std::vector<::IUnknown*> pResources(numResources, __nullptr);
 
     try
     {

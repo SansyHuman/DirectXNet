@@ -315,7 +315,7 @@ void DirectXNet::DirectX12::D3D12GraphicsCommandList::SetDescriptorHeaps(
     ...array<D3D12DescriptorHeap^>^ descriptorHeaps)
 {
     UINT numDescriptorHeaps = descriptorHeaps->Length;
-    std::vector<::ID3D12DescriptorHeap*> heaps(numDescriptorHeaps);
+    std::vector<::ID3D12DescriptorHeap*> heaps(numDescriptorHeaps, __nullptr);
 
     try
     {
